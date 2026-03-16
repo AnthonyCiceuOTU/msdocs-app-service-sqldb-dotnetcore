@@ -1,0 +1,114 @@
+@model DotNetCoreSqlDb.ViewModels.AlgorithmsViewModel
+
+@{
+    ViewData["Title"] = "Algorithms";
+}
+
+<div class="container mt-4">
+    <h1>Algorithms</h1>
+    <p class="text-success fw-bold">Completed</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Introduction</h3>
+            <p>
+                An algorithm is a step-by-step set of instructions for solving a problem.
+                Good algorithms are precise, finite, and deterministic.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Example</h3>
+            <pre class="bg-light p-3 border rounded">BEGIN
+SET number = 5
+SET result = number * 2
+DISPLAY result
+END</pre>
+
+            <h4>Explanation</h4>
+            <p>
+                This algorithm multiplies a number by two. Each step is clear and the algorithm
+                always produces the same result for the same input.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Practice Exercises</h3>
+            <p><strong>Practice:</strong> Fix the Algorithm</p>
+            <p>✏️ Fill in the Blank</p>
+
+            <h4>Challenge</h4>
+            <p>
+                Complete the algorithm so it correctly calculates the total cost of two items.
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
+            {
+                var alertClass = Model.IsCorrect == true ? "alert-success" :
+                                 Model.IsCorrect == false ? "alert-danger" :
+                                 "alert-info";
+
+                <div class="alert @alertClass">
+                    @Model.FeedbackMessage
+                </div>
+            }
+
+            <form asp-action="Algorithms" asp-controller="UnitOne" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Your Code</label>
+                    <div class="bg-light p-3 border rounded font-monospace">
+                        <div>BEGIN</div>
+                        <div>SET price1 = 5</div>
+                        <div>SET price2 = 10</div>
+                        <div>
+                            SET total =
+                            <input asp-for="UserAnswer1" class="form-control d-inline-block mx-1" style="width:140px;" />
+                            +
+                            <input asp-for="UserAnswer2" class="form-control d-inline-block mx-1" style="width:140px;" />
+                        </div>
+                        <div>DISPLAY total</div>
+                        <div>END</div>
+                    </div>
+                </div>
+
+                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
+                    Check Solution
+                </button>
+
+                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
+                    Hints
+                </button>
+
+                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
+                    See Solution
+                </button>
+            </form>
+
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Hint: The missing parts are the names of the variables that already contain the prices.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-secondary mt-3">
+                    <strong>Solution:</strong>
+                    <pre class="mt-2 mb-0">BEGIN
+SET price1 = 5
+SET price2 = 10
+SET total = price1 + price2
+DISPLAY total
+END</pre>
+                </div>
+            }
+        </div>
+    </div>
+</div>
