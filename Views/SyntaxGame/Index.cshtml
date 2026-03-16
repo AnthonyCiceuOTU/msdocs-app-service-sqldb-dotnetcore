@@ -1,0 +1,63 @@
+@model DotNetCoreSqlDb.ViewModels.SyntaxGameViewModel
+
+@{
+    ViewData["Title"] = "Syntax Game";
+}
+
+<div class="container mt-4">
+    <h2>Syntax Game</h2>
+
+    @if (ViewBag.GameComplete == true)
+    {
+        <div class="alert alert-success">
+            @Model.FeedbackMessage
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(Model.FeedbackMessage))
+        {
+            <div class="alert @(Model.IsCorrect ? "alert-success" : "alert-danger")">
+                @Model.FeedbackMessage
+            </div>
+        }
+
+        <div class="card mb-3">
+            <div class="card-header">
+                Question @Model.QuestionNumber
+            </div>
+            <div class="card-body">
+                <label class="form-label fw-bold">Pseudocode</label>
+                <pre class="bg-light p-3 border rounded">@Model.Pseudocode</pre>
+            </div>
+        </div>
+
+        <form asp-action="Submit" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="QuestionNumber" />
+
+            <div class="mb-3">
+                <label asp-for="SelectedLanguage" class="form-label">Language</label>
+                <select asp-for="SelectedLanguage" class="form-select">
+                    <option value="Java">Java</option>
+                    <option value="C#">C#</option>
+                    <option value="Python">Python</option>
+                </select>
+                <span asp-validation-for="SelectedLanguage" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="UserAnswer" class="form-label">Your Answer</label>
+                <textarea asp-for="UserAnswer" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="UserAnswer" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Answer</button>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
