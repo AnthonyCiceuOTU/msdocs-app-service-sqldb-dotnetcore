@@ -1,19 +1,19 @@
-@model DotNetCoreSqlDb.ViewModels.AlgorithmsViewModel
+@model DotNetCoreSqlDb.ViewModels.DecompositionViewModel
 
 @{
-    ViewData["Title"] = "Algorithms";
+    ViewData["Title"] = "Decomposition";
 }
 
 <div class="container mt-4">
-    <h1>Algorithms</h1>
+    <h1>Decomposition</h1>
     <p class="text-success fw-bold">Completed</p>
 
     <div class="card mb-4">
         <div class="card-body">
             <h3>Introduction</h3>
             <p>
-                An algorithm is a step-by-step set of instructions for solving a problem.
-                Good algorithms are precise, finite, and deterministic.
+                Decomposition means breaking a large problem into smaller, manageable steps.
+                This makes complex problems easier to solve.
             </p>
         </div>
     </div>
@@ -22,15 +22,16 @@
         <div class="card-body">
             <h3>Example</h3>
             <pre class="bg-light p-3 border rounded">BEGIN
-SET number = 5
-SET result = number * 2
-DISPLAY result
+DISPLAY "Step 1: Choose destination"
+DISPLAY "Step 2: Book transportation"
+DISPLAY "Step 3: Pack luggage"
+DISPLAY "Step 4: Travel"
 END</pre>
 
             <h4>Explanation</h4>
             <p>
-                This algorithm multiplies a number by two. Each step is clear and the algorithm
-                always produces the same result for the same input.
+                Planning a trip is a large task, but by breaking it into smaller steps we can
+                manage each part individually.
             </p>
         </div>
     </div>
@@ -38,12 +39,12 @@ END</pre>
     <div class="card mb-4">
         <div class="card-body">
             <h3>Practice Exercises</h3>
-            <p><strong>Practice:</strong> Fix the Algorithm</p>
+            <p><strong>Practice:</strong> Break Down a Task</p>
             <p>✏️ Fill in the Blank</p>
 
             <h4>Challenge</h4>
             <p>
-                Complete the algorithm so it correctly calculates the total cost of two items.
+                Complete the steps for preparing for school in the morning.
             </p>
 
             @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
@@ -57,22 +58,29 @@ END</pre>
                 </div>
             }
 
-            <form asp-action="Algorithms" asp-controller="UnitOne" method="post">
+            <form asp-action="Decomposition" asp-controller="UnitOne" method="post">
                 @Html.AntiForgeryToken()
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Your Code</label>
                     <div class="bg-light p-3 border rounded font-monospace">
                         <div>BEGIN</div>
-                        <div>SET price1 = 5</div>
-                        <div>SET price2 = 10</div>
                         <div>
-                            SET total =
-                            <input asp-for="UserAnswer1" class="form-control d-inline-block mx-1" style="width:140px;" />
-                            +
-                            <input asp-for="UserAnswer2" class="form-control d-inline-block mx-1" style="width:140px;" />
+                            DISPLAY "Step 1:
+                            <input asp-for="UserAnswer1" class="form-control d-inline-block mx-1" style="width:180px;" />
+                            "
                         </div>
-                        <div>DISPLAY total</div>
+                        <div>
+                            DISPLAY "Step 2:
+                            <input asp-for="UserAnswer2" class="form-control d-inline-block mx-1" style="width:180px;" />
+                            "
+                        </div>
+                        <div>
+                            DISPLAY "Step 3:
+                            <input asp-for="UserAnswer3" class="form-control d-inline-block mx-1" style="width:180px;" />
+                            "
+                        </div>
+                        <div>DISPLAY "Step 4: Leave for school"</div>
                         <div>END</div>
                     </div>
                 </div>
@@ -86,14 +94,14 @@ END</pre>
                 </button>
 
                 <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
-                    See Solution
+                    Solution
                 </button>
             </form>
 
             @if (Model.ShowHint)
             {
                 <div class="alert alert-warning mt-3">
-                    Hint: The missing parts are the names of the variables that already contain the prices.
+                    Hint: think about what you usually do first, second, and third before you leave home.
                 </div>
             }
 
@@ -102,17 +110,13 @@ END</pre>
                 <div class="alert alert-secondary mt-3">
                     <strong>Solution:</strong>
                     <pre class="mt-2 mb-0">BEGIN
-SET price1 = 5
-SET price2 = 10
-SET total = price1 + price2
-DISPLAY total
+DISPLAY "Step 1: Wake up"
+DISPLAY "Step 2: Get dressed"
+DISPLAY "Step 3: Eat breakfast"
+DISPLAY "Step 4: Leave for school"
 END</pre>
                 </div>
             }
         </div>
     </div>
-
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="UnitOne" asp-action="Decomposition">Unit 1, Lesson 3</a>
-    </li>
 </div>

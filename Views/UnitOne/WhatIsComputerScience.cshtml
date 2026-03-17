@@ -1,0 +1,157 @@
+@model DotNetCoreSqlDb.ViewModels.ComputerScienceViewModel
+
+@{
+    ViewData["Title"] = "What Is Computer Science?";
+}
+
+<div class="container mt-4">
+
+    <h1>What Is Computer Science?</h1>
+    <p class="text-success fw-bold">Completed</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <h3>Introduction</h3>
+
+            <p>
+                Computer science is about solving problems using logical steps that a computer can follow.
+                Programming is simply the process of writing these steps so a computer can execute them.
+            </p>
+
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <h3>Example</h3>
+
+            <pre class="bg-light p-3 border rounded">
+                BEGIN
+                DISPLAY "Step 1: Get bread"
+                DISPLAY "Step 2: Add filling"
+                DISPLAY "Step 3: Close sandwich"
+                END
+            </pre>
+
+            <h4>Explanation</h4>
+
+            <p>
+                Programs are essentially instructions executed step-by-step. Even everyday activities
+                like making a sandwich can be written as an ordered set of instructions.
+            </p>
+
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <h3>Practice Exercises</h3>
+
+            <p><strong>Practice:</strong> Write Instructions</p>
+            <p>🔨 Code Completion</p>
+
+            <h4>Challenge</h4>
+
+            <p>
+                Write pseudocode instructions for brushing your teeth using DISPLAY statements.
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
+            {
+                var alertClass = Model.IsCorrect == true ? "alert-success"
+                               : Model.IsCorrect == false ? "alert-danger"
+                               : "alert-info";
+
+                <div class="alert @alertClass">
+                    @Model.FeedbackMessage
+                </div>
+            }
+
+            <form asp-action="WhatIsComputerScience" asp-controller="UnitOne" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-bold">Your Code</label>
+
+                    <div class="bg-light p-3 border rounded font-monospace">
+
+                        <div>BEGIN</div>
+
+                        <div>
+                            DISPLAY "Step 1:
+                            <input asp-for="UserAnswer1" class="form-control d-inline-block mx-1"
+                                   style="width:220px;" />
+                            "
+                        </div>
+
+                        <div>
+                            DISPLAY "Step 2:
+                            <input asp-for="UserAnswer2" class="form-control d-inline-block mx-1"
+                                   style="width:220px;" />
+                            "
+                        </div>
+
+                        <div>
+                            DISPLAY "Step 3:
+                            <input asp-for="UserAnswer3" class="form-control d-inline-block mx-1"
+                                   style="width:220px;" />
+                            "
+                        </div>
+
+                        <div>END</div>
+
+                    </div>
+
+                </div>
+
+                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
+                    Check Solution
+                </button>
+
+                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
+                    Hints
+                </button>
+
+                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
+                    Solution
+                </button>
+
+            </form>
+
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Hint: think about the steps involved when brushing your teeth.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-secondary mt-3">
+
+                    <strong>Solution:</strong>
+
+                    <pre class="mt-2 mb-0">
+                        BEGIN
+                        DISPLAY "Step 1: Put toothpaste on toothbrush"
+                        DISPLAY "Step 2: Brush teeth"
+                        DISPLAY "Step 3: Rinse mouth"
+                        END
+                    </pre>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="UnitOne" asp-action="Algorithms">Unit 1, Lesson 2</a>
+    </li>
+
+</div>
