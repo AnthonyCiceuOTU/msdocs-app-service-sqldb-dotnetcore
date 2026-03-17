@@ -1,22 +1,383 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background: #f5f5f7;
+    color: #111827;
+}
+
+.cq-page {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.cq-sidebar {
+    position: sticky;
+    top: 20px;
+}
+
+.cq-sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.cq-unit-card {
+    background: #f0f1f4;
+    border: 1px solid #e3e5ea;
+    border-radius: 18px;
+    padding: 14px;
+}
+
+.cq-unit-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.cq-unit-header h3 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: #2f3747;
+}
+
+.cq-unit-header p {
+    margin: 0 0 8px 0;
+    color: #697386;
+    line-height: 1.45;
+}
+
+.cq-unit-header span {
+    color: #697386;
+    font-size: 0.95rem;
+}
+
+.cq-unit-arrow {
+    font-size: 1.25rem;
+    color: #4b5563;
+    line-height: 1;
+    padding-top: 4px;
+}
+
+.cq-lesson-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cq-lesson-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    background: #ffffff;
+    color: #334155;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #ebeef3;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.cq-lesson-link strong {
+    display: block;
+    font-size: 1.05rem;
+    margin-bottom: 2px;
+}
+
+.cq-lesson-link div:last-child {
+    font-size: 0.95rem;
+    color: #6b7280;
+}
+
+.cq-lesson-link.active {
+    background: linear-gradient(90deg, #5b5cf0 0%, #b21df3 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 10px 24px rgba(128, 90, 213, 0.28);
+}
+
+.cq-lesson-link.active div:last-child,
+.cq-lesson-link.active strong {
+    color: white;
+}
+
+.cq-lesson-link.disabled {
+    opacity: 0.65;
+    cursor: default;
+}
+
+.cq-lesson-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #ece8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cq-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cq-top-card,
+.cq-content-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.cq-top-card {
+    padding: 28px 32px;
+}
+
+.cq-top-text {
+    margin-bottom: 20px;
+}
+
+.cq-breadcrumb {
+    color: #7c3aed;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.cq-top-card h1 {
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.cq-top-card p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.cq-complete-btn {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: white;
+    background: linear-gradient(90deg, #5b5cf0 0%, #b21df3 100%);
+}
+
+.cq-content-card {
+    padding: 28px 32px;
+}
+
+.cq-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.cq-section-title h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.cq-purple-icon {
+    color: #8b5cf6;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.cq-exercise-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.cq-exercise-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.cq-exercise-header h3 {
+    margin: 0;
+    font-size: 1.95rem;
+    font-weight: 800;
+}
+
+.cq-exercise-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: #efe7ff;
+    color: #8b5cf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.cq-label {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #111827;
+}
+
+.cq-challenge-text {
+    font-size: 1.15rem;
+    color: #374151;
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.cq-code-box {
+    width: 100%;
+    min-height: 255px;
+    resize: vertical;
+    border-radius: 14px;
+    border: 1px solid #d1d5db;
+    background: #f8fafc;
+    padding: 18px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 1.05rem;
+    color: #0f172a;
+    margin-bottom: 22px;
+    white-space: pre;
+}
+
+.cq-button-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cq-primary-btn,
+.cq-hint-btn,
+.cq-secondary-btn {
+    border: none;
+    border-radius: 14px;
+    padding: 15px 24px;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.cq-primary-btn {
+    flex: 1;
+    min-width: 240px;
+    color: white;
+    background: linear-gradient(90deg, #5b5cf0 0%, #b21df3 100%);
+}
+
+.cq-hint-btn {
+    background: #f2df93;
+    color: #8a5b00;
+}
+
+.cq-secondary-btn {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.cq-feedback-box {
+    display: none;
+    margin-top: 18px;
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-weight: 600;
+}
+
+.cq-feedback-box.show {
+    display: block;
+}
+
+.cq-feedback-box.success {
+    background: #ecfdf5;
+    border: 1px solid #86efac;
+    color: #166534;
+}
+
+.cq-feedback-box.error {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+}
+
+.cq-feedback-box.hint {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+}
+
+.cq-feedback-box.solution {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    color: #1d4ed8;
+}
+
+.cq-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.cq-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: #ffffff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-weight: 700;
+}
+
+.cq-nav-btn-right {
+    margin-left: auto;
+}
+
+@media (max-width: 1100px) {
+    .cq-page {
+        grid-template-columns: 1fr;
+    }
+
+    .cq-sidebar {
+        position: static;
+    }
 }

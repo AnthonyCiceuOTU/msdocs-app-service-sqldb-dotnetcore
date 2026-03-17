@@ -1,0 +1,167 @@
+@model DotNetCoreSqlDb.Models.PseudocodeCourseViewModel
+
+@{
+    ViewData["Title"] = "Pseudocode Quest";
+
+    var selected = Model.SelectedLesson;
+    var availableLessons = Model.Units
+        .SelectMany(u => u.Lessons)
+        .Where(l => l.IsAvailable)
+        .ToList();
+
+    var currentIndex = availableLessons.FindIndex(l => l.Slug == selected.Slug);
+    var previousLesson = currentIndex > 0 ? availableLessons[currentIndex - 1] : null;
+    var nextLesson = currentIndex < availableLessons.Count - 1 ? availableLessons[currentIndex + 1] : null;
+
+    var totalExercises = Model.Units.SelectMany(u => u.Lessons).Count(l => l.IsAvailable);
+}
+
+<div class="cq-page">
+    <aside class="cq-sidebar">
+        <div class="cq-sidebar-inner">
+            @foreach (var unit in Model.Units)
+            {
+                var unitExerciseCount = unit.Lessons.Count(l => l.IsAvailable);
+
+                <div class="cq-unit-card">
+                    <div class="cq-unit-header">
+                        <div>
+                            <h3>@unit.Title</h3>
+                            <p>@unit.Description</p>
+                            <span>0/@unitExerciseCount completed</span>
+                        </div>
+                        <span class="cq-unit-arrow">⌄</span>
+                    </div>
+
+                    @if (unit.IsExpanded)
+                    {
+                        <div class="cq-lesson-links">
+                            @foreach (var lesson in unit.Lessons)
+                            {
+                                var isActive = lesson.Slug == selected.Slug;
+                                var lessonClass = "cq-lesson-link";
+
+                                if (isActive)
+                                {
+                                    lessonClass += " active";
+                                }
+
+                                if (!lesson.IsAvailable)
+                                {
+                                    lessonClass += " disabled";
+                                }
+
+                                if (lesson.IsAvailable)
+                                {
+                                    <a class="@lessonClass"
+                                       asp-controller="Pseudocode"
+                                       asp-action="Index"
+                                       asp-route-lesson="@lesson.Slug">
+                                        <div class="cq-lesson-icon">📖</div>
+                                        <div>
+                                            <strong>@lesson.Title</strong>
+                                            <div>@lesson.Summary</div>
+                                        </div>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="@lessonClass">
+                                        <div class="cq-lesson-icon">📖</div>
+                                        <div>
+                                            <strong>@lesson.Title</strong>
+                                            <div>@lesson.Summary</div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </aside>
+
+    <main class="cq-main">
+        <section class="cq-top-card">
+            <div class="cq-top-text">
+                <div class="cq-breadcrumb">Unit 2 • Variables and Data</div>
+                <h1>@selected.Title</h1>
+                <p>@selected.Summary</p>
+            </div>
+
+            <button type="button" class="cq-complete-btn">Mark as Complete</button>
+        </section>
+
+        <section class="cq-content-card">
+            <div class="cq-section-title">
+                <span class="cq-purple-icon">&lt;/&gt;</span>
+                <h2>Practice Exercises</h2>
+            </div>
+
+            <div class="cq-exercise-card">
+                <div class="cq-exercise-header">
+                    <div class="cq-exercise-icon">&lt;/&gt;</div>
+                    <div>
+                        <h3>@selected.ChallengeTitle</h3>
+                    </div>
+                </div>
+
+                <div class="cq-label">Challenge</div>
+                <p class="cq-challenge-text">@selected.ChallengePrompt</p>
+
+                <div class="cq-label">Your Code</div>
+                <textarea id="studentAnswer" class="cq-code-box" spellcheck="false">@selected.StarterCode</textarea>
+
+                <div class="cq-button-row">
+                    <button id="checkSolutionBtn" class="cq-primary-btn" type="button"
+                            data-expected="@selected.ExpectedAnswer">
+                        Check Solution
+                    </button>
+
+                    <button id="hintBtn" class="cq-hint-btn" type="button"
+                            data-hint="@selected.Hint">
+                        Hints
+                    </button>
+
+                    <button id="solutionBtn" class="cq-secondary-btn" type="button"
+                            data-solution="@selected.Solution">
+                        Solution
+                    </button>
+                </div>
+
+                <div id="feedbackBox" class="cq-feedback-box"></div>
+            </div>
+
+            <div class="cq-nav-row">
+                @if (previousLesson != null)
+                {
+                    <a class="cq-nav-btn"
+                       asp-controller="Pseudocode"
+                       asp-action="Index"
+                       asp-route-lesson="@previousLesson.Slug">
+                        ‹ Previous
+                    </a>
+                }
+                else
+                {
+                    <span></span>
+                }
+
+                @if (nextLesson != null)
+                {
+                    <a class="cq-nav-btn cq-nav-btn-right"
+                       asp-controller="Pseudocode"
+                       asp-action="Index"
+                       asp-route-lesson="@nextLesson.Slug">
+                        Next ›
+                    </a>
+                }
+            </div>
+        </section>
+    </main>
+</div>
+
+@section Scripts {
+    <script src="~/js/pseudocode-game.js" asp-append-version="true"></script>
+}

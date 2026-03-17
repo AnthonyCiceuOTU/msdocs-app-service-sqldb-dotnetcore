@@ -1,0 +1,136 @@
+@model DotNetCoreSqlDb.Models.UnitTwoViewModel
+
+@{
+    ViewData["Title"] = "Unit Two";
+
+    var selected = Model.SelectedLesson;
+}
+
+<div class="cq-page">
+    <aside class="cq-sidebar">
+        <div class="cq-sidebar-inner">
+            <div class="cq-unit-card">
+                <div class="cq-unit-header">
+                    <div>
+                        <h3>@Model.UnitTitle</h3>
+                        <p>@Model.UnitDescription</p>
+                        <span>0/@Model.Lessons.Count completed</span>
+                    </div>
+                    <span class="cq-unit-arrow">⌄</span>
+                </div>
+
+                <div class="cq-lesson-links">
+                    @foreach (var lesson in Model.Lessons)
+                    {
+                        var lessonClass = "cq-lesson-link";
+
+                        if (lesson.Slug == selected.Slug)
+                        {
+                            lessonClass += " active";
+                        }
+
+                        <a class="@lessonClass"
+                           asp-controller="UnitTwo"
+                           asp-action="Index"
+                           asp-route-lesson="@lesson.Slug">
+                            <div class="cq-lesson-icon">📖</div>
+                            <div>
+                                <strong>@lesson.Title</strong>
+                                <div>@lesson.LessonType • @lesson.ExerciseCount exercise</div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="cq-main">
+        <section class="cq-top-card">
+            <div class="cq-top-text">
+                <div class="cq-breadcrumb">Unit Two • Variables and Data</div>
+                <h1>@selected.Title</h1>
+                <p>@selected.LessonType • @selected.ExerciseCount exercise</p>
+            </div>
+
+            <button type="button" class="cq-complete-btn">Mark as Complete</button>
+        </section>
+
+        <section class="cq-content-card">
+            <div class="cq-section-title">
+                <span class="cq-purple-icon">&lt;/&gt;</span>
+                <h2>Practice Exercises</h2>
+            </div>
+
+            <div class="cq-exercise-card">
+                <div class="cq-exercise-header">
+                    <div class="cq-exercise-icon">&lt;/&gt;</div>
+                    <div>
+                        <h3>@selected.ChallengeTitle</h3>
+                    </div>
+                </div>
+
+                <div class="cq-label">Challenge</div>
+                <p class="cq-challenge-text">@selected.ChallengePrompt</p>
+
+                <div class="cq-label">Your Code</div>
+                <textarea id="studentAnswer" class="cq-code-box" spellcheck="false">@selected.StarterCode</textarea>
+
+                <div class="cq-button-row">
+                    <button id="checkSolutionBtn"
+                            class="cq-primary-btn"
+                            type="button"
+                            data-expected="@selected.ExpectedAnswer">
+                        Check Solution
+                    </button>
+
+                    <button id="hintBtn"
+                            class="cq-hint-btn"
+                            type="button"
+                            data-hint="@selected.Hint">
+                        Hints
+                    </button>
+
+                    <button id="solutionBtn"
+                            class="cq-secondary-btn"
+                            type="button"
+                            data-solution="@selected.Solution">
+                        Solution
+                    </button>
+                </div>
+
+                <div id="feedbackBox" class="cq-feedback-box"></div>
+            </div>
+
+            <div class="cq-nav-row">
+                @if (Model.PreviousLesson != null)
+                {
+                    <a class="cq-nav-btn"
+                       asp-controller="UnitTwo"
+                       asp-action="Index"
+                       asp-route-lesson="@Model.PreviousLesson.Slug">
+                        ‹ Previous
+                    </a>
+                }
+                else
+                {
+                    <span></span>
+                }
+
+                @if (Model.NextLesson != null)
+                {
+                    <a class="cq-nav-btn cq-nav-btn-right"
+                       asp-controller="UnitTwo"
+                       asp-action="Index"
+                       asp-route-lesson="@Model.NextLesson.Slug">
+                        Next ›
+                    </a>
+                }
+            </div>
+        </section>
+    </main>
+</div>
+
+@section Scripts {
+    <script src="~/js/pseudocode-game.js" asp-append-version="true"></script>
+}
