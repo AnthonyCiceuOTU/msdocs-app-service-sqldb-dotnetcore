@@ -1,0 +1,111 @@
+@model DotNetCoreSqlDb.ViewModels.ArithmeticExpressionsViewModel
+
+@{
+    ViewData["Title"] = "Arithmetic Expressions";
+}
+
+<div class="container mt-4">
+    <h1>Arithmetic Expressions</h1>
+    <p class="text-success fw-bold">Completed</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Introduction</h3>
+            <p>
+                Arithmetic expressions are used to perform calculations in pseudocode.
+                You can use operators like +, -, *, and / to work with numbers.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Example</h3>
+            <pre class="bg-light p-3 border rounded">BEGIN
+SET total = 6 + 2
+DISPLAY total
+END</pre>
+
+            <h4>Explanation</h4>
+            <p>
+                The expression <code>6 + 2</code> is evaluated first, then the result is stored in
+                the variable <code>total</code>.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Practice Exercises</h3>
+            <p><strong>Practice:</strong> Calculate a Total</p>
+            <p>✏️ Fill in the Blank</p>
+
+            <h4>Challenge</h4>
+            <p>
+                Complete the algorithm so the variable <code>total</code> stores the result of 8 + 4.
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
+            {
+                var alertClass = Model.IsCorrect == true ? "alert-success" :
+                                 Model.IsCorrect == false ? "alert-danger" :
+                                 "alert-info";
+
+                <div class="alert @alertClass">
+                    @Model.FeedbackMessage
+                </div>
+            }
+
+            <form asp-action="ArithmeticExpressions" asp-controller="UnitTwo" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Your Code</label>
+                    <div class="bg-light p-3 border rounded font-monospace">
+                        <div>BEGIN</div>
+                        <div>
+                            SET total =
+                            <input asp-for="UserAnswer" class="form-control d-inline-block mx-1" style="width:180px;" />
+                        </div>
+                        <div>DISPLAY total</div>
+                        <div>END</div>
+                    </div>
+                </div>
+
+                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
+                    Check Solution
+                </button>
+
+                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
+                    Hints
+                </button>
+
+                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
+                    Solution
+                </button>
+            </form>
+
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Hint: write the expression using 8 plus 4.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-secondary mt-3">
+                    <strong>Solution:</strong>
+                    <pre class="mt-2 mb-0">BEGIN
+SET total = 8 + 4
+DISPLAY total
+END</pre>
+                </div>
+            }
+        </div>
+    </div>
+
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="UnitTwo" asp-action="InputOutput">Unit Two, Lesson 4</a>
+    </li>
+</div>

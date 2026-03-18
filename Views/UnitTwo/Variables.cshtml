@@ -1,0 +1,111 @@
+@model DotNetCoreSqlDb.ViewModels.VariablesViewModel
+
+@{
+    ViewData["Title"] = "Variables";
+}
+
+<div class="container mt-4">
+    <h1>Variables</h1>
+    <p class="text-success fw-bold">Completed</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Introduction</h3>
+            <p>
+                A variable is a named storage location used to keep data in a program.
+                Variables let us save values and use them later in the algorithm.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Example</h3>
+            <pre class="bg-light p-3 border rounded">BEGIN
+SET score = 10
+DISPLAY score
+END</pre>
+
+            <h4>Explanation</h4>
+            <p>
+                This algorithm stores the value 10 inside the variable score,
+                then displays that value.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Practice Exercises</h3>
+            <p><strong>Practice:</strong> Assign a Variable</p>
+            <p>✏️ Fill in the Blank</p>
+
+            <h4>Challenge</h4>
+            <p>
+                Complete the algorithm so the variable <code>points</code> stores the value 25.
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
+            {
+                var alertClass = Model.IsCorrect == true ? "alert-success" :
+                                 Model.IsCorrect == false ? "alert-danger" :
+                                 "alert-info";
+
+                <div class="alert @alertClass">
+                    @Model.FeedbackMessage
+                </div>
+            }
+
+            <form asp-action="Variables" asp-controller="UnitTwo" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Your Code</label>
+                    <div class="bg-light p-3 border rounded font-monospace">
+                        <div>BEGIN</div>
+                        <div>
+                            SET points =
+                            <input asp-for="UserAnswer" class="form-control d-inline-block mx-1" style="width:140px;" />
+                        </div>
+                        <div>DISPLAY points</div>
+                        <div>END</div>
+                    </div>
+                </div>
+
+                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
+                    Check Solution
+                </button>
+
+                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
+                    Hints
+                </button>
+
+                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
+                    Solution
+                </button>
+            </form>
+
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Hint: assign the number directly to the variable.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-secondary mt-3">
+                    <strong>Solution:</strong>
+                    <pre class="mt-2 mb-0">BEGIN
+SET points = 25
+DISPLAY points
+END</pre>
+                </div>
+            }
+        </div>
+    </div>
+
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="UnitTwo" asp-action="DataTypes">Unit Two, Lesson 2</a>
+    </li>
+</div>

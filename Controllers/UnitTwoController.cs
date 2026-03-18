@@ -1,96 +1,184 @@
-using DotNetCoreSqlDb.Models;
 using Microsoft.AspNetCore.Mvc;
+using DotNetCoreSqlDb.ViewModels;
 
 namespace DotNetCoreSqlDb.Controllers
 {
     public class UnitTwoController : Controller
     {
-        public IActionResult Index(string? lesson = null)
+        [HttpGet]
+        public IActionResult Variables()
         {
-            var model = BuildViewModel(lesson);
-            return View("UnitTwo", model);
+            return View(new VariablesViewModel());
         }
 
-        private UnitTwoViewModel BuildViewModel(string? lessonSlug)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Variables(VariablesViewModel vm, string actionType)
         {
-            var lessons = new List<UnitTwoLessonViewModel>
-            {
-                new UnitTwoLessonViewModel
-                {
-                    Id = 1,
-                    Slug = "variables",
-                    Title = "Variables",
-                    LessonType = "Lesson",
-                    ExerciseCount = 1,
-                    ChallengeTitle = "Practice: Assign a Variable",
-                    ChallengePrompt = "Complete the pseudocode so the variable 'points' stores the value 25.",
-                    StarterCode = "BEGIN\nSET points = ____\nDISPLAY points\nEND",
-                    ExpectedAnswer = "25",
-                    Hint = "You are assigning a number directly to the variable.",
-                    Solution = "BEGIN\nSET points = 25\nDISPLAY points\nEND"
-                },
-                new UnitTwoLessonViewModel
-                {
-                    Id = 2,
-                    Slug = "data-types",
-                    Title = "Data Types",
-                    LessonType = "Lesson",
-                    ExerciseCount = 1,
-                    ChallengeTitle = "Practice: Store Text",
-                    ChallengePrompt = "Complete the pseudocode so the variable 'name' stores the text Alex.",
-                    StarterCode = "BEGIN\nSET name = ____\nDISPLAY name\nEND",
-                    ExpectedAnswer = "\"Alex\"",
-                    Hint = "Text values should be written in quotation marks.",
-                    Solution = "BEGIN\nSET name = \"Alex\"\nDISPLAY name\nEND"
-                },
-                new UnitTwoLessonViewModel
-                {
-                    Id = 3,
-                    Slug = "arithmetic-expressions",
-                    Title = "Arithmetic Expressions",
-                    LessonType = "Lesson",
-                    ExerciseCount = 1,
-                    ChallengeTitle = "Practice: Calculate a Total",
-                    ChallengePrompt = "Complete the pseudocode so the variable 'total' stores the result of 8 + 4.",
-                    StarterCode = "BEGIN\nSET total = ____\nDISPLAY total\nEND",
-                    ExpectedAnswer = "8 + 4",
-                    Hint = "Use an arithmetic expression on the right side of the assignment.",
-                    Solution = "BEGIN\nSET total = 8 + 4\nDISPLAY total\nEND"
-                },
-                new UnitTwoLessonViewModel
-                {
-                    Id = 4,
-                    Slug = "input-output",
-                    Title = "Input and Output",
-                    LessonType = "Lesson",
-                    ExerciseCount = 1,
-                    ChallengeTitle = "Practice: Input a Value",
-                    ChallengePrompt = "Complete the pseudocode so the program asks the user for age, stores it, and then displays it.",
-                    StarterCode = "BEGIN\nINPUT ____\nDISPLAY age\nEND",
-                    ExpectedAnswer = "age",
-                    Hint = "The variable should be named the same thing that gets displayed.",
-                    Solution = "BEGIN\nINPUT age\nDISPLAY age\nEND"
-                }
-            };
+            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
 
-            var selectedLesson = lessons.FirstOrDefault();
-
-            if (!string.IsNullOrWhiteSpace(lessonSlug))
+            if (actionType == "hint")
             {
-                selectedLesson = lessons.FirstOrDefault(l => l.Slug == lessonSlug) ?? selectedLesson;
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Hint: assign the number directly to the variable.";
+                return View(vm);
             }
 
-            var selectedIndex = lessons.FindIndex(l => l.Slug == selectedLesson!.Slug);
-
-            return new UnitTwoViewModel
+            if (actionType == "solution")
             {
-                UnitTitle = "Unit Two: Variables and Data",
-                UnitDescription = "Understand how programs store and manipulate information using variables, data types, and expressions.",
-                Lessons = lessons,
-                SelectedLesson = selectedLesson,
-                PreviousLesson = selectedIndex > 0 ? lessons[selectedIndex - 1] : null,
-                NextLesson = selectedIndex < lessons.Count - 1 ? lessons[selectedIndex + 1] : null
-            };
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Solution shown below.";
+                return View(vm);
+            }
+
+            bool isCorrect = vm.UserAnswer.Equals("25", StringComparison.OrdinalIgnoreCase);
+
+            vm.IsCorrect = isCorrect;
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+            vm.FeedbackMessage = isCorrect
+                ? "Correct! The variable points now stores the value 25."
+                : "Not quite. Try assigning the value 25 to the variable.";
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult DataTypes()
+        {
+            return View(new DataTypesViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DataTypes(DataTypesViewModel vm, string actionType)
+        {
+            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Hint: text values should be inside quotation marks.";
+                return View(vm);
+            }
+
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Solution shown below.";
+                return View(vm);
+            }
+
+            bool isCorrect =
+                vm.UserAnswer.Equals("\"Alex\"", StringComparison.OrdinalIgnoreCase) ||
+                vm.UserAnswer.Equals("Alex", StringComparison.OrdinalIgnoreCase);
+
+            vm.IsCorrect = isCorrect;
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+            vm.FeedbackMessage = isCorrect
+                ? "Correct! Alex is stored as text."
+                : "Not quite. Remember that text values are usually written in quotation marks.";
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult ArithmeticExpressions()
+        {
+            return View(new ArithmeticExpressionsViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ArithmeticExpressions(ArithmeticExpressionsViewModel vm, string actionType)
+        {
+            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Hint: use an arithmetic expression with 8 and 4.";
+                return View(vm);
+            }
+
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Solution shown below.";
+                return View(vm);
+            }
+
+            bool isCorrect = vm.UserAnswer.Replace(" ", "") == "8+4";
+
+            vm.IsCorrect = isCorrect;
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+            vm.FeedbackMessage = isCorrect
+                ? "Correct! The expression 8 + 4 calculates the total."
+                : "Not quite. Try writing the expression using 8 plus 4.";
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult InputOutput()
+        {
+            return View(new InputOutputViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult InputOutput(InputOutputViewModel vm, string actionType)
+        {
+            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Hint: the same variable should be input and then displayed.";
+                return View(vm);
+            }
+
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Solution shown below.";
+                return View(vm);
+            }
+
+            bool isCorrect = vm.UserAnswer.Equals("age", StringComparison.OrdinalIgnoreCase);
+
+            vm.IsCorrect = isCorrect;
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+            vm.FeedbackMessage = isCorrect
+                ? "Correct! The program inputs age and then displays it."
+                : "Not quite. Try using the variable name age.";
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return RedirectToAction(nameof(Variables));
         }
     }
 }

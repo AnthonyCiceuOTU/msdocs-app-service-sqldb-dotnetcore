@@ -1,0 +1,107 @@
+@model DotNetCoreSqlDb.ViewModels.InputOutputViewModel
+
+@{
+    ViewData["Title"] = "Input and Output";
+}
+
+<div class="container mt-4">
+    <h1>Input and Output</h1>
+    <p class="text-success fw-bold">Completed</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Introduction</h3>
+            <p>
+                Input is data entered into a program, while output is the information a program displays.
+                These steps let a program interact with the user.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Example</h3>
+            <pre class="bg-light p-3 border rounded">BEGIN
+INPUT name
+DISPLAY name
+END</pre>
+
+            <h4>Explanation</h4>
+            <p>
+                The program asks the user for a value and stores it in <code>name</code>.
+                Then it displays the stored value.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Practice Exercises</h3>
+            <p><strong>Practice:</strong> Input a Value</p>
+            <p>✏️ Fill in the Blank</p>
+
+            <h4>Challenge</h4>
+            <p>
+                Complete the algorithm so the program asks the user for age, stores it, and then displays it.
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
+            {
+                var alertClass = Model.IsCorrect == true ? "alert-success" :
+                                 Model.IsCorrect == false ? "alert-danger" :
+                                 "alert-info";
+
+                <div class="alert @alertClass">
+                    @Model.FeedbackMessage
+                </div>
+            }
+
+            <form asp-action="InputOutput" asp-controller="UnitTwo" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Your Code</label>
+                    <div class="bg-light p-3 border rounded font-monospace">
+                        <div>BEGIN</div>
+                        <div>
+                            INPUT
+                            <input asp-for="UserAnswer" class="form-control d-inline-block mx-1" style="width:140px;" />
+                        </div>
+                        <div>DISPLAY age</div>
+                        <div>END</div>
+                    </div>
+                </div>
+
+                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
+                    Check Solution
+                </button>
+
+                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
+                    Hints
+                </button>
+
+                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
+                    Solution
+                </button>
+            </form>
+
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Hint: use the same variable name that appears in DISPLAY.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-secondary mt-3">
+                    <strong>Solution:</strong>
+                    <pre class="mt-2 mb-0">BEGIN
+INPUT age
+DISPLAY age
+END</pre>
+                </div>
+            }
+        </div>
+    </div>
+</div>
