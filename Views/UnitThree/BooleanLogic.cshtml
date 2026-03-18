@@ -1,0 +1,47 @@
+
+@* Lesson 11 — Boolean Logic *@
+
+@model Unit3DecisionMaking.ViewModels.BooleanLogicViewModel
+
+<div class="container mt-4">
+    <h1>Boolean Logic</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Introduction</h3>
+            <p>Boolean logic uses values that are either <strong>True</strong> or <strong>False</strong>.</p>
+            <p>Comparison operators help us compare values.</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Example</h3>
+            <pre class="bg-light p-3 border rounded">age >= 18</pre>
+            <p>This checks if someone is an adult.</p>
+        </div>
+    </div>
+
+    <form asp-action="BooleanLogic" asp-controller="UnitThree" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="UserAnswer" class="form-control mb-2" />
+        <button type="submit" name="actionType" value="check" class="btn btn-primary">Check</button>
+        <button type="submit" name="actionType" value="hint" class="btn btn-warning">Hint</button>
+        <button type="submit" name="actionType" value="solution" class="btn btn-secondary">Solution</button>
+    </form>
+
+    @if (Model.ShowHint)
+    {
+        <div class="alert alert-warning mt-3">Compare age to 18.</div>
+    }
+
+    @if (Model.ShowSolution)
+    {
+        <div class="alert alert-secondary mt-3">age >= 18</div>
+    }
+        <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="UnitThree" asp-action="IfStatement">Unit 3, Lesson 2</a>
+    </li>
+</div>
+
+

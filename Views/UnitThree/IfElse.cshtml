@@ -1,0 +1,27 @@
+
+
+@* Lesson 13 — IF ELSE *@
+
+@model Unit3DecisionMaking.ViewModels.IfElseViewModel
+
+<div class="container mt-4">
+    <h1>IF–ELSE</h1>
+
+    <pre class="bg-light p-3 border rounded">IF grade >= 50 THEN
+PRINT "Pass"
+ELSE
+PRINT "Fail"
+END IF</pre>
+
+    <form asp-action="IfElse" asp-controller="UnitThree" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="UserAnswer" class="form-control mb-2" />
+        <button type="submit" name="actionType" value="check" class="btn btn-primary">Check</button>
+        <button type="submit" name="actionType" value="hint" class="btn btn-warning">Hint</button>
+        <button type="submit" name="actionType" value="solution" class="btn btn-secondary">Solution</button>
+    </form>
+</div>
+        <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="UnitThree" asp-action="NestedConditions">Unit 3, Lesson 4</a>
+    </li>
+
