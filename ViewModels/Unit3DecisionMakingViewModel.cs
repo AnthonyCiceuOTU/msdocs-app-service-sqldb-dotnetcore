@@ -12,7 +12,7 @@ namespace DotNetCoreSqlDb.Models
         public UnitThreeLessonViewModel? NextLesson { get; set; }
     }
 
-    public class Unit3DecisionMakingLessonViewModel
+    public class Unit3LessonViewModel
     {
         public int Id { get; set; }
 
