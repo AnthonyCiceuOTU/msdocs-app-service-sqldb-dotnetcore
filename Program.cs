@@ -1,5 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿﻿using Microsoft.EntityFrameworkCore;
 using DotNetCoreSqlDb.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Azure.Identity;
+//using DotNetCoreSqlDb.Services;
+//using DotNetCoreSqlDb.Settings;
+//using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using System.Net.Http.Headers;
+//using DotNetCoreSqlDb.Hubs;
 using DotNetCoreSqlDb.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +33,17 @@ else
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath          = "/Login/Login";
+        options.LogoutPath         = "/Login/Logout";
+        options.AccessDeniedPath   = "/Home/AccessDenied";
+        options.ExpireTimeSpan     = TimeSpan.FromHours(24);
+        options.SlidingExpiration  = true;
+    });
+
+
 // Add App Service logging
 builder.Logging.AddAzureWebAppDiagnostics();
 
@@ -43,11 +61,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Login}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Login}/{id?}");
 
 app.Run();
