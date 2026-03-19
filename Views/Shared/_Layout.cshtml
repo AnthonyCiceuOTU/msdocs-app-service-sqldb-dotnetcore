@@ -8,55 +8,57 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DotNetCoreSqlDb.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="cq-body">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Todos" asp-action="Index">Code Quest</a>
+        <nav class="navbar navbar-expand-lg cq-navbar">
+            <div class="container">
+                <a class="navbar-brand cq-brand" asp-area="" asp-controller="Todos" asp-action="Index">
+                    <span class="cq-brand-mark">&lt;/&gt;</span>
+                    <span>Code Quest</span>
+                </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Todos" asp-action="Index">Home</a>
-                        </li>*@
-
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="UnitOne" asp-action="WhatIsComputerScience">Unit One</a>
+                            <a class="nav-link cq-nav-link" asp-area="" asp-controller="Todos" asp-action="Index">Home</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="UnitTwo" asp-action="Variables">Unit Two</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="UnitThree" asp-action="BooleanLogic">Unit Three</a>
+                            <a class="nav-link cq-nav-link" asp-area="" asp-controller="UnitOne" asp-action="WhatIsComputerScience">Unit One</a>
                         </li>
 
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>*@
+                        <li class="nav-item">
+                            <a class="nav-link cq-nav-link" asp-area="" asp-controller="UnitTwo" asp-action="Variables">Unit Two</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link cq-nav-link" asp-area="" asp-controller="UnitThree" asp-action="BooleanLogic">Unit Three</a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container cq-main-shell">
+        <main role="main" class="pb-4">
             @RenderBody()
 
             @if (ViewData["TimeElapsed"] != null)
             {
-                <p>Processing Time: @ViewData["TimeElapsed"]</p>
+                <div class="cq-processing-time">
+                    Processing Time: @ViewData["TimeElapsed"]
+                </div>
             }
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="cq-footer">
         <div class="container">
             &copy; 2026 - Code Quest
         </div>
