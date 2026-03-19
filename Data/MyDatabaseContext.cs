@@ -16,5 +16,6 @@ namespace DotNetCoreSqlDb.Data
         public DbSet<DotNetCoreSqlDb.Models.Todo> Todo { get; set; } = default!;
         public DbSet<DotNetCoreSqlDb.Models.User> User { get; set; } = default!;
         public DbSet<DotNetCoreSqlDb.Models.SyntaxGameQuestions> SyntaxGameQuestions { get; set; } = default!;
+        public DbSet<DotNetCoreSqlDb.Models.SignInLog> SignInLog { get; set; } = default!;
     }
 }

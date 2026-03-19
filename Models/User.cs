@@ -13,9 +13,12 @@ namespace DotNetCoreSqlDb.Models
         [Required]
         public required string Username { get; set; }
 
-        [DisplayName("Password")]
         [Required]
-        public required string Password { get; set; }
+        public byte[] PasswordHash { get; set; } = null!;
+
+        [Required]
+        public byte[] PasswordSalt { get; set; } = null!;
+
 
     }
 }

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetCoreSqlDb.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetCoreSqlDb.Controllers
 {
+    [Authorize]
     public class UnitOneController : Controller
     {
         [HttpGet]
