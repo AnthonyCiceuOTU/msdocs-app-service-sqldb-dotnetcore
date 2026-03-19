@@ -5,27 +5,137 @@
 @model Unit3DecisionMaking.ViewModels.IfStatementViewModel
 
 <div class="container mt-4">
-    <h1>IF Statements</h1>
+    <h1>Lesson 12 — IF Statements</h1>
 
+    <!-- INTRO -->
     <div class="card mb-4">
         <div class="card-body">
-            <p>IF statements run code only when a condition is true.</p>
+            <h3>Introduction</h3>
+            <p>IF statements allow a program to make decisions.</p>
+            <p>Code inside an IF statement only runs when the condition is <strong>true</strong>.</p>
         </div>
     </div>
 
-    <pre class="bg-light p-3 border rounded">IF temperature < 0 THEN
-PRINT "Freezing"
+    <!-- EXAMPLE -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Example</h3>
+            <pre class="bg-light p-3 border rounded">IF temperature &lt; 0 THEN
+    PRINT "Freezing"
 END IF</pre>
 
-    <form asp-action="IfStatements" asp-controller="UnitThree" method="post">
-        @Html.AntiForgeryToken()
-        <input asp-for="UserAnswer" class="form-control mb-2" />
-        <button type="submit" name="actionType" value="check" class="btn btn-primary">Check</button>
-        <button type="submit" name="actionType" value="hint" class="btn btn-warning">Hint</button>
-        <button type="submit" name="actionType" value="solution" class="btn btn-secondary">Solution</button>
-    </form>
-</div>
-        <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="UnitThree" asp-action="IfElse">Unit 3, Lesson 3</a>
-    </li>
+            <p>If the temperature is below 0, the message "Freezing" is displayed.</p>
+        </div>
+    </div>
 
+    <!-- QUIZ -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Practice & Quiz</h3>
+
+            <form asp-action="IfStatements" asp-controller="UnitThree" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Q1 -->
+                <div class="mb-4">
+                    <label class="fw-bold">1. Write a condition to check if temperature is below 0:</label>
+                    <input asp-for="UserAnswer1" class="form-control" />
+
+                    @if (Model.IsQ1Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ1Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback1
+                        </div>
+                    }
+                </div>
+
+                <!-- Q2 -->
+                <div class="mb-4">
+                    <label class="fw-bold">2. What happens if the condition is FALSE?</label>
+
+                    <input type="radio" asp-for="UserAnswer2" value="Code runs" /> Code runs<br />
+                    <input type="radio" asp-for="UserAnswer2" value="Code is skipped" /> Code is skipped
+
+                    @if (Model.IsQ2Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ2Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback2
+                        </div>
+                    }
+                </div>
+
+                <!-- Q3 -->
+                <div class="mb-4">
+                    <label class="fw-bold">3. Fill in the blank:</label>
+                    <pre class="bg-light p-2 border rounded">IF score ___ 50 THEN</pre>
+
+                    <input asp-for="UserAnswer3" class="form-control" placeholder="Enter operator" />
+
+                    @if (Model.IsQ3Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ3Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback3
+                        </div>
+                    }
+                </div>
+
+                <!-- Q4 -->
+                <div class="mb-4">
+                    <label class="fw-bold">4. If temperature = -5, what happens?</label>
+
+                    <input type="radio" asp-for="UserAnswer4" value="Freezing prints" /> "Freezing" prints<br />
+                    <input type="radio" asp-for="UserAnswer4" value="Nothing happens" /> Nothing happens
+
+                    @if (Model.IsQ4Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ4Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback4
+                        </div>
+                    }
+                </div>
+
+                <!-- BUTTONS -->
+                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
+                    Check Answers
+                </button>
+
+                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
+                    Hint
+                </button>
+
+                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
+                    Solution
+                </button>
+            </form>
+
+            <!-- HINT -->
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Think about when conditions are true vs false.
+                </div>
+            }
+
+            <!-- SOLUTION -->
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-secondary mt-3">
+                    <strong>Solutions:</strong>
+                    <pre class="mt-2 mb-0">
+1. temperature < 0
+2. Code is skipped
+3. >=
+4. "Freezing" prints
+                    </pre>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="UnitThree" asp-action="IfElse">
+            Unit 3, Lesson 13 — IF–ELSE
+        </a>
+    </li>
+</div>
