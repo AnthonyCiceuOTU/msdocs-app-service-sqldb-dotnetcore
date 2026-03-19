@@ -73,42 +73,66 @@ public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
             return View(new IfStatementViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult IfStatements(IfStatementViewModel vm, string actionType)
-        {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult IfStatements(IfStatementViewModel vm, string actionType)
+{
+    // Trim inputs
+    vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
+    vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
+    vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
+    vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
 
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: check if temperature is less than 0.";
-                return View(vm);
-            }
+    // HINT
+    if (actionType == "hint")
+    {
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
+        return View(vm);
+    }
 
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution: IF temperature < 0 THEN PRINT \"Freezing\"";
-                return View(vm);
-            }
+    // SOLUTION
+    if (actionType == "solution")
+    {
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
+        return View(vm);
+    }
 
-            bool isCorrect = vm.UserAnswer.Contains("< 0") &&
-                             vm.UserAnswer.ToLower().Contains("freezing");
+    // =========================
+    // Question 1
+    // =========================
+    vm.IsQ1Correct = vm.UserAnswer1.Contains("< 0");
+    vm.Feedback1 = vm.IsQ1Correct == true
+        ? "Correct!"
+        : "You need to check if temperature is less than 0.";
 
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! The IF statement runs when the condition is true."
-                : "Not quite. Check the condition and output.";
+    // =========================
+    // Question 2
+    // =========================
+    vm.IsQ2Correct = vm.UserAnswer2 == "Code is skipped";
+    vm.Feedback2 = vm.IsQ2Correct == true
+        ? "Correct! IF only runs when the condition is true."
+        : "If the condition is false, the code inside the IF does not run.";
 
-            return View(vm);
-        }
+    // =========================
+    // Question 3
+    // =========================
+    vm.IsQ3Correct = vm.UserAnswer3.Contains(">=");
+    vm.Feedback3 = vm.IsQ3Correct == true
+        ? "Correct!"
+        : "To pass at 50 or higher, use >=.";
+
+    // =========================
+    // Question 4
+    // =========================
+    vm.IsQ4Correct = vm.UserAnswer4 == "Freezing prints";
+    vm.Feedback4 = vm.IsQ4Correct == true
+        ? "Correct! -5 is less than 0."
+        : "Since -5 < 0, the IF condition is true.";
+
+    return View(vm);
+}
 
 
         // Lesson 13 — IF–ELSE
