@@ -1,0 +1,374 @@
+@model DotNetCoreSqlDb.Models.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+
+    var allDates = new List<DateTime>();
+    for (var d = Model.CalendarStart.Date; d <= Model.CalendarEnd.Date; d = d.AddDays(1))
+    {
+        allDates.Add(d);
+    }
+
+    int totalWeeks = (int)Math.Ceiling(allDates.Count / 7.0);
+}
+
+<div class="profile-page">
+    <div class="profile-container">
+
+        <div class="profile-header">
+            <div>
+                <h1 class="profile-title">Profile</h1>
+                <p class="profile-subtitle">Your CodeQuest account and sign-in activity</p>
+            </div>
+
+            <div class="profile-actions">
+                <a asp-controller="Home" asp-action="Index" class="profile-btn secondary">Home</a>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-info-grid">
+                <div class="info-box">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">@Model.Username</span>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-label">User ID</span>
+                    <span class="info-value small">@Model.UserId</span>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-label">Total Sign-ins</span>
+                    <span class="info-value">@Model.TotalSignIns</span>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-label">First Sign-in</span>
+                    <span class="info-value">
+                        @(Model.FirstSignIn?.ToString("MMM d, yyyy") ?? "No sign-ins yet")
+                    </span>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-label">Last Sign-in</span>
+                    <span class="info-value">
+                        @(Model.LastSignIn?.ToString("MMM d, yyyy h:mm tt") ?? "No sign-ins yet")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="calendar-header">
+                <h2>Sign-in History</h2>
+            </div>
+
+            <div class="contribution-wrapper">
+                <div class="month-row">
+                    @for (int i = 0; i < totalWeeks; i++)
+                    {
+                        var label = Model.MonthLabels.FirstOrDefault(x => x.WeekIndex == i);
+                        <div class="month-cell">@(label?.Label ?? "")</div>
+                    }
+                </div>
+
+                <div class="calendar-layout">
+                    <div class="day-labels">
+                        <div></div>
+                        <div>Mon</div>
+                        <div></div>
+                        <div>Wed</div>
+                        <div></div>
+                        <div>Fri</div>
+                        <div></div>
+                    </div>
+
+                    <div class="calendar-grid" style="grid-template-columns: repeat(@totalWeeks, 14px);">
+                        @for (int week = 0; week < totalWeeks; week++)
+                        {
+                            for (int day = 0; day < 7; day++)
+                            {
+                                var index = week * 7 + day;
+
+                                if (index < allDates.Count)
+                                {
+                                    var date = allDates[index].Date;
+                                    var count = Model.SignInsByDate.ContainsKey(date)
+                                        ? Model.SignInsByDate[date]
+                                        : 0;
+
+                                    string levelClass = count switch
+                                    {
+                                        0 => "level-0",
+                                        1 => "level-1",
+                                        2 => "level-2",
+                                        3 => "level-3",
+                                        _ => "level-4"
+                                    };
+
+                                    <div class="day-cell @levelClass" title="@date.ToString("MMMM d, yyyy"): @count sign-in(s)">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="day-cell empty"></div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <span>Less</span>
+                    <div class="legend-box level-0"></div>
+                    <div class="legend-box level-1"></div>
+                    <div class="legend-box level-2"></div>
+                    <div class="legend-box level-3"></div>
+                    <div class="legend-box level-4"></div>
+                    <span>More</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .profile-page {
+        min-height: 100vh;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
+            linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
+        color: #e5e7eb;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .profile-container {
+        max-width: 1100px;
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+
+    .profile-title {
+        margin: 0;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .profile-subtitle {
+        margin: 6px 0 0 0;
+        color: #94a3b8;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .profile-btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .profile-btn.secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: #e5e7eb;
+    }
+
+    .profile-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .profile-card {
+        background: rgba(17, 24, 39, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+        margin-bottom: 16px;
+        backdrop-filter: blur(12px);
+    }
+
+    .profile-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .info-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        padding: 16px;
+    }
+
+    .info-label {
+        display: block;
+        font-size: 0.82rem;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .info-value {
+        display: block;
+        font-size: 1.05rem;
+        color: #f8fafc;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .info-value.small {
+        font-size: 0.9rem;
+    }
+
+    .calendar-header h2 {
+        margin: 0;
+        color: #ffffff;
+    }
+
+    .calendar-header p {
+        margin: 8px 0 20px 0;
+        color: #94a3b8;
+    }
+
+    .contribution-wrapper {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .month-row {
+        display: grid;
+        grid-template-columns: 30px repeat(
+                @totalWeeks
+                , 14px);
+        gap: 4px;
+        margin-bottom: 8px;
+        min-width: fit-content;
+        align-items: center;
+    }
+
+    .month-cell {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .calendar-layout {
+        display: flex;
+        gap: 8px;
+        min-width: fit-content;
+    }
+
+    .day-labels {
+        display: grid;
+        grid-template-rows: repeat(7, 14px);
+        gap: 4px;
+        width: 30px;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        align-items: center;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-rows: repeat(7, 14px);
+        grid-auto-flow: column;
+        gap: 4px;
+        min-width: fit-content;
+    }
+
+    .day-cell,
+    .legend-box {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .day-cell.empty {
+        background: transparent;
+        border: none;
+    }
+
+    .level-0 {
+        background: #161b22;
+    }
+
+    .level-1 {
+        background: #0e4429;
+    }
+
+    .level-2 {
+        background: #006d32;
+    }
+
+    .level-3 {
+        background: #26a641;
+    }
+
+    .level-4 {
+        background: #39d353;
+    }
+
+    .legend {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+        margin-top: 16px;
+        color: #94a3b8;
+        font-size: 0.8rem;
+    }
+
+    .profile-card:last-child {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .profile-card {
+            padding: 18px;
+        }
+
+        .profile-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>

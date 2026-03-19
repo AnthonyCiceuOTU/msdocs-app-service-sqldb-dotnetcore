@@ -8,11 +8,12 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DotNetCoreSqlDb.styles.css" asp-append-version="true" />
 </head>
+
 <body class="cq-body">
 
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {
-        <header>
+        @*<header>
             <nav class="navbar navbar-expand-lg cq-navbar">
                 <div class="container">
                     <a class="navbar-brand cq-brand" asp-area="" asp-controller="Home" asp-action="Index">
@@ -50,11 +51,11 @@
                     </div>
                 </div>
             </nav>
-        </header>
+        </header>*@
     }
 
-    <div class="container cq-main-shell">
-        <main role="main" class="pb-4">
+    <div class="cq-main-shell">
+        <main role="main">
             @RenderBody()
 
             @if (ViewData["TimeElapsed"] != null)
@@ -71,4 +72,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
