@@ -1,8 +1,805 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    :root {
+        --bg: #0b1020;
+        --bg-2: #0f172a;
+        --panel: rgba(15, 23, 42, 0.82);
+        --panel-border: rgba(148, 163, 184, 0.18);
+        --text: #e5eefc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #22c55e;
+        --input-bg: rgba(15, 23, 42, 0.75);
+        --input-border: rgba(148, 163, 184, 0.22);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        --card-hover: rgba(30, 41, 59, 0.92);
+    }
+
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 28%),
+            radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.08), transparent 25%),
+            linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+        color: var(--text);
+        overflow-x: hidden;
+        position: relative;
+        font-family: Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .home-page {
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        padding: 32px 20px 48px 20px;
+    }
+
+    .code-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .code-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 32px 32px;
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.25));
+        pointer-events: none;
+    }
+
+    .editor-window {
+        position: absolute;
+        inset: 0;
+        opacity: 0.18;
+        transform: scale(1.03);
+        filter: blur(0.15px);
+    }
+
+    .editor-topbar {
+        height: 42px;
+        background: rgba(2, 6, 23, 0.72);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+    }
+
+    .editor-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .editor-dot.red { background: #fb7185; }
+    .editor-dot.yellow { background: #facc15; }
+    .editor-dot.green { background: #4ade80; }
+
+    .editor-title {
+        margin-left: 10px;
+        color: rgba(226, 232, 240, 0.7);
+        font-size: 13px;
+        letter-spacing: 0.3px;
+    }
+
+    .editor-body {
+        height: calc(100% - 42px);
+        padding: 24px 0 24px 0;
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.7));
+    }
+
+    .line-numbers {
+        padding: 0 12px 0 0;
+        text-align: right;
+        color: rgba(148, 163, 184, 0.45);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        line-height: 1.8;
+        user-select: none;
+    }
+
+    .code-area {
+        position: relative;
+        padding-right: 40px;
+        overflow: hidden;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        line-height: 1.8;
+        white-space: pre;
+        color: rgba(226, 232, 240, 0.88);
+    }
+
+    .code-line {
+        min-height: 27px;
+    }
+
+    .kw { color: #c084fc; }
+    .type { color: #38bdf8; }
+    .str { color: #86efac; }
+    .num { color: #fca5a5; }
+    .fn { color: #facc15; }
+    .prop { color: #7dd3fc; }
+    .cm { color: rgba(148, 163, 184, 0.8); }
+    .op { color: #f8fafc; }
+
+    .cursor {
+        display: inline-block;
+        width: 9px;
+        margin-left: 2px;
+        background: rgba(255,255,255,0.9);
+        vertical-align: middle;
+        animation: blink 0.9s steps(1) infinite;
+    }
+
+    @@keyframes blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+    }
+
+    .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.18;
+        pointer-events: none;
+        animation: floatOrb 10s ease-in-out infinite alternate;
+    }
+
+    .glow-orb.one {
+        width: 320px;
+        height: 320px;
+        background: #38bdf8;
+        top: 8%;
+        left: 6%;
+    }
+
+    .glow-orb.two {
+        width: 260px;
+        height: 260px;
+        background: #22c55e;
+        right: 8%;
+        bottom: 8%;
+        animation-duration: 12s;
+    }
+
+    @@keyframes floatOrb {
+        from { transform: translateY(0) translateX(0); }
+        to   { transform: translateY(18px) translateX(-18px); }
+    }
+
+    .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        background: radial-gradient(circle, transparent 35%, rgba(2, 6, 23, 0.38) 100%);
+    }
+
+    .home-shell {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .brand-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(34, 197, 94, 0.18));
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Consolas, monospace;
+        font-size: 18px;
+        color: #dbeafe;
+        box-shadow: inset 0 0 18px rgba(56, 189, 248, 0.08);
+    }
+
+    .brand-text h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        color: #f8fafc;
+    }
+
+    .brand-text p {
+        margin: 4px 0 0 0;
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .panel {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(14px);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .panel::before {
+        content: "";
+        display: block;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
+        background-size: 200% 100%;
+        animation: headerFlow 4s linear infinite;
+    }
+
+    @@keyframes headerFlow {
+        from { background-position: 0% 50%; }
+        to   { background-position: 200% 50%; }
+    }
+
+    .hero {
+        padding: 32px;
+        margin-bottom: 28px;
+    }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 28px;
+        align-items: center;
+    }
+
+    .hero h2 {
+        margin: 0 0 12px 0;
+        font-size: 38px;
+        line-height: 1.15;
+        color: #f8fafc;
+    }
+
+    .hero p {
+        margin: 0 0 22px 0;
+        color: var(--muted);
+        font-size: 16px;
+        max-width: 700px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .btn-main,
+    .btn-secondary,
+    .lesson-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease, background 0.16s ease;
+    }
+
+    .btn-main {
+        border: none;
+        padding: 12px 18px;
+        background: linear-gradient(90deg, #0ea5e9, #22c55e);
+        color: white;
+        box-shadow: 0 10px 24px rgba(14, 165, 233, 0.2);
+    }
+
+    .btn-secondary {
+        padding: 12px 18px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background: rgba(15, 23, 42, 0.65);
+        color: #e5eefc;
+    }
+
+    .btn-main:hover,
+    .btn-secondary:hover,
+    .lesson-btn:hover {
+        transform: translateY(-1px);
+        opacity: 0.98;
+    }
+
+    .hero-stats {
+        display: grid;
+        gap: 14px;
+    }
+
+    .stat-card {
+        background: rgba(15, 23, 42, 0.72);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 16px;
+        padding: 18px;
+    }
+
+    .stat-card .label {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .stat-card .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: #f8fafc;
+    }
+
+    .section-title {
+        margin: 0 0 16px 0;
+        font-size: 24px;
+        color: #f8fafc;
+    }
+
+    .units-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .unit-card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+        overflow: hidden;
+        transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+
+    .unit-card:hover {
+        transform: translateY(-3px);
+        background: var(--card-hover);
+        border-color: rgba(56, 189, 248, 0.28);
+    }
+
+    .unit-card-header {
+        padding: 20px 20px 8px 20px;
+    }
+
+    .unit-number {
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        margin-bottom: 8px;
+    }
+
+    .unit-title {
+        margin: 0;
+        font-size: 22px;
+        color: #f8fafc;
+    }
+
+    .unit-description {
+        padding: 0 20px;
+        color: var(--muted);
+        font-size: 14px;
+        min-height: 44px;
+    }
+
+    .lesson-list {
+        padding: 18px 20px 20px 20px;
+        display: grid;
+        gap: 12px;
+    }
+
+    .lesson-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.58);
+    }
+
+    .lesson-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .lesson-name {
+        color: #f8fafc;
+        font-weight: 600;
+    }
+
+    .lesson-sub {
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .lesson-btn {
+        padding: 10px 14px;
+        background: rgba(56, 189, 248, 0.14);
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        color: #dbeafe;
+        white-space: nowrap;
+    }
+
+    @@media (max-width: 900px) {
+        .hero-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .hero,
+        .unit-card-header,
+        .lesson-list,
+        .unit-description {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .hero {
+            padding-top: 24px;
+            padding-bottom: 24px;
+        }
+
+        .hero h2 {
+            font-size: 30px;
+        }
+
+        .topbar {
+            align-items: flex-start;
+        }
+
+        .lesson-item {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+
+<div class="home-page">
+    <div class="code-bg" aria-hidden="true">
+        <div class="glow-orb one"></div>
+        <div class="glow-orb two"></div>
+
+        <div class="editor-window">
+            <div class="editor-topbar">
+                <span class="editor-dot red"></span>
+                <span class="editor-dot yellow"></span>
+                <span class="editor-dot green"></span>
+                <span class="editor-title">learning-path.cs</span>
+            </div>
+
+            <div class="editor-body">
+                <div class="line-numbers" id="lineNumbers"></div>
+                <div class="code-area" id="codeArea"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vignette"></div>
+
+    <div class="home-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <div class="brand-text">
+                    <h1>Code Academy</h1>
+                    <p>Learn programming one lesson at a time</p>
+                </div>
+            </div>
+
+            <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
+                Profile
+            </a>
+        </div>
+
+        <div class="panel hero">
+            <div class="hero-grid">
+                <div>
+                    <h2>Build coding skills through structured lessons and hands-on practice.</h2>
+                    <p>
+                        Start from the beginning or jump into any lesson. Progress through units,
+                        strengthen core programming concepts, and learn at your own pace.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="1" asp-route-lessonId="1" class="btn-main">
+                            Start Learning
+                        </a>
+
+                        <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="label">Current path</div>
+                        <div class="value">Intro to Coding</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Units available</div>
+                        <div class="value">3</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Recommended next lesson</div>
+                        <div class="value">Unit 1 · Lesson 1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Browse Units</h2>
+
+        <div class="units-grid">
+            <div class="unit-card">
+                <div class="unit-card-header">
+                    <div class="unit-number">Unit 1</div>
+                    <h3 class="unit-title">Programming Basics</h3>
+                </div>
+                <div class="unit-description">
+                    Learn what programming is, how logic works, and how to write your first instructions.
+                </div>
+                <div class="lesson-list">
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 1: What Is Coding?</div>
+                            <div class="lesson-sub">Foundations and simple logic</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="1" asp-route-lessonId="1" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 2: Variables</div>
+                            <div class="lesson-sub">Storing information in code</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="1" asp-route-lessonId="2" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 3: Conditions</div>
+                            <div class="lesson-sub">Making decisions in a program</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="1" asp-route-lessonId="3" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="unit-card">
+                <div class="unit-card-header">
+                    <div class="unit-number">Unit 2</div>
+                    <h3 class="unit-title">Control Flow</h3>
+                </div>
+                <div class="unit-description">
+                    Understand loops, repetition, and how programs follow sequences of steps.
+                </div>
+                <div class="lesson-list">
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 1: Loops</div>
+                            <div class="lesson-sub">Repeat tasks efficiently</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="2" asp-route-lessonId="1" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 2: Nested Logic</div>
+                            <div class="lesson-sub">Combining decisions and repetition</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="2" asp-route-lessonId="2" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 3: Debugging</div>
+                            <div class="lesson-sub">Finding and fixing mistakes</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="2" asp-route-lessonId="3" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="unit-card">
+                <div class="unit-card-header">
+                    <div class="unit-number">Unit 3</div>
+                    <h3 class="unit-title">Functions and Structure</h3>
+                </div>
+                <div class="unit-description">
+                    Break programs into reusable pieces and organize your code more clearly.
+                </div>
+                <div class="lesson-list">
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 1: Functions</div>
+                            <div class="lesson-sub">Reusable blocks of code</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="3" asp-route-lessonId="1" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 2: Parameters</div>
+                            <div class="lesson-sub">Passing data into functions</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="3" asp-route-lessonId="2" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+
+                    <div class="lesson-item">
+                        <div class="lesson-meta">
+                            <div class="lesson-name">Lesson 3: Return Values</div>
+                            <div class="lesson-sub">Getting results back from functions</div>
+                        </div>
+                        <a asp-controller="Lessons" asp-action="Details" asp-route-unitId="3" asp-route-lessonId="3" class="lesson-btn">
+                            Open Lesson
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    (function () {
+        const codeArea = document.getElementById("codeArea");
+        const lineNumbers = document.getElementById("lineNumbers");
+
+        const lines = [
+            '<span class="kw">public class</span> <span class="type">LearningPath</span>',
+            '{',
+            '    <span class="kw">public</span> <span class="type">string</span> <span class="prop">Course</span> <span class="op">=</span> <span class="str">"Intro to Coding"</span>;',
+            '',
+            '    <span class="kw">public</span> <span class="type">void</span> <span class="fn">Start</span>()',
+            '    {',
+            '        <span class="fn">OpenLesson</span>(<span class="num">1</span>, <span class="num">1</span>);',
+            '    }',
+            '',
+            '    <span class="kw">public</span> <span class="type">void</span> <span class="fn">ShowUnits</span>()',
+            '    {',
+            '        <span class="cm">// Unit 1: Programming Basics</span>',
+            '        <span class="cm">// Unit 2: Control Flow</span>',
+            '        <span class="cm">// Unit 3: Functions and Structure</span>',
+            '    }',
+            '',
+            '    <span class="kw">private</span> <span class="type">void</span> <span class="fn">OpenLesson</span>(<span class="type">int</span> unitId, <span class="type">int</span> lessonId)',
+            '    {',
+            '        <span class="kw">var</span> route <span class="op">=</span> <span class="str">$"/Lessons/Details?unitId={unitId}&lessonId={lessonId}"</span>;',
+            '    }',
+            '}'
+        ];
+
+        function buildLineNumbers() {
+            let nums = "";
+            for (let i = 1; i <= lines.length; i++) {
+                nums += i + "<br>";
+            }
+            lineNumbers.innerHTML = nums;
+        }
+
+        function escapeCursorLine(html) {
+            return html + '<span class="cursor">&nbsp;</span>';
+        }
+
+        let lineIndex = 0;
+        let charIndex = 0;
+        let deleting = false;
+        let pause = false;
+        const rendered = new Array(lines.length).fill("");
+
+        function draw() {
+            let output = "";
+
+            for (let i = 0; i < lines.length; i++) {
+                output += '<div class="code-line">';
+                if (i < lineIndex) {
+                    output += rendered[i];
+                } else if (i === lineIndex) {
+                    output += escapeCursorLine(rendered[i]);
+                }
+                output += '</div>';
+            }
+
+            codeArea.innerHTML = output;
+        }
+
+        function step() {
+            if (pause) return;
+
+            const target = lines[lineIndex];
+
+            if (!deleting) {
+                charIndex++;
+                rendered[lineIndex] = target.slice(0, charIndex);
+
+                if (charIndex >= target.length) {
+                    rendered[lineIndex] = target;
+
+                    if (lineIndex < lines.length - 1) {
+                        lineIndex++;
+                        charIndex = 0;
+                    } else {
+                        pause = true;
+                        setTimeout(() => {
+                            deleting = true;
+                            pause = false;
+                        }, 1200);
+                    }
+                }
+            } else {
+                if (lineIndex === 0 && charIndex === 0) {
+                    deleting = false;
+                    pause = true;
+                    setTimeout(() => {
+                        pause = false;
+                    }, 500);
+                } else {
+                    if (charIndex === 0) {
+                        lineIndex--;
+                        charIndex = lines[lineIndex].length;
+                    }
+
+                    charIndex--;
+                    rendered[lineIndex] = lines[lineIndex].slice(0, charIndex);
+
+                    for (let i = lineIndex + 1; i < rendered.length; i++) {
+                        rendered[i] = "";
+                    }
+                }
+            }
+
+            draw();
+        }
+
+        buildLineNumbers();
+        draw();
+        setInterval(step, 38);
+    })();
+</script>
