@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DotNetCoreSqlDb.Data;
+using DotNetCoreSqlDb.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddScoped<LogHelper>();
 // Add database context and cache
 if(builder.Environment.IsDevelopment())
 {
