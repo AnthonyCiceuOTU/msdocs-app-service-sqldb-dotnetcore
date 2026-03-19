@@ -1,0 +1,143 @@
+
+@* Lesson 11 — Boolean Logic *@
+
+@model Unit3DecisionMaking.ViewModels.BooleanLogicViewModel
+
+<div class="container mt-4">
+    <h1>Boolean Logic</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Introduction</h3>
+            <p>Boolean logic is used in programming to make decisions.</p>
+            <p>Every Boolean expression evaluates to either <strong>True</strong> or <strong>False</strong>.</p>
+            <p>We use <strong>comparison operators</strong> to compare values.</p>
+
+            <ul>
+                <li>== (equal to)</li>
+                <li>!= (not equal to)</li>
+                <li>&gt; (greater than)</li>
+                <li>&lt; (less than)</li>
+                <li>&gt;= (greater than or equal to)</li>
+                <li>&lt;= (less than or equal to)</li>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Example</h3>
+            <pre class="bg-light p-3 border rounded">age &gt;= 18</pre>
+            <p>If age is 18 or higher → <strong>True</strong></p>
+            <p>If age is less than 18 → <strong>False</strong></p>
+        </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Practice & Quiz</h3>
+
+            <form asp-action="BooleanLogic" asp-controller="UnitThree" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Q1 -->
+                <div class="mb-4">
+                    <label class="fw-bold">1. Write a condition for: age is at least 18</label>
+                    <input asp-for="UserAnswer1" class="form-control" />
+
+                    @if (Model.IsQ1Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ1Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback1
+                        </div>
+                    }
+                </div>
+
+                <!-- Q2 -->
+                <div class="mb-4">
+                    <label class="fw-bold">2. If score = 75, what is the result?</label>
+                    <pre class="bg-light p-2 border rounded">score &gt;= 50</pre>
+
+                    <input type="radio" asp-for="UserAnswer2" value="True" /> True
+                    <input type="radio" asp-for="UserAnswer2" value="False" class="ms-3" /> False
+
+                    @if (Model.IsQ2Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ2Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback2
+                        </div>
+                    }
+                </div>
+
+                <!-- Q3 -->
+                <div class="mb-4">
+                    <label class="fw-bold">3. Operator for NOT equal:</label>
+                    <input asp-for="UserAnswer3" class="form-control" />
+
+                    @if (Model.IsQ3Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ3Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback3
+                        </div>
+                    }
+                </div>
+
+                <!-- Q4 -->
+                <div class="mb-4">
+                    <label class="fw-bold">4. If x = 10, what is the result?</label>
+                    <pre class="bg-light p-2 border rounded">x &lt; 5</pre>
+
+                    <input type="radio" asp-for="UserAnswer4" value="True" /> True
+                    <input type="radio" asp-for="UserAnswer4" value="False" class="ms-3" /> False
+
+                    @if (Model.IsQ4Correct != null)
+                    {
+                        <div class="alert @(Model.IsQ4Correct == true ? "alert-success" : "alert-danger") mt-2">
+                            @Model.Feedback4
+                        </div>
+                    }
+                </div>
+
+                <!-- BUTTONS -->
+                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
+                    Check Answers
+                </button>
+
+                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
+                    Hint
+                </button>
+
+                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
+                    Solution
+                </button>
+            </form>
+
+            <!-- HINT -->
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Think carefully about what each comparison is asking. Is it true or false?
+                </div>
+            }
+
+            <!-- SOLUTION -->
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-secondary mt-3">
+                    <strong>Solutions:</strong>
+                    <pre class="mt-2 mb-0">
+1. age >= 18
+2. True
+3. !=
+4. False
+                    </pre>
+                </div>
+            }
+        </div>
+    </div>
+        <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="UnitThree" asp-action="IfStatements">Unit 3, Lesson 2</a>
+    </li>
+</div>
+
+
