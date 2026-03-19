@@ -119,44 +119,55 @@ public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
             return View(new IfElseViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult IfElse(IfElseViewModel vm, string actionType)
-        {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult IfElse(IfElseViewModel vm, string actionType)
+{
+    vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
+    vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
+    vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
+    vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
 
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: you need two outcomes: Pass and Fail.";
-                return View(vm);
-            }
+    if (actionType == "hint")
+    {
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
+        return View(vm);
+    }
 
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution: IF grade >= 50 THEN Pass ELSE Fail";
-                return View(vm);
-            }
+    if (actionType == "solution")
+    {
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
+        return View(vm);
+    }
 
-            bool isCorrect = vm.UserAnswer.Contains(">= 50") &&
-                             vm.UserAnswer.ToLower().Contains("pass") &&
-                             vm.UserAnswer.ToLower().Contains("fail");
+    // Q1
+    vm.IsQ1Correct = vm.UserAnswer1.Equals("grade >= 50", StringComparison.OrdinalIgnoreCase);
+    vm.Feedback1 = vm.IsQ1Correct == true
+        ? "Correct!"
+        : "Use >= for 'at least 50'.";
 
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! IF–ELSE allows two possible outcomes."
-                : "Not quite. Make sure both Pass and Fail are included.";
+    // Q2
+    vm.IsQ2Correct = vm.UserAnswer2 == "ELSE runs";
+    vm.Feedback2 = vm.IsQ2Correct == true
+        ? "Correct!"
+        : "When IF is false, ELSE runs.";
 
-            return View(vm);
-        }
+    // Q3
+    vm.IsQ3Correct = vm.UserAnswer3.Equals("ELSE", StringComparison.OrdinalIgnoreCase);
+    vm.Feedback3 = vm.IsQ3Correct == true
+        ? "Correct!"
+        : "The missing keyword is ELSE.";
 
+    // Q4
+    vm.IsQ4Correct = vm.UserAnswer4 == "Fail";
+    vm.Feedback4 = vm.IsQ4Correct == true
+        ? "Correct!"
+        : "40 is less than 50, so it prints Fail.";
+
+    return View(vm);
+}
 
         // Lesson 14 — Nested Conditions
 
