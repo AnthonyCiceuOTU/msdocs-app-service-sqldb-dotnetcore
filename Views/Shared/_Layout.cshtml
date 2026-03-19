@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="~/DotNetCoreSqlDb.styles.css" asp-append-version="true" />
 </head>
 <body class="cq-body">
-    @*If user is signed in, they can do all lessons*@
+
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {
         <header>
             <nav class="navbar navbar-expand-lg cq-navbar">
                 <div class="container">
-                    <a class="navbar-brand cq-brand" asp-area="" asp-controller="Todos" asp-action="Index">
+                    <a class="navbar-brand cq-brand" asp-area="" asp-controller="Home" asp-action="Index">
                         <span class="cq-brand-mark">&lt;/&gt;</span>
                         <span>Code Quest</span>
                     </a>
@@ -42,41 +42,18 @@
                             <li class="nav-item">
                                 <a class="nav-link cq-nav-link" asp-area="" asp-controller="UnitThree" asp-action="BooleanLogic">Unit Three</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link cq-nav-link" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </nav>
         </header>
     }
-    <header>
-            <nav class="navbar navbar-expand-lg cq-navbar">
-                <div class="container">
-                    <a class="navbar-brand cq-brand" asp-area="" asp-controller="Todos" asp-action="Index">
-                        <span class="cq-brand-mark">&lt;/&gt;</span>
-                        <span>Code Quest</span>
-                    </a>
 
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="mainNav">
-                        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-                            <li class="nav-item">
-                                <a class="nav-link cq-nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link cq-nav-link" asp-area="" asp-controller="UnitOne" asp-action="WhatIsComputerScience">Unit One</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-    @*<div class="container cq-main-shell">
+    <div class="container cq-main-shell">
         <main role="main" class="pb-4">
             @RenderBody()
 
@@ -87,13 +64,7 @@
                 </div>
             }
         </main>
-    </div>*@
-
-    @*<footer class="cq-footer">
-        <div class="container">
-            &copy; 2026 - Code Quest
-        </div>
-    </footer>*@
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
