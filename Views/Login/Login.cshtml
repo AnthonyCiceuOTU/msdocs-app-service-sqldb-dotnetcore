@@ -1,0 +1,562 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    :root {
+        --bg: #0b1020;
+        --bg-2: #0f172a;
+        --panel: rgba(15, 23, 42, 0.82);
+        --panel-border: rgba(148, 163, 184, 0.18);
+        --text: #e5eefc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #22c55e;
+        --danger-bg: rgba(220, 38, 38, 0.16);
+        --danger-border: rgba(248, 113, 113, 0.35);
+        --danger-text: #fecaca;
+        --input-bg: rgba(15, 23, 42, 0.75);
+        --input-border: rgba(148, 163, 184, 0.22);
+        --input-focus: rgba(56, 189, 248, 0.55);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 28%),
+            radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.08), transparent 25%),
+            linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+        color: var(--text);
+        overflow: hidden;
+        position: relative;
+        font-family: Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding: 24px;
+    }
+
+    .code-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .code-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 32px 32px;
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.25));
+        pointer-events: none;
+    }
+
+    .editor-window {
+        position: absolute;
+        inset: 0;
+        opacity: 0.28;
+        transform: scale(1.03);
+        filter: blur(0.15px);
+    }
+
+    .editor-topbar {
+        height: 42px;
+        background: rgba(2, 6, 23, 0.72);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+    }
+
+    .editor-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .editor-dot.red { background: #fb7185; }
+    .editor-dot.yellow { background: #facc15; }
+    .editor-dot.green { background: #4ade80; }
+
+    .editor-title {
+        margin-left: 10px;
+        color: rgba(226, 232, 240, 0.7);
+        font-size: 13px;
+        letter-spacing: 0.3px;
+    }
+
+    .editor-body {
+        height: calc(100% - 42px);
+        padding: 24px 0 24px 0;
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.7));
+    }
+
+    .line-numbers {
+        padding: 0 12px 0 0;
+        text-align: right;
+        color: rgba(148, 163, 184, 0.45);
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        line-height: 1.8;
+        user-select: none;
+    }
+
+    .code-area {
+        position: relative;
+        padding-right: 40px;
+        overflow: hidden;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+        line-height: 1.8;
+        white-space: pre;
+        color: rgba(226, 232, 240, 0.88);
+    }
+
+    .code-line {
+        min-height: 27px;
+    }
+
+    .kw { color: #c084fc; }
+    .type { color: #38bdf8; }
+    .str { color: #86efac; }
+    .num { color: #fca5a5; }
+    .fn { color: #facc15; }
+    .prop { color: #7dd3fc; }
+    .cm { color: rgba(148, 163, 184, 0.8); }
+    .op { color: #f8fafc; }
+
+    .cursor {
+        display: inline-block;
+        width: 9px;
+        margin-left: 2px;
+        background: rgba(255,255,255,0.9);
+        vertical-align: middle;
+        animation: blink 0.9s steps(1) infinite;
+    }
+
+    @@keyframes blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+    }
+
+    .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.18;
+        pointer-events: none;
+        animation: floatOrb 10s ease-in-out infinite alternate;
+    }
+
+    .glow-orb.one {
+        width: 320px;
+        height: 320px;
+        background: #38bdf8;
+        top: 8%;
+        left: 6%;
+    }
+
+    .glow-orb.two {
+        width: 260px;
+        height: 260px;
+        background: #22c55e;
+        right: 8%;
+        bottom: 8%;
+        animation-duration: 12s;
+    }
+
+    @@keyframes floatOrb {
+        from { transform: translateY(0) translateX(0); }
+        to   { transform: translateY(18px) translateX(-18px); }
+    }
+
+    .login-shell {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .login-card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(14px);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .login-card::before {
+        content: "";
+        display: block;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
+        background-size: 200% 100%;
+        animation: headerFlow 4s linear infinite;
+    }
+
+    @@keyframes headerFlow {
+        from { background-position: 0% 50%; }
+        to   { background-position: 200% 50%; }
+    }
+
+    .login-card-body {
+        padding: 30px;
+    }
+
+    .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 6px;
+    }
+
+    .brand-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(34, 197, 94, 0.18));
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Consolas, monospace;
+        font-size: 18px;
+        color: #dbeafe;
+        box-shadow: inset 0 0 18px rgba(56, 189, 248, 0.08);
+    }
+
+    .login-title {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        color: #f8fafc;
+        text-align: center;
+    }
+
+    .login-subtitle {
+        margin: 6px 0 24px 0;
+        color: var(--muted);
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .alert.alert-danger {
+        background: var(--danger-bg);
+        border: 1px solid var(--danger-border);
+        color: var(--danger-text);
+        border-radius: 12px;
+    }
+
+    .form-group label {
+        color: #dbeafe;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: inline-block;
+    }
+
+    .form-control {
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        color: #f8fafc;
+        border-radius: 12px;
+        padding: 12px 14px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .form-control::placeholder {
+        color: rgba(148, 163, 184, 0.85);
+    }
+
+    .form-control:focus {
+        background: rgba(15, 23, 42, 0.9);
+        color: #fff;
+        border-color: var(--input-focus);
+        box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.14);
+        outline: none;
+    }
+
+    .btn-primary {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        background: linear-gradient(90deg, #0ea5e9, #22c55e);
+        box-shadow: 0 10px 24px rgba(14, 165, 233, 0.2);
+        transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 28px rgba(14, 165, 233, 0.28);
+        opacity: 0.98;
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .login-footer {
+        margin-top: 18px;
+        text-align: center;
+        color: rgba(148, 163, 184, 0.82);
+        font-size: 12px;
+        font-family: Consolas, monospace;
+    }
+
+    .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        background: radial-gradient(circle, transparent 35%, rgba(2, 6, 23, 0.38) 100%);
+    }
+
+    @@media (max-width: 576px) {
+        .login-card-body {
+            padding: 22px;
+        }
+
+        .login-title {
+            font-size: 26px;
+        }
+
+        .editor-body {
+            grid-template-columns: 48px 1fr;
+        }
+
+        .code-area,
+        .line-numbers {
+            font-size: 13px;
+        }
+    }
+</style>
+
+<div class="login-page">
+    <div class="code-bg" aria-hidden="true">
+        <div class="glow-orb one"></div>
+        <div class="glow-orb two"></div>
+
+        <div class="editor-window">
+            <div class="editor-topbar">
+                <span class="editor-dot red"></span>
+                <span class="editor-dot yellow"></span>
+                <span class="editor-dot green"></span>
+                <span class="editor-title">LoginController.cs</span>
+            </div>
+
+            <div class="editor-body">
+                <div class="line-numbers" id="lineNumbers"></div>
+                <div class="code-area" id="codeArea"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vignette"></div>
+
+    <div class="login-shell">
+        <div class="login-card">
+            <div class="login-card-body">
+                <div class="brand-row justify-content-center">
+                    <div class="brand-icon">&lt;/&gt;</div>
+                </div>
+
+                <h3 class="login-title">Login</h3>
+                <p class="login-subtitle">Authenticate to continue into the application</p>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">
+                        @ViewBag.Error
+                    </div>
+                }
+
+                <form asp-action="Index" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group mb-3">
+                        <label for="username">Username</label>
+                        <input type="text"
+                               name="username"
+                               id="username"
+                               class="form-control"
+                               placeholder="Enter username"
+                               required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="password">Password</label>
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               class="form-control"
+                               placeholder="Enter password"
+                               required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Login
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    initializing secure session...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const codeArea = document.getElementById("codeArea");
+        const lineNumbers = document.getElementById("lineNumbers");
+
+        const lines = [
+            '<span class="kw">using</span> <span class="type">Microsoft.AspNetCore.Mvc</span>;',
+            '<span class="kw">using</span> <span class="type">System.Threading.Tasks</span>;',
+            '',
+            '<span class="kw">namespace</span> <span class="type">DotNetCoreSqlDb.Controllers</span>',
+            '{',
+            '    <span class="kw">public class</span> <span class="type">LoginController</span> <span class="op">:</span> <span class="type">Controller</span>',
+            '    {',
+            '        <span class="kw">public</span> <span class="type">IActionResult</span> <span class="fn">Index</span>()',
+            '        {',
+            '            <span class="kw">return</span> <span class="fn">View</span>();',
+            '        }',
+            '',
+            '        [<span class="type">HttpPost</span>]',
+            '        [<span class="type">ValidateAntiForgeryToken</span>]',
+            '        <span class="kw">public async</span> <span class="type">Task</span>&lt;<span class="type">IActionResult</span>&gt; <span class="fn">Index</span>(<span class="type">string</span> username, <span class="type">string</span> password)',
+            '        {',
+            '            <span class="kw">if</span> (<span class="type">string</span>.<span class="prop">IsNullOrWhiteSpace</span>(username) <span class="op">||</span> <span class="type">string</span>.<span class="prop">IsNullOrWhiteSpace</span>(password))',
+            '            {',
+            '                <span class="prop">ViewBag</span>.<span class="prop">Error</span> <span class="op">=</span> <span class="str">"Invalid credentials"</span>;',
+            '                <span class="kw">return</span> <span class="fn">View</span>();',
+            '            }',
+            '',
+            '            <span class="cm">// authenticate user and create cookie session</span>',
+            '            <span class="kw">var</span> user <span class="op">=</span> <span class="kw">await</span> <span class="fn">AuthenticateAsync</span>(username, password);',
+            '',
+            '            <span class="kw">if</span> (user <span class="op">==</span> <span class="kw">null</span>)',
+            '            {',
+            '                <span class="prop">ViewBag</span>.<span class="prop">Error</span> <span class="op">=</span> <span class="str">"Login failed"</span>;',
+            '                <span class="kw">return</span> <span class="fn">View</span>();',
+            '            }',
+            '',
+            '            <span class="kw">return</span> <span class="fn">RedirectToAction</span>(<span class="str">"Index"</span>, <span class="str">"Home"</span>);',
+            '        }',
+            '    }',
+            '}'
+        ];
+
+        function buildLineNumbers() {
+            let nums = "";
+            for (let i = 1; i <= lines.length; i++) {
+                nums += i + "<br>";
+            }
+            lineNumbers.innerHTML = nums;
+        }
+
+        function escapeCursorLine(html) {
+            return html + '<span class="cursor">&nbsp;</span>';
+        }
+
+        let lineIndex = 0;
+        let charIndex = 0;
+        let deleting = false;
+        let pause = false;
+
+        const rendered = new Array(lines.length).fill("");
+
+        function draw() {
+            let output = "";
+
+            for (let i = 0; i < lines.length; i++) {
+                output += '<div class="code-line">';
+                if (i < lineIndex) {
+                    output += rendered[i];
+                } else if (i === lineIndex) {
+                    output += escapeCursorLine(rendered[i]);
+                }
+                output += '</div>';
+            }
+
+            codeArea.innerHTML = output;
+        }
+
+        function step() {
+            if (pause) return;
+
+            const target = lines[lineIndex];
+
+            if (!deleting) {
+                charIndex++;
+                rendered[lineIndex] = target.slice(0, charIndex);
+
+                if (charIndex >= target.length) {
+                    rendered[lineIndex] = target;
+
+                    if (lineIndex < lines.length - 1) {
+                        lineIndex++;
+                        charIndex = 0;
+                    } else {
+                        pause = true;
+                        setTimeout(() => {
+                            deleting = true;
+                            pause = false;
+                        }, 1200);
+                    }
+                }
+            } else {
+                if (lineIndex === 0 && charIndex === 0) {
+                    deleting = false;
+                    pause = true;
+                    setTimeout(() => {
+                        pause = false;
+                    }, 500);
+                } else {
+                    if (charIndex === 0) {
+                        lineIndex--;
+                        charIndex = lines[lineIndex].length;
+                    }
+
+                    charIndex--;
+                    rendered[lineIndex] = lines[lineIndex].slice(0, charIndex);
+
+                    for (let i = lineIndex + 1; i < rendered.length; i++) {
+                        rendered[i] = "";
+                    }
+                }
+            }
+
+            draw();
+        }
+
+        buildLineNumbers();
+        draw();
+        setInterval(step, 38);
+    })();
+</script>
