@@ -15,40 +15,54 @@ namespace Unit3DecisionMaking.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
-        {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+[ValidateAntiForgeryToken]
+public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
+{
+    vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
+    vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
+    vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
+    vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
 
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: compare the age to 18 using a comparison operator.";
-                return View(vm);
-            }
+    if (actionType == "hint")
+    {
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
+        return View(vm);
+    }
 
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution: age >= 18";
-                return View(vm);
-            }
+    if (actionType == "solution")
+    {
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
+        return View(vm);
+    }
 
-            bool isCorrect = vm.UserAnswer.Equals("age >= 18", StringComparison.OrdinalIgnoreCase);
+    // Question 1
+    vm.IsQ1Correct = vm.UserAnswer1.Equals("age >= 18", StringComparison.OrdinalIgnoreCase);
+    vm.Feedback1 = vm.IsQ1Correct == true
+        ? "Correct!"
+        : "Remember to use >= for 'at least 18'.";
 
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! This expression evaluates to True or False."
-                : "Not quite. Try comparing age to 18.";
+    // Question 2
+    vm.IsQ2Correct = vm.UserAnswer2 == "True";
+    vm.Feedback2 = vm.IsQ2Correct == true
+        ? "Correct! 75 is greater than 50."
+        : "75 is greater than 50, so this is True.";
 
-            return View(vm);
-        }
+    // Question 3
+    vm.IsQ3Correct = vm.UserAnswer3.Trim() == "!=";
+    vm.Feedback3 = vm.IsQ3Correct == true
+        ? "Correct!"
+        : "The 'not equal to' operator is !=";
+
+    // Question 4
+    vm.IsQ4Correct = vm.UserAnswer4 == "False";
+    vm.Feedback4 = vm.IsQ4Correct == true
+        ? "Correct! 10 is not less than 5."
+        : "10 is greater than 5, so this is False.";
+
+    return View(vm);
+}
 
 
         // Lesson 12 — IF Statements
