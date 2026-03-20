@@ -197,8 +197,8 @@ namespace DotNetCoreSqlDb.Controllers
             var correctPb = string.Join("|", new[]
             {
                 "Put bread slices on plate",
-                "Spread peanut butter on the other slice",
                 "Spread jam on one slice",
+                "Spread peanut butter on the other slice",
                 "Press the slices together"
             });
 
