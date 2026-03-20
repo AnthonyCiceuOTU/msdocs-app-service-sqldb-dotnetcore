@@ -109,6 +109,7 @@ namespace DotNetCoreSqlDb.Controllers
                 CurrentLessonDescription = currentLesson?.Description,
                 CurrentLessonCompleted = currentLesson != null &&
                                          progressList.Any(p => p.LessonId == currentLesson.Id && p.IsCompleted),
+                CurrentLessonContent = currentLesson?.Content,
                 PreviousLessonId = previousLessonId,
                 NextLessonId = nextLessonId
             };

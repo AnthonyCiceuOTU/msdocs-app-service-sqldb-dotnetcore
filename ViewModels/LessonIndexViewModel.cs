@@ -10,6 +10,7 @@ namespace DotNetCoreSqlDb.ViewModels
         public string? CurrentLessonTitle { get; set; }
         public string? CurrentLessonDescription { get; set; }
         public bool CurrentLessonCompleted { get; set; }
+        public string? CurrentLessonContent { get; set; }
 
         public int? PreviousLessonId { get; set; }
         public int? NextLessonId { get; set; }
