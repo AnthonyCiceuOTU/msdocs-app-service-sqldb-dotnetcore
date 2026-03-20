@@ -1,0 +1,415 @@
+@model DotNetCoreSqlDb.ViewModels.LessonsIndexViewModel
+
+@{
+    ViewData["Title"] = "Lessons";
+}
+
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .lessons-page {
+        min-height: 100vh;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
+            linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
+        color: #e5e7eb;
+        padding: 16px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .lessons-shell {
+        max-width: 1100px;
+        min-height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .brand-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #f8fafc;
+    }
+
+    .brand-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.1;
+    }
+
+    .panel {
+        background: rgba(17, 24, 39, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 18px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(12px);
+    }
+
+    .lessons-hero {
+        padding: 24px;
+        margin-top: 8px;
+    }
+
+    .lessons-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 18px;
+        align-items: start;
+    }
+
+    .lessons-sidebar,
+    .lesson-content {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 16px;
+        padding: 18px;
+    }
+
+    .sidebar-header {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .sidebar-header h2 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 1.35rem;
+    }
+
+    .unit-block + .unit-block {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .unit-title {
+        color: #f8fafc;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .unit-description {
+        color: #94a3b8;
+        font-size: 0.92rem;
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    .lesson-links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .lesson-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #cbd5e1;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: 0.2s ease;
+    }
+
+    .lesson-link:hover {
+        color: #ffffff;
+        border-color: rgba(34, 197, 94, 0.45);
+        background: rgba(255,255,255,0.07);
+        transform: translateY(-1px);
+    }
+
+    .lesson-link.current {
+        border-color: rgba(14, 165, 233, 0.65);
+        background: rgba(14, 165, 233, 0.12);
+        color: #ffffff;
+    }
+
+    .lesson-link.completed {
+        opacity: 0.98;
+    }
+
+    .lesson-status {
+        font-weight: 700;
+        color: #22c55e;
+    }
+
+    .lesson-breadcrumb {
+        color: #22c55e;
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .lesson-content h1 {
+        margin: 0 0 10px 0;
+        color: #ffffff;
+        font-size: 1.9rem;
+        line-height: 1.15;
+    }
+
+    .lesson-description {
+        color: #94a3b8;
+        margin-bottom: 22px;
+        line-height: 1.6;
+        max-width: 700px;
+    }
+
+    .empty-state h1 {
+        color: #ffffff;
+        margin-top: 0;
+    }
+
+    .empty-state p,
+    .muted {
+        color: #94a3b8;
+    }
+
+    .lesson-actions {
+        margin-top: 28px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .nav-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-main,
+    .btn-secondary,
+    .btn-success {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 16px;
+        cursor: pointer;
+    }
+
+    .btn-main {
+        background: linear-gradient(135deg, #0ea5e9, #22c55e);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.05);
+        color: #e5e7eb;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+        color: white;
+    }
+
+    .btn-main:hover,
+    .btn-secondary:hover,
+    .btn-success:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        color: #ffffff;
+    }
+
+    form {
+        margin: 0;
+    }
+
+    @@media (max-width: 900px) {
+        .lessons-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .lesson-content h1 {
+            font-size: 1.6rem;
+        }
+
+        .brand-text h1 {
+            font-size: 1.7rem;
+        }
+    }
+</style>
+
+<div class="lessons-page">
+    <div class="lessons-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <div class="brand-text">
+                    <h1>Code Quest</h1>
+                </div>
+            </div>
+
+            <a asp-controller="Home" asp-action="Index" class="btn-secondary">
+                Home
+            </a>
+        </div>
+
+        <div class="panel lessons-hero">
+            <div class="lessons-layout">
+                <aside class="lessons-sidebar">
+                    <div class="sidebar-header">
+                        <h2>Course Content</h2>
+                        <a asp-controller="Lessons" asp-action="Start" class="btn-main">Start Learning</a>
+                    </div>
+
+                    @if (!Model.Units.Any())
+                    {
+                        <p class="muted">No lessons available yet.</p>
+                    }
+                    else
+                    {
+                        @foreach (var unit in Model.Units.OrderBy(u => u.SortOrder))
+                        {
+                            <div class="unit-block">
+                                <div class="unit-title">@unit.Title</div>
+
+                                @if (!string.IsNullOrWhiteSpace(unit.Description))
+                                {
+                                    <div class="unit-description">@unit.Description</div>
+                                }
+
+                                <div class="lesson-links">
+                                    @foreach (var lesson in unit.Lessons.OrderBy(l => l.SortOrder))
+                                    {
+                                        var cssClass = "lesson-link";
+                                        if (lesson.IsCurrent) cssClass += " current";
+                                        if (lesson.IsCompleted) cssClass += " completed";
+
+                                        <a asp-controller="Lessons"
+                                           asp-action="Open"
+                                           asp-route-lessonId="@lesson.LessonId"
+                                           class="@cssClass">
+                                            <span>@lesson.Title</span>
+
+                                            @if (lesson.IsCompleted)
+                                            {
+                                                <span class="lesson-status">✓</span>
+                                            }
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </aside>
+
+                <main class="lesson-content">
+                    @if (Model.CurrentLessonId == null)
+                    {
+                        <div class="empty-state">
+                            <h1>No lesson selected</h1>
+                            <p>Select a lesson from the sidebar or click Start Learning.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="lesson-meta">
+                            <div class="lesson-breadcrumb">
+                                @Model.CurrentUnitTitle
+                            </div>
+
+                            <h1>@Model.CurrentLessonTitle</h1>
+
+                            @if (!string.IsNullOrWhiteSpace(Model.CurrentLessonDescription))
+                            {
+                                <p class="lesson-description">@Model.CurrentLessonDescription</p>
+                            }
+                        </div>
+
+                        <div class="lesson-actions">
+                            <div class="nav-buttons">
+                                @if (Model.PreviousLessonId != null)
+                                {
+                                    <a asp-controller="Lessons"
+                                       asp-action="Previous"
+                                       asp-route-lessonId="@Model.CurrentLessonId"
+                                       class="btn-secondary">
+                                        ← Previous
+                                    </a>
+                                }
+
+                                <a asp-controller="Lessons"
+                                   asp-action="Open"
+                                   asp-route-lessonId="@Model.CurrentLessonId"
+                                   class="btn-main">
+                                    Open Lesson
+                                </a>
+
+                                @if (Model.NextLessonId != null)
+                                {
+                                    <a asp-controller="Lessons"
+                                       asp-action="Next"
+                                       asp-route-lessonId="@Model.CurrentLessonId"
+                                       class="btn-secondary">
+                                        Next →
+                                    </a>
+                                }
+                            </div>
+
+                            <form asp-controller="Lessons" asp-action="Complete" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="lessonId" value="@Model.CurrentLessonId" />
+
+                                @if (Model.CurrentLessonCompleted)
+                                {
+                                    <button type="submit" class="btn-success">Completed ✓</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn-main">Mark Complete</button>
+                                }
+                            </form>
+                        </div>
+                    }
+                </main>
+            </div>
+        </div>
+    </div>
+</div>

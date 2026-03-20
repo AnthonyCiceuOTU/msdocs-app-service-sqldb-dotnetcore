@@ -66,6 +66,7 @@ namespace DotNetCoreSqlDb.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
                 new Claim("UserID", user.ID.ToString())
             };
 
