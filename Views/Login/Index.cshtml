@@ -392,6 +392,12 @@
                         @ViewBag.Error
                     </div>
                 }
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["Success"]
+                    </div>
+                }
 
                 <form asp-action="Index" method="post">
                     @Html.AntiForgeryToken()
@@ -423,6 +429,10 @@
 
                 <div class="login-footer">
                     initializing secure session...
+                    <br />
+                    <a asp-controller="Login" asp-action="Registration" style="color:#7dd3fc; text-decoration:none;">
+                        Create an account
+                    </a>
                 </div>
             </div>
         </div>

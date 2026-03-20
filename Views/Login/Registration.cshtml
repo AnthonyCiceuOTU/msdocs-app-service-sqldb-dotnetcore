@@ -1,0 +1,262 @@
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    :root {
+        --bg: #0b1020;
+        --bg-2: #0f172a;
+        --panel: rgba(15, 23, 42, 0.82);
+        --panel-border: rgba(148, 163, 184, 0.18);
+        --text: #e5eefc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #22c55e;
+        --danger-bg: rgba(220, 38, 38, 0.16);
+        --danger-border: rgba(248, 113, 113, 0.35);
+        --danger-text: #fecaca;
+        --success-bg: rgba(34, 197, 94, 0.16);
+        --success-border: rgba(74, 222, 128, 0.35);
+        --success-text: #bbf7d0;
+        --input-bg: rgba(15, 23, 42, 0.75);
+        --input-border: rgba(148, 163, 184, 0.22);
+        --input-focus: rgba(56, 189, 248, 0.55);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 28%),
+            radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.08), transparent 25%),
+            linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+        color: var(--text);
+        overflow: hidden;
+        position: relative;
+        font-family: Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .register-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    .register-shell {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .register-card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(14px);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .register-card::before {
+        content: "";
+        display: block;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
+        background-size: 200% 100%;
+        animation: headerFlow 4s linear infinite;
+    }
+
+    @@keyframes headerFlow {
+        from { background-position: 0% 50%; }
+        to   { background-position: 200% 50%; }
+    }
+
+    .register-card-body {
+        padding: 30px;
+    }
+
+    .brand-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 6px;
+    }
+
+    .brand-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(34, 197, 94, 0.18));
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Consolas, monospace;
+        font-size: 18px;
+        color: #dbeafe;
+        box-shadow: inset 0 0 18px rgba(56, 189, 248, 0.08);
+    }
+
+    .register-title {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        color: #f8fafc;
+        text-align: center;
+    }
+
+    .register-subtitle {
+        margin: 6px 0 24px 0;
+        color: var(--muted);
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .alert-danger {
+        background: var(--danger-bg);
+        border: 1px solid var(--danger-border);
+        color: var(--danger-text);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        color: #dbeafe;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: inline-block;
+    }
+
+    .form-control {
+        width: 100%;
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        color: #f8fafc;
+        border-radius: 12px;
+        padding: 12px 14px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-control::placeholder {
+        color: rgba(148, 163, 184, 0.85);
+    }
+
+    .form-control:focus {
+        background: rgba(15, 23, 42, 0.9);
+        color: #fff;
+        border-color: var(--input-focus);
+        box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.14);
+        outline: none;
+    }
+
+    .btn-primary {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        background: linear-gradient(90deg, #0ea5e9, #22c55e);
+        box-shadow: 0 10px 24px rgba(14, 165, 233, 0.2);
+        transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+        width: 100%;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 28px rgba(14, 165, 233, 0.28);
+        opacity: 0.98;
+    }
+
+    .register-footer {
+        margin-top: 18px;
+        text-align: center;
+        color: rgba(148, 163, 184, 0.82);
+        font-size: 13px;
+    }
+
+    .register-footer a {
+        color: #7dd3fc;
+        text-decoration: none;
+    }
+
+    .register-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="register-page">
+    <div class="register-shell">
+        <div class="register-card">
+            <div class="register-card-body">
+                <div class="brand-row">
+                    <div class="brand-icon">&lt;/&gt;</div>
+                </div>
+
+                <h3 class="register-title">Create Account</h3>
+                <p class="register-subtitle">Register a new user to continue</p>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert-danger">
+                        @ViewBag.Error
+                    </div>
+                }
+
+                <form asp-action="Registration" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group mb-3">
+                        <label for="username">Username</label>
+                        <input type="text"
+                               name="username"
+                               id="username"
+                               class="form-control"
+                               placeholder="Enter username"
+                               required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="password">Password</label>
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               class="form-control"
+                               placeholder="Enter password"
+                               required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password"
+                               name="confirmPassword"
+                               id="confirmPassword"
+                               class="form-control"
+                               placeholder="Re-enter password"
+                               required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="register-footer">
+                    Already have an account?
+                    <a asp-controller="Login" asp-action="Index">Back to login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -19,6 +19,5 @@ namespace DotNetCoreSqlDb.Models
         [Required]
         public byte[] PasswordSalt { get; set; } = null!;
 
-
     }
 }

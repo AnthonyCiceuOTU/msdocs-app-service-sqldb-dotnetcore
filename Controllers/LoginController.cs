@@ -92,6 +92,64 @@ namespace DotNetCoreSqlDb.Controllers
 
         }
 
+        // GET: /Login/Registration
+        [HttpGet]
+        public IActionResult Registration()
+        {
+            return View();
+        }
+
+        // POST: /Login/Registration
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Registration(string username, string password, string confirmPassword)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                ViewBag.Error = "Username is required.";
+                return View();
+            }
+
+            if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                ViewBag.Error = "Password and confirm password are required.";
+                return View();
+            }
+
+            if (password != confirmPassword)
+            {
+                ViewBag.Error = "Passwords do not match.";
+                return View();
+            }
+
+            var normalizedUsername = username.Trim();
+
+            var existingUser = await _context.User
+                .FirstOrDefaultAsync(u => u.Username == normalizedUsername);
+
+            if (existingUser != null)
+            {
+                ViewBag.Error = "Username already exists.";
+                return View();
+            }
+
+            PasswordHelper.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            var newUser = new User
+            {
+                ID = Guid.NewGuid(),
+                Username = normalizedUsername,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
+            };
+
+            _context.User.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Account created successfully. Please log in.";
+            return RedirectToAction("Index");
+        }
+
         // Simple logout action
         public async Task<IActionResult> Logout()
         {
