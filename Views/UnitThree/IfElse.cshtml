@@ -1,140 +1,620 @@
-@model Unit3DecisionMaking.ViewModels.IfElseViewModel
+@model DotNetCoreSqlDb.ViewModels.IfElseViewModel
 
-<div class="container mt-4">
-    <h1>Lesson 13 — IF–ELSE</h1>
+@{
+    ViewData["Title"] = "IF-ELSE";
+}
 
-    <!-- INTRO -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h3>Introduction</h3>
-            <p>IF–ELSE statements allow a program to choose between two outcomes.</p>
-            <p>If the condition is <strong>true</strong>, the IF block runs. Otherwise, the ELSE block runs.</p>
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .lesson-page {
+        min-height: 100vh;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
+            linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
+        color: #e5e7eb;
+        padding: 16px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .lesson-shell {
+        max-width: 1100px;
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .brand-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #f8fafc;
+    }
+
+    .brand-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.1;
+    }
+
+    .brand-text p {
+        margin: 4px 0 0 0;
+        color: #94a3b8;
+        font-size: 0.95rem;
+    }
+
+    .panel {
+        background: rgba(17, 24, 39, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 18px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(12px);
+    }
+
+    .step-panel {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+    }
+
+    .step-card {
+        width: 100%;
+        padding: 18px 20px;
+        display: none;
+        overflow: hidden;
+    }
+
+    .step-card.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .step-top h2,
+    .step-top h3 {
+        margin: 0 0 8px 0;
+        color: #ffffff;
+        line-height: 1.15;
+    }
+
+    .step-top h2 {
+        font-size: 1.65rem;
+    }
+
+    .step-top h3 {
+        font-size: 1.3rem;
+    }
+
+    .step-top p {
+        margin: 0 0 10px 0;
+        color: #94a3b8;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    .instruction-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: #cbd5e1;
+        line-height: 1.5;
+        font-size: 0.94rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block {
+        background: rgba(2, 6, 23, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-family: Consolas, Monaco, monospace;
+        white-space: pre-wrap;
+        line-height: 1.45;
+        font-size: 0.92rem;
+        margin-bottom: 10px;
+    }
+
+    .quiz-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: start;
+    }
+
+    .quiz-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        padding: 12px;
+    }
+
+    .quiz-title {
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .mini-code {
+        background: rgba(2, 6, 23, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #e2e8f0;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .text-input {
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(2, 6, 23, 0.7);
+        color: #f8fafc;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
+        padding: 10px 12px;
+        outline: none;
+        font-size: 0.92rem;
+    }
+
+    .text-input:focus {
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    .radio-row {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .radio-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #e5e7eb;
+        font-size: 0.92rem;
+    }
+
+    .mc-grid {
+        display: grid;
+        gap: 10px;
+    }
+
+    .mc-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 12px;
+        padding: 10px 12px;
+    }
+
+    .mc-header {
+        color: #e5e7eb;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .concept-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+    .concept-card h4 {
+        margin: 0 0 6px 0;
+        color: #ffffff;
+        font-size: 0.95rem;
+    }
+
+    .concept-card p {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
+    .btn-main,
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 16px;
+        cursor: pointer;
+    }
+
+    .btn-main {
+        background: linear-gradient(135deg, #0ea5e9, #22c55e);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.05);
+        color: #e5e7eb;
+    }
+
+    .btn-main:hover,
+    .btn-secondary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        color: #ffffff;
+    }
+
+    .step-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .step-progress {
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .alert-box {
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: 10px;
+        border: 1px solid transparent;
+        font-size: 0.92rem;
+    }
+
+    .alert-success-custom {
+        background: rgba(34, 197, 94, 0.12);
+        color: #bbf7d0;
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .alert-danger-custom {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fecaca;
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .alert-info-custom {
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .nav-footer {
+        margin-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    @@media (max-width: 900px) {
+        .brand-text h1 {
+            font-size: 1.7rem;
+        }
+
+        .step-top h2 {
+            font-size: 1.4rem;
+        }
+
+        .step-top h3 {
+            font-size: 1.15rem;
+        }
+
+        .step-card {
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .quiz-grid,
+        .concept-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="lesson-page">
+    <div class="lesson-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <div class="brand-text">
+                    <h1>Code Quest</h1>
+                    <p>Unit 3 · Lesson 3</p>
+                </div>
+            </div>
+
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
-    </div>
 
-    <!-- EXAMPLE -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h3>Example</h3>
-            <pre class="bg-light p-3 border rounded">IF grade >= 50 THEN
+        <form asp-action="IfElse" asp-controller="UnitThree" method="post" id="lessonForm">
+            @Html.AntiForgeryToken()
+
+            <div class="panel step-panel">
+                <div class="step-card active" id="step0">
+                    <div class="step-top">
+                        <h2>IF-ELSE</h2>
+                        <p>
+                            IF-ELSE statements let a program choose between two outcomes.
+                            If the condition is true, the IF block runs. Otherwise, the ELSE block runs.
+                        </p>
+
+                        <div class="code-block">IF grade >= 50 THEN
     PRINT "Pass"
 ELSE
     PRINT "Fail"
-END IF</pre>
-        </div>
-    </div>
+END IF</div>
 
-    <!-- QUIZ -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h3>Practice & Quiz</h3>
-
-            <form asp-action="IfElse" asp-controller="UnitThree" method="post">
-                @Html.AntiForgeryToken()
-
-                <!-- Q1 -->
-                <div class="mb-4">
-                    <label class="fw-bold">1. Write the condition for passing (grade is at least 50):</label>
-                    <input asp-for="UserAnswer1" class="form-control" />
-
-                    @if (Model.IsQ1Correct != null)
-                    {
-                        <div class="alert @(Model.IsQ1Correct == true ? "alert-success" : "alert-danger") mt-2">
-                            @Model.Feedback1
+                        <div class="instruction-box">
+                            In this lesson, you will first practice how IF-ELSE chooses between two paths,
+                            then explain why this structure is useful in programming.
                         </div>
-                    }
+
+                        <div class="concept-grid">
+                            <div class="concept-card">
+                                <h4>Two Outcomes</h4>
+                                <p>IF-ELSE always gives one of two possible paths.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>IF Path</h4>
+                                <p>The IF block runs when the condition is true.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>ELSE Path</h4>
+                                <p>The ELSE block runs when the condition is false.</p>
+                            </div>
+                        </div>
+
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Think about what happens when the IF condition is false. What block takes over?
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) grade >= 50, 2) ELSE runs, 3) ELSE, 4) Fail
+                            </div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <div class="step-progress">Instructions</div>
+                        <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
+                    </div>
                 </div>
 
-                <!-- Q2 -->
-                <div class="mb-4">
-                    <label class="fw-bold">2. What happens if the condition is FALSE?</label>
+                <div class="step-card" id="step1">
+                    <div class="step-top">
+                        <h3>First assignment · Practice IF-ELSE logic</h3>
 
-                    <input type="radio" asp-for="UserAnswer2" value="IF runs" /> IF runs<br />
-                    <input type="radio" asp-for="UserAnswer2" value="ELSE runs" /> ELSE runs
-
-                    @if (Model.IsQ2Correct != null)
-                    {
-                        <div class="alert @(Model.IsQ2Correct == true ? "alert-success" : "alert-danger") mt-2">
-                            @Model.Feedback2
+                        <div class="instruction-box">
+                            Complete the four IF-ELSE questions below. Check your answers before moving to the second assignment.
                         </div>
-                    }
-                </div>
 
-                <!-- Q3 -->
-                <div class="mb-4">
-                    <label class="fw-bold">3. Fill in the blank:</label>
-                    <pre class="bg-light p-2 border rounded">IF score >= 50 THEN
+                        <div class="quiz-grid">
+                            <div class="quiz-card">
+                                <div class="quiz-title">1. Write the condition for passing when grade is at least 50</div>
+                                <input asp-for="UserAnswer1" class="text-input" placeholder="Example: grade >= 50" />
+
+                                @if (Model.IsQ1Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ1Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback1
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">2. What happens if the condition is false?</div>
+
+                                <div class="radio-row">
+                                    <label class="radio-option">
+                                        <input type="radio" asp-for="UserAnswer2" value="IF runs" />
+                                        <span>IF runs</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" asp-for="UserAnswer2" value="ELSE runs" />
+                                        <span>ELSE runs</span>
+                                    </label>
+                                </div>
+
+                                @if (Model.IsQ2Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ2Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback2
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">3. Fill in the missing keyword</div>
+                                <div class="mini-code">IF score >= 50 THEN
     PRINT "Pass"
 ____
-    PRINT "Fail"</pre>
+    PRINT "Fail"</div>
+                                <input asp-for="UserAnswer3" class="text-input" placeholder="Enter the keyword" />
 
-                    <input asp-for="UserAnswer3" class="form-control" placeholder="Enter keyword" />
+                                @if (Model.IsQ3Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ3Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback3
+                                    </div>
+                                }
+                            </div>
 
-                    @if (Model.IsQ3Correct != null)
-                    {
-                        <div class="alert @(Model.IsQ3Correct == true ? "alert-success" : "alert-danger") mt-2">
-                            @Model.Feedback3
+                            <div class="quiz-card">
+                                <div class="quiz-title">4. If grade = 40, what will print?</div>
+
+                                <div class="radio-row">
+                                    <label class="radio-option">
+                                        <input type="radio" asp-for="UserAnswer4" value="Pass" />
+                                        <span>Pass</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" asp-for="UserAnswer4" value="Fail" />
+                                        <span>Fail</span>
+                                    </label>
+                                </div>
+
+                                @if (Model.IsQ4Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ4Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback4
+                                    </div>
+                                }
+                            </div>
                         </div>
-                    }
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+                        <div class="step-progress">Step 1 of 2</div>
+
+                        @if (Model.IsQ1Correct == true && Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true)
+                        {
+                            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+                        }
+                        else
+                        {
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                                <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
+                                <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
+                            </div>
+                        }
+                    </div>
                 </div>
 
-                <!-- Q4 -->
-                <div class="mb-4">
-                    <label class="fw-bold">4. If grade = 40, what will print?</label>
+                <div class="step-card" id="step2">
+                    <div class="step-top">
+                        <h3>Second assignment · Explain IF-ELSE</h3>
 
-                    <input type="radio" asp-for="UserAnswer4" value="Pass" /> Pass<br />
-                    <input type="radio" asp-for="UserAnswer4" value="Fail" /> Fail
-
-                    @if (Model.IsQ4Correct != null)
-                    {
-                        <div class="alert @(Model.IsQ4Correct == true ? "alert-success" : "alert-danger") mt-2">
-                            @Model.Feedback4
+                        <div class="instruction-box">
+                            In one short sentence, explain why IF-ELSE statements are useful in programming.
                         </div>
-                    }
+
+                        <div class="mc-grid">
+                            <div class="mc-card">
+                                <div class="mc-header">Your explanation</div>
+                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="For now, type: trueonepathfalseotherpath" />
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+                        {
+                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                                @Model.ExplanationFeedback
+                            </div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <div class="step-progress">Step 2 of 2</div>
+
+                        @if (Model.ExplanationCorrect == true)
+                        {
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                        }
+                    </div>
                 </div>
+            </div>
+        </form>
 
-                <!-- BUTTONS -->
-                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
-                    Check Answers
-                </button>
-
-                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
-                    Hint
-                </button>
-
-                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
-                    Solution
-                </button>
-            </form>
-
-            <!-- HINT -->
-            @if (Model.ShowHint)
-            {
-                <div class="alert alert-warning mt-3">
-                    Think about what happens when the IF condition is false.
-                </div>
-            }
-
-            <!-- SOLUTION -->
-            @if (Model.ShowSolution)
-            {
-                <div class="alert alert-secondary mt-3">
-                    <strong>Solutions:</strong>
-                    <pre class="mt-2 mb-0">
-1. grade >= 50
-2. ELSE runs
-3. ELSE
-4. Fail
-                    </pre>
-                </div>
-            }
+        <div class="nav-footer">
+            <a asp-controller="UnitThree" asp-action="IfStatements" class="btn-secondary">Back to Lesson 2</a>
+            <a asp-controller="Lessons" asp-action="Index" class="btn-main">Back to Lessons</a>
         </div>
     </div>
-
-    <!-- NAV -->
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-controller="UnitThree" asp-action="NestedConditions">
-            Unit 3, Lesson 14 — Nested Conditions
-        </a>
-    </li>
 </div>
+
+<script>
+    function showStep(stepNumber) {
+        document.querySelectorAll('.step-card').forEach(card => {
+            card.classList.remove('active');
+        });
+
+        const target = document.getElementById(`step${stepNumber}`);
+        if (target) {
+            target.classList.add('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let stepToShow = 0;
+
+        const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")';
+        const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
+        const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
+        const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
+        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+
+        if (explanationDone === 'True') {
+            stepToShow = 2;
+        } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
+            stepToShow = 1;
+        }
+
+        showStep(stepToShow);
+    });
+</script>
