@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Unit3DecisionMaking.ViewModels;
 
 namespace Unit3DecisionMaking.Controllers
 {
+    [Authorize]
     public class UnitThreeController : Controller
     {
 
@@ -15,54 +17,54 @@ namespace Unit3DecisionMaking.Controllers
         }
 
         [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
-{
-    vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
-    vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
-    vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
-    vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
+        [ValidateAntiForgeryToken]
+        public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
+        {
+            vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
+            vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
+            vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
+            vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
 
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        return View(vm);
-    }
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                return View(vm);
+            }
 
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        return View(vm);
-    }
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                return View(vm);
+            }
 
-    // Question 1
-    vm.IsQ1Correct = vm.UserAnswer1.Equals("age >= 18", StringComparison.OrdinalIgnoreCase);
-    vm.Feedback1 = vm.IsQ1Correct == true
-        ? "Correct!"
-        : "Remember to use >= for 'at least 18'.";
+            // Question 1
+            vm.IsQ1Correct = vm.UserAnswer1.Equals("age >= 18", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback1 = vm.IsQ1Correct == true
+                ? "Correct!"
+                : "Remember to use >= for 'at least 18'.";
 
-    // Question 2
-    vm.IsQ2Correct = vm.UserAnswer2 == "True";
-    vm.Feedback2 = vm.IsQ2Correct == true
-        ? "Correct! 75 is greater than 50."
-        : "75 is greater than 50, so this is True.";
+            // Question 2
+            vm.IsQ2Correct = vm.UserAnswer2 == "True";
+            vm.Feedback2 = vm.IsQ2Correct == true
+                ? "Correct! 75 is greater than 50."
+                : "75 is greater than 50, so this is True.";
 
-    // Question 3
-    vm.IsQ3Correct = vm.UserAnswer3.Trim() == "!=";
-    vm.Feedback3 = vm.IsQ3Correct == true
-        ? "Correct!"
-        : "The 'not equal to' operator is !=";
+            // Question 3
+            vm.IsQ3Correct = vm.UserAnswer3.Trim() == "!=";
+            vm.Feedback3 = vm.IsQ3Correct == true
+                ? "Correct!"
+                : "The 'not equal to' operator is !=";
 
-    // Question 4
-    vm.IsQ4Correct = vm.UserAnswer4 == "False";
-    vm.Feedback4 = vm.IsQ4Correct == true
-        ? "Correct! 10 is not less than 5."
-        : "10 is greater than 5, so this is False.";
+            // Question 4
+            vm.IsQ4Correct = vm.UserAnswer4 == "False";
+            vm.Feedback4 = vm.IsQ4Correct == true
+                ? "Correct! 10 is not less than 5."
+                : "10 is greater than 5, so this is False.";
 
-    return View(vm);
-}
+            return View(vm);
+        }
 
 
         // Lesson 12 — IF Statements
@@ -73,66 +75,66 @@ public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
             return View(new IfStatementViewModel());
         }
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult IfStatements(IfStatementViewModel vm, string actionType)
-{
-    // Trim inputs
-    vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
-    vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
-    vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
-    vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult IfStatements(IfStatementViewModel vm, string actionType)
+        {
+            // Trim inputs
+            vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
+            vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
+            vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
+            vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
 
-    // HINT
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        return View(vm);
-    }
+            // HINT
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                return View(vm);
+            }
 
-    // SOLUTION
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        return View(vm);
-    }
+            // SOLUTION
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                return View(vm);
+            }
 
-    // =========================
-    // Question 1
-    // =========================
-    vm.IsQ1Correct = vm.UserAnswer1.Contains("< 0");
-    vm.Feedback1 = vm.IsQ1Correct == true
-        ? "Correct!"
-        : "You need to check if temperature is less than 0.";
+            // =========================
+            // Question 1
+            // =========================
+            vm.IsQ1Correct = vm.UserAnswer1.Contains("< 0");
+            vm.Feedback1 = vm.IsQ1Correct == true
+                ? "Correct!"
+                : "You need to check if temperature is less than 0.";
 
-    // =========================
-    // Question 2
-    // =========================
-    vm.IsQ2Correct = vm.UserAnswer2 == "Code is skipped";
-    vm.Feedback2 = vm.IsQ2Correct == true
-        ? "Correct! IF only runs when the condition is true."
-        : "If the condition is false, the code inside the IF does not run.";
+            // =========================
+            // Question 2
+            // =========================
+            vm.IsQ2Correct = vm.UserAnswer2 == "Code is skipped";
+            vm.Feedback2 = vm.IsQ2Correct == true
+                ? "Correct! IF only runs when the condition is true."
+                : "If the condition is false, the code inside the IF does not run.";
 
-    // =========================
-    // Question 3
-    // =========================
-    vm.IsQ3Correct = vm.UserAnswer3.Contains(">=");
-    vm.Feedback3 = vm.IsQ3Correct == true
-        ? "Correct!"
-        : "To pass at 50 or higher, use >=.";
+            // =========================
+            // Question 3
+            // =========================
+            vm.IsQ3Correct = vm.UserAnswer3.Contains(">=");
+            vm.Feedback3 = vm.IsQ3Correct == true
+                ? "Correct!"
+                : "To pass at 50 or higher, use >=.";
 
-    // =========================
-    // Question 4
-    // =========================
-    vm.IsQ4Correct = vm.UserAnswer4 == "Freezing prints";
-    vm.Feedback4 = vm.IsQ4Correct == true
-        ? "Correct! -5 is less than 0."
-        : "Since -5 < 0, the IF condition is true.";
+            // =========================
+            // Question 4
+            // =========================
+            vm.IsQ4Correct = vm.UserAnswer4 == "Freezing prints";
+            vm.Feedback4 = vm.IsQ4Correct == true
+                ? "Correct! -5 is less than 0."
+                : "Since -5 < 0, the IF condition is true.";
 
-    return View(vm);
-}
+            return View(vm);
+        }
 
 
         // Lesson 13 — IF–ELSE
@@ -143,55 +145,55 @@ public IActionResult IfStatements(IfStatementViewModel vm, string actionType)
             return View(new IfElseViewModel());
         }
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult IfElse(IfElseViewModel vm, string actionType)
-{
-    vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
-    vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
-    vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
-    vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult IfElse(IfElseViewModel vm, string actionType)
+        {
+            vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
+            vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
+            vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
+            vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
 
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        return View(vm);
-    }
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                return View(vm);
+            }
 
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        return View(vm);
-    }
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                return View(vm);
+            }
 
-    // Q1
-    vm.IsQ1Correct = vm.UserAnswer1.Equals("grade >= 50", StringComparison.OrdinalIgnoreCase);
-    vm.Feedback1 = vm.IsQ1Correct == true
-        ? "Correct!"
-        : "Use >= for 'at least 50'.";
+            // Q1
+            vm.IsQ1Correct = vm.UserAnswer1.Equals("grade >= 50", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback1 = vm.IsQ1Correct == true
+                ? "Correct!"
+                : "Use >= for 'at least 50'.";
 
-    // Q2
-    vm.IsQ2Correct = vm.UserAnswer2 == "ELSE runs";
-    vm.Feedback2 = vm.IsQ2Correct == true
-        ? "Correct!"
-        : "When IF is false, ELSE runs.";
+            // Q2
+            vm.IsQ2Correct = vm.UserAnswer2 == "ELSE runs";
+            vm.Feedback2 = vm.IsQ2Correct == true
+                ? "Correct!"
+                : "When IF is false, ELSE runs.";
 
-    // Q3
-    vm.IsQ3Correct = vm.UserAnswer3.Equals("ELSE", StringComparison.OrdinalIgnoreCase);
-    vm.Feedback3 = vm.IsQ3Correct == true
-        ? "Correct!"
-        : "The missing keyword is ELSE.";
+            // Q3
+            vm.IsQ3Correct = vm.UserAnswer3.Equals("ELSE", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback3 = vm.IsQ3Correct == true
+                ? "Correct!"
+                : "The missing keyword is ELSE.";
 
-    // Q4
-    vm.IsQ4Correct = vm.UserAnswer4 == "Fail";
-    vm.Feedback4 = vm.IsQ4Correct == true
-        ? "Correct!"
-        : "40 is less than 50, so it prints Fail.";
+            // Q4
+            vm.IsQ4Correct = vm.UserAnswer4 == "Fail";
+            vm.Feedback4 = vm.IsQ4Correct == true
+                ? "Correct!"
+                : "40 is less than 50, so it prints Fail.";
 
-    return View(vm);
-}
+            return View(vm);
+        }
 
         // Lesson 14 — Nested Conditions
 

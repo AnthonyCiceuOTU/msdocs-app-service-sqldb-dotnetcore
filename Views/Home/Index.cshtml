@@ -1,6 +1,10 @@
 ﻿@{
     ViewData["Title"] = "Home";
 }
+@using System.Security.Claims
+@{
+    var isGuest = User.FindFirst("IsGuest")?.Value == "true";
+}
 
 <style>
     html,
@@ -200,9 +204,18 @@
                 </div>
             </div>
 
-            <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
-                Profile
-            </a>
+            @if (isGuest)
+            {
+                <span class="btn-secondary" style="opacity:0.5; pointer-events:none;">
+                    Profile
+                </span>
+            }
+            else
+            {
+                <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
+                    Profile
+                </a>
+            }
         </div>
 
         <div class="panel hero">

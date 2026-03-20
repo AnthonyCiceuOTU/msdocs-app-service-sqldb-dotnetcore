@@ -5,13 +5,12 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetCoreSqlDb.Helpers;
-//using DotNetCoreSqlDb.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreSqlDb.Controllers
 {
-    //[RequireHttps]
+    [AllowAnonymous]
     public class LoginController : Controller
     {
         private readonly MyDatabaseContext _context;
@@ -34,9 +33,6 @@ namespace DotNetCoreSqlDb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string username, string password)
         {
-
-            //ViewBag.ShowForgotPassword = true;
-            // Validate input
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 ViewBag.Error = "Please enter both username and password.";
@@ -51,15 +47,14 @@ namespace DotNetCoreSqlDb.Controllers
                 return View();
             }
 
-            //bool valid = PasswordHelper.VerifyPassword(password, user.PasswordHash, user.PasswordSalt);
             bool primaryValid = PasswordHelper.VerifyPassword(password, user.PasswordHash, user.PasswordSalt);
-            
-            //if (!valid)
+
             if (!primaryValid)
             {
                 ViewBag.Error = "Invalid credentials. Please try again.";
                 return View();
             }
+
             await _logHelper.LogSignInAsync(user.ID, username);
             await _context.SaveChangesAsync();
 
@@ -67,39 +62,57 @@ namespace DotNetCoreSqlDb.Controllers
             {
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
-                new Claim("UserID", user.ID.ToString())
+                new Claim("UserID", user.ID.ToString()),
+                new Claim("IsGuest", "false")
             };
 
-            // Create a claims identity specifying the authentication scheme
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            // Set up authentication properties if needed (e.g., IsPersistent for "Remember Me")
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(1440)
-                // IsPersistent = true
             };
 
-            // Sign in the user (this creates an encrypted cookie)
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            // Redirect based on role
-
             return RedirectToAction("Index", "Home");
-
         }
 
-        // GET: /Login/Registration
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ContinueAsGuest()
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, "Guest"),
+                new Claim(ClaimTypes.NameIdentifier, "guest"),
+                new Claim("IsGuest", "true")
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24)
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpGet]
         public IActionResult Registration()
         {
             return View();
         }
 
-        // POST: /Login/Registration
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Registration(string username, string password, string confirmPassword)
@@ -150,7 +163,6 @@ namespace DotNetCoreSqlDb.Controllers
             return RedirectToAction("Index");
         }
 
-        // Simple logout action
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
