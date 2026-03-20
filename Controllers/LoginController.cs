@@ -87,7 +87,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             // Redirect based on role
 
-            return RedirectToAction("Home", "Index");
+            return RedirectToAction("Index", "Home");
 
         }
 
