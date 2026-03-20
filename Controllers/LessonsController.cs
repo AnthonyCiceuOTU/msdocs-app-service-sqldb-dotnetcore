@@ -194,12 +194,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             await _context.SaveChangesAsync();
 
-            var nextLessonId = await GetNextLessonId(lessonId);
-
-            if (nextLessonId != null)
-                return RedirectToAction(nameof(Open), new { lessonId = nextLessonId.Value });
-
-            return RedirectToAction(nameof(Open), new { lessonId });
+            return RedirectToAction(nameof(Index), new { lessonId });
         }
 
         [HttpGet]
