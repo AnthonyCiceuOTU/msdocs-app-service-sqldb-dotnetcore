@@ -4,115 +4,492 @@
     ViewData["Title"] = "Algorithms";
 }
 
-<div class="container mt-4">
-    <h1>Algorithms</h1>
-    <p class="text-success fw-bold">Completed</p>
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h3>Introduction</h3>
-            <p>
-                An algorithm is a step-by-step set of instructions for solving a problem.
-                Good algorithms are precise, finite, and deterministic.
-            </p>
+    .lesson-page {
+        min-height: 100vh;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
+            linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
+        color: #e5e7eb;
+        padding: 16px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .lesson-shell {
+        max-width: 1100px;
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .brand-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #f8fafc;
+    }
+
+    .brand-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.1;
+    }
+
+    .brand-text p {
+        margin: 4px 0 0 0;
+        color: #94a3b8;
+        font-size: 0.95rem;
+    }
+
+    .panel {
+        background: rgba(17, 24, 39, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 18px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(12px);
+    }
+
+    .step-panel {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+    }
+
+    .step-card {
+        width: 100%;
+        padding: 18px 20px;
+        display: none;
+        overflow: hidden;
+    }
+
+    .step-card.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .step-top h2,
+    .step-top h3 {
+        margin: 0 0 8px 0;
+        color: #ffffff;
+        line-height: 1.15;
+    }
+
+    .step-top h2 {
+        font-size: 1.65rem;
+    }
+
+    .step-top h3 {
+        font-size: 1.3rem;
+    }
+
+    .step-top p {
+        margin: 0 0 10px 0;
+        color: #94a3b8;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    .instruction-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: #cbd5e1;
+        line-height: 1.5;
+        font-size: 0.94rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block {
+        background: rgba(2, 6, 23, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-family: Consolas, Monaco, monospace;
+        white-space: pre-wrap;
+        line-height: 1.45;
+        font-size: 0.92rem;
+        margin-bottom: 10px;
+    }
+
+    .compact-code {
+        background: rgba(2, 6, 23, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 0.92rem;
+        line-height: 1.7;
+        margin-bottom: 10px;
+    }
+
+    .inline-answer {
+        width: 120px;
+        max-width: 120px;
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 6px;
+        background: rgba(15, 23, 42, 0.95);
+        color: #f8fafc;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
+        padding: 8px 10px;
+        outline: none;
+        font-size: 0.92rem;
+    }
+
+    .inline-answer:focus {
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    .mc-grid {
+        display: grid;
+        gap: 10px;
+    }
+
+    .mc-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 12px;
+        padding: 10px 12px;
+    }
+
+    .mc-header {
+        color: #e5e7eb;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .text-input {
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(2, 6, 23, 0.7);
+        color: #f8fafc;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
+        padding: 10px 12px;
+        outline: none;
+        font-size: 0.92rem;
+    }
+
+    .text-input:focus {
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    .btn-main,
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 16px;
+        cursor: pointer;
+    }
+
+    .btn-main {
+        background: linear-gradient(135deg, #0ea5e9, #22c55e);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.05);
+        color: #e5e7eb;
+    }
+
+    .btn-main:hover,
+    .btn-secondary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        color: #ffffff;
+    }
+
+    .step-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .step-progress {
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .alert-box {
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: 10px;
+        border: 1px solid transparent;
+        font-size: 0.92rem;
+    }
+
+    .alert-success-custom {
+        background: rgba(34, 197, 94, 0.12);
+        color: #bbf7d0;
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .alert-danger-custom {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fecaca;
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .alert-info-custom {
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .nav-footer {
+        margin-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    @@media (max-width: 900px) {
+        .brand-text h1 {
+            font-size: 1.7rem;
+        }
+
+        .step-top h2 {
+            font-size: 1.4rem;
+        }
+
+        .step-top h3 {
+            font-size: 1.15rem;
+        }
+
+        .step-card {
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .inline-answer {
+            width: 95px;
+            max-width: 95px;
+        }
+    }
+</style>
+
+<div class="lesson-page">
+    <div class="lesson-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <div class="brand-text">
+                    <h1>Code Quest</h1>
+                    <p>Unit 1 · Lesson 2</p>
+                </div>
+            </div>
+
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
-    </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h3>Example</h3>
-            <pre class="bg-light p-3 border rounded">BEGIN
+        <form asp-action="Algorithms" asp-controller="UnitOne" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="panel step-panel">
+                <div class="step-card active" id="step0">
+                    <div class="step-top">
+                        <h2>Algorithms</h2>
+                        <p>
+                            An algorithm is a step-by-step set of instructions for solving a problem.
+                            Good algorithms are precise, finite, and deterministic.
+                        </p>
+
+                        <div class="code-block">BEGIN
 SET number = 5
 SET result = number * 2
 DISPLAY result
-END</pre>
+END</div>
 
-            <h4>Explanation</h4>
-            <p>
-                This algorithm multiplies a number by two. Each step is clear and the algorithm
-                always produces the same result for the same input.
-            </p>
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-body">
-            <h3>Practice Exercises</h3>
-            <p><strong>Practice:</strong> Fix the Algorithm</p>
-            <p>✏️ Fill in the Blank</p>
-
-            <h4>Challenge</h4>
-            <p>
-                Complete the algorithm so it correctly calculates the total cost of two items.
-            </p>
-
-            @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
-            {
-                var alertClass = Model.IsCorrect == true ? "alert-success" :
-                                 Model.IsCorrect == false ? "alert-danger" :
-                                 "alert-info";
-
-                <div class="alert @alertClass">
-                    @Model.FeedbackMessage
-                </div>
-            }
-
-            <form asp-action="Algorithms" asp-controller="UnitOne" method="post">
-                @Html.AntiForgeryToken()
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Your Code</label>
-                    <div class="bg-light p-3 border rounded font-monospace">
-                        <div>BEGIN</div>
-                        <div>SET price1 = 5</div>
-                        <div>SET price2 = 10</div>
-                        <div>
-                            SET total =
-                            <input asp-for="UserAnswer1" class="form-control d-inline-block mx-1" style="width:140px;" />
-                            +
-                            <input asp-for="UserAnswer2" class="form-control d-inline-block mx-1" style="width:140px;" />
+                        <div class="instruction-box">
+                            In this lesson, you will first review the idea of an algorithm, then fix a short
+                            algorithm, and finally explain why a corrected version works.
                         </div>
-                        <div>DISPLAY total</div>
-                        <div>END</div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
+                        {
+                            var overallClass = Model.IsCorrect == true
+                                ? "alert-success-custom"
+                                : Model.IsCorrect == false
+                                    ? "alert-danger-custom"
+                                    : "alert-info-custom";
+
+                            <div class="alert-box @overallClass">
+                                @Model.FeedbackMessage
+                            </div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <div class="step-progress">Instructions</div>
+                        <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
                     </div>
                 </div>
 
-                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
-                    Check Solution
-                </button>
+                <div class="step-card" id="step1">
+                    <div class="step-top">
+                        <h3>Question 1 · Fix the algorithm</h3>
+                        <div class="instruction-box">
+                            Complete the algorithm so it correctly calculates the total cost of two items.
+                        </div>
 
-                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
-                    Hints
-                </button>
+                        <div class="compact-code">
+                            <div>BEGIN</div>
+                            <div>SET price1 = 5</div>
+                            <div>SET price2 = 10</div>
+                            <div>
+                                SET total =
+                                <input asp-for="UserAnswer1" class="inline-answer" />
+                                +
+                                <input asp-for="UserAnswer2" class="inline-answer" />
+                            </div>
+                            <div>DISPLAY total</div>
+                            <div>END</div>
+                        </div>
 
-                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
-                    See Solution
-                </button>
-            </form>
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.CurrentStep == 1)
+                        {
+                            var alertClass = Model.IsCorrect == true ? "alert-success-custom"
+                                : Model.IsCorrect == false ? "alert-danger-custom"
+                                : "alert-info-custom";
 
-            @if (Model.ShowHint)
-            {
-                <div class="alert alert-warning mt-3">
-                    Hint: The missing parts are the names of the variables that already contain the prices.
+                            <div class="alert-box @alertClass">
+                                @Model.FeedbackMessage
+                            </div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+                        <div class="step-progress">Step 1 of 2</div>
+
+                        @if (Model.IsCorrect == true && Model.CurrentStep == 1)
+                        {
+                            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                        }
+                    </div>
                 </div>
-            }
 
-            @if (Model.ShowSolution)
-            {
-                <div class="alert alert-secondary mt-3">
-                    <strong>Solution:</strong>
-                    <pre class="mt-2 mb-0">BEGIN
-SET price1 = 5
-SET price2 = 10
-SET total = price1 + price2
-DISPLAY total
-END</pre>
+                <div class="step-card" id="step2">
+                    <div class="step-top">
+                        <h3>Question 2 · Explain the fix</h3>
+                        <div class="instruction-box">
+                            Briefly explain why using <strong>price1</strong> and <strong>price2</strong> makes the algorithm correct.
+                        </div>
+
+                        <div class="mc-grid">
+                            <div class="mc-card">
+                                <div class="mc-header">Your explanation</div>
+                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: It uses the two variables that already store the prices, so the total adds both item costs correctly." />
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+                        {
+                            var explanationClass = Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom";
+                            <div class="alert-box @explanationClass">
+                                @Model.ExplanationFeedback
+                            </div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <div class="step-progress">Step 2 of 2</div>
+
+                        @if (Model.ExplanationCorrect == true)
+                        {
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                        }
+                    </div>
                 </div>
-            }
+            </div>
+        </form>
+
+        <div class="nav-footer">
+            <a asp-controller="UnitOne" asp-action="WhatIsComputerScience" class="btn-secondary">Back to Lesson 1</a>
+            <a asp-controller="UnitOne" asp-action="Decomposition" class="btn-main">Go to Unit 1, Lesson 3</a>
         </div>
     </div>
-
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="UnitOne" asp-action="Decomposition">Unit 1, Lesson 3</a>
-    </li>
 </div>
+
+<script>
+    function showStep(stepNumber) {
+        document.querySelectorAll('.step-card').forEach(card => {
+            card.classList.remove('active');
+        });
+
+        const target = document.getElementById(`step${stepNumber}`);
+        if (target) {
+            target.classList.add('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const currentStep = @Model.CurrentStep;
+        showStep(currentStep);
+    });
+</script>

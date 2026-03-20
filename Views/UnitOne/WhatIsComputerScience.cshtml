@@ -4,154 +4,661 @@
     ViewData["Title"] = "What Is Computer Science?";
 }
 
-<div class="container mt-4">
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
 
-    <h1>What Is Computer Science?</h1>
-    <p class="text-success fw-bold">Completed</p>
+    .lesson-page {
+        min-height: 100vh;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
+            linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
+        color: #e5e7eb;
+        padding: 16px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    <div class="card mb-4">
-        <div class="card-body">
+    .lesson-shell {
+        max-width: 1100px;
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
 
-            <h3>Introduction</h3>
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
 
-            <p>
-                Computer science is about solving problems using logical steps that a computer can follow.
-                Programming is simply the process of writing these steps so a computer can execute them.
-            </p>
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
 
-        </div>
-    </div>
+    .brand-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #f8fafc;
+    }
 
-    <div class="card mb-4">
-        <div class="card-body">
+    .brand-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.1;
+    }
 
-            <h3>Example</h3>
+    .brand-text p {
+        margin: 4px 0 0 0;
+        color: #94a3b8;
+        font-size: 0.95rem;
+    }
 
-            <pre class="bg-light p-3 border rounded">
-                BEGIN
-                DISPLAY "Step 1: Get bread"
-                DISPLAY "Step 2: Add filling"
-                DISPLAY "Step 3: Close sandwich"
-                END
-            </pre>
+    .panel {
+        background: rgba(17, 24, 39, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 18px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(12px);
+    }
 
-            <h4>Explanation</h4>
+    .step-panel {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+    }
 
-            <p>
-                Programs are essentially instructions executed step-by-step. Even everyday activities
-                like making a sandwich can be written as an ordered set of instructions.
-            </p>
+    .step-card {
+        width: 100%;
+        padding: 18px 20px;
+        display: none;
+        overflow: hidden;
+    }
 
-        </div>
-    </div>
+    .step-card.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
-    <div class="card mb-4">
-        <div class="card-body">
+    .step-top h2,
+    .step-top h3 {
+        margin: 0 0 8px 0;
+        color: #ffffff;
+        line-height: 1.15;
+    }
 
-            <h3>Practice Exercises</h3>
+    .step-top h2 {
+        font-size: 1.65rem;
+    }
 
-            <p><strong>Practice:</strong> Write Instructions</p>
-            <p>🔨 Code Completion</p>
+    .step-top h3 {
+        font-size: 1.3rem;
+    }
 
-            <h4>Challenge</h4>
+    .step-top p {
+        margin: 0 0 10px 0;
+        color: #94a3b8;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
 
-            <p>
-                Write pseudocode instructions for brushing your teeth using DISPLAY statements.
-            </p>
+    .instruction-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: #cbd5e1;
+        line-height: 1.5;
+        font-size: 0.94rem;
+        margin-bottom: 10px;
+    }
 
-            @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
-            {
-                var alertClass = Model.IsCorrect == true ? "alert-success"
-                               : Model.IsCorrect == false ? "alert-danger"
-                               : "alert-info";
+    .code-block {
+        background: rgba(2, 6, 23, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-family: Consolas, Monaco, monospace;
+        white-space: pre-wrap;
+        line-height: 1.45;
+        font-size: 0.92rem;
+        margin-bottom: 10px;
+    }
 
-                <div class="alert @alertClass">
-                    @Model.FeedbackMessage
+    .drag-hint {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .sortable-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+    }
+
+    .sortable-item {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 12px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: grab;
+        user-select: none;
+    }
+
+    .sortable-item:active {
+        cursor: grabbing;
+    }
+
+    .sortable-item.dragging {
+        opacity: 0.55;
+        border-color: rgba(34, 197, 94, 0.45);
+    }
+
+    .step-number {
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
+        border-radius: 9px;
+        background: rgba(14, 165, 233, 0.15);
+        color: #bae6fd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .step-text {
+        flex: 1;
+        color: #e5e7eb;
+        font-weight: 500;
+        font-size: 0.95rem;
+        line-height: 1.35;
+    }
+
+    .mc-grid {
+        display: grid;
+        gap: 10px;
+    }
+
+    .mc-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 12px;
+        padding: 10px 12px;
+    }
+
+    .mc-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .mc-header label {
+        color: #e5e7eb;
+        font-size: 0.95rem;
+    }
+
+    .mc-header input[type="checkbox"] {
+        transform: scale(1.1);
+    }
+
+    .text-input {
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(2, 6, 23, 0.7);
+        color: #f8fafc;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
+        padding: 10px 12px;
+        outline: none;
+        font-size: 0.92rem;
+    }
+
+    .text-input:focus {
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    .btn-main,
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 16px;
+        cursor: pointer;
+    }
+
+    .btn-main {
+        background: linear-gradient(135deg, #0ea5e9, #22c55e);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.05);
+        color: #e5e7eb;
+    }
+
+    .btn-main:hover,
+    .btn-secondary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        color: #ffffff;
+    }
+
+    .step-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .step-progress {
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .alert-box {
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: 10px;
+        border: 1px solid transparent;
+        font-size: 0.92rem;
+    }
+
+    .alert-success-custom {
+        background: rgba(34, 197, 94, 0.12);
+        color: #bbf7d0;
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .alert-danger-custom {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fecaca;
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .alert-info-custom {
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .nav-footer {
+        margin-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    @@media (max-width: 900px) {
+        .brand-text h1 {
+            font-size: 1.7rem;
+        }
+
+        .step-top h2 {
+            font-size: 1.4rem;
+        }
+
+        .step-top h3 {
+            font-size: 1.15rem;
+        }
+
+        .step-card {
+            padding: 16px;
+            overflow-y: auto;
+        }
+    }
+</style>
+
+<div class="lesson-page">
+    <div class="lesson-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <div class="brand-text">
+                    <h1>Code Quest</h1>
+                    <p>Unit 1 · Lesson 1</p>
                 </div>
-            }
+            </div>
 
-            <form asp-action="WhatIsComputerScience" asp-controller="UnitOne" method="post">
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
+        </div>
 
-                @Html.AntiForgeryToken()
+        <form id="lessonForm" asp-action="WhatIsComputerScience" asp-controller="UnitOne" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="PbSandwichOrder" type="hidden" id="PbSandwichOrder" />
+            <input asp-for="CardSortOrder" type="hidden" id="CardSortOrder" />
 
-                <div class="mb-3">
+            <div class="panel step-panel">
+                <div class="step-card active" id="step0">
+                    <div class="step-top">
+                        <h2>What Is Computer Science?</h2>
+                        <p>
+                            Computer science is about solving problems using clear, logical instructions.
+                            In this lesson, you will practice recognizing and ordering algorithms.
+                        </p>
 
-                    <label class="form-label fw-bold">Your Code</label>
+                        <div class="code-block">BEGIN
+DISPLAY "Step 1: Get bread"
+DISPLAY "Step 2: Add filling"
+DISPLAY "Step 3: Close sandwich"
+END</div>
 
-                    <div class="bg-light p-3 border rounded font-monospace">
-
-                        <div>BEGIN</div>
-
-                        <div>
-                            DISPLAY "Step 1:
-                            <input asp-for="UserAnswer1" class="form-control d-inline-block mx-1"
-                                   style="width:220px;" />
-                            "
+                        <div class="instruction-box">
+                            Complete the lesson in order: first read the instructions, then arrange sandwich
+                            steps, then arrange card-sorting steps, then identify which examples are algorithms.
                         </div>
 
-                        <div>
-                            DISPLAY "Step 2:
-                            <input asp-for="UserAnswer2" class="form-control d-inline-block mx-1"
-                                   style="width:220px;" />
-                            "
-                        </div>
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
+                        {
+                            var overallClass = Model.IsCorrect == true
+                                ? "alert-success-custom"
+                                : Model.IsCorrect == false
+                                    ? "alert-danger-custom"
+                                    : "alert-info-custom";
 
-                        <div>
-                            DISPLAY "Step 3:
-                            <input asp-for="UserAnswer3" class="form-control d-inline-block mx-1"
-                                   style="width:220px;" />
-                            "
-                        </div>
-
-                        <div>END</div>
-
+                            <div class="alert-box @overallClass">
+                                @Model.FeedbackMessage
+                            </div>
+                        }
                     </div>
 
+                    <div class="step-actions">
+                        <div class="step-progress">Instructions</div>
+                        <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
+                    </div>
                 </div>
 
-                <button type="submit" name="actionType" value="check" class="btn btn-primary me-2">
-                    Check Solution
-                </button>
+                <div class="step-card" id="step1">
+                    <div class="step-top">
+                        <h3>Question 1 · PB sandwich</h3>
+                        <div class="instruction-box">
+                            Drag the steps into the correct order.
+                        </div>
+                        <div class="drag-hint">Drag and drop each card.</div>
 
-                <button type="submit" name="actionType" value="hint" class="btn btn-warning me-2">
-                    Hints
-                </button>
+                        <ul class="sortable-list" id="pbList">
+                            @{
+                                var pbSteps = (string.IsNullOrWhiteSpace(Model.PbSandwichOrder)
+                                    ? "Put bread slices on plate|Spread jam on one slice|Spread peanut butter on the other slice|Press the slices together"
+                                    : Model.PbSandwichOrder).Split('|');
+                            }
 
-                <button type="submit" name="actionType" value="solution" class="btn btn-secondary">
-                    Solution
-                </button>
+                            @for (int i = 0; i < pbSteps.Length; i++)
+                            {
+                                <li class="sortable-item" draggable="true" data-value="@pbSteps[i]">
+                                    <div class="step-number">@(i + 1)</div>
+                                    <div class="step-text">@pbSteps[i]</div>
+                                </li>
+                            }
+                        </ul>
 
-            </form>
+                        @if (!string.IsNullOrWhiteSpace(Model.PbFeedback))
+                        {
+                            var pbClass = Model.PbCorrect == true ? "alert-success-custom" : "alert-danger-custom";
+                            <div class="alert-box @pbClass">@Model.PbFeedback</div>
+                        }
+                    </div>
 
-            @if (Model.ShowHint)
-            {
-                <div class="alert alert-warning mt-3">
-                    Hint: think about the steps involved when brushing your teeth.
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+                        <div class="step-progress">Step 1 of 3</div>
+
+                        @if (Model.PbCorrect == true)
+                        {
+                            <button type="submit" name="actionType" value="goStep2" class="btn-main">Next</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="actionType" value="checkPb" class="btn-main">Check</button>
+                        }
+                    </div>
                 </div>
-            }
 
-            @if (Model.ShowSolution)
-            {
-                <div class="alert alert-secondary mt-3">
+                <div class="step-card" id="step2">
+                    <div class="step-top">
+                        <h3>Question 2 · Sort a deck of cards</h3>
+                        <div class="instruction-box">
+                            Drag the steps into the best order for a simple sorting process.
+                        </div>
+                        <div class="drag-hint">Drag and drop each card.</div>
 
-                    <strong>Solution:</strong>
+                        <ul class="sortable-list" id="cardList">
+                            @{
+                                var cardSteps = (string.IsNullOrWhiteSpace(Model.CardSortOrder)
+                                    ? "Shuffle the deck|Look at the first two cards|Compare their values|Swap them if needed|Repeat until the deck is in order|Stop when no swaps are needed"
+                                    : Model.CardSortOrder).Split('|');
+                            }
 
-                    <pre class="mt-2 mb-0">
-                        BEGIN
-                        DISPLAY "Step 1: Put toothpaste on toothbrush"
-                        DISPLAY "Step 2: Brush teeth"
-                        DISPLAY "Step 3: Rinse mouth"
-                        END
-                    </pre>
+                            @for (int i = 0; i < cardSteps.Length; i++)
+                            {
+                                <li class="sortable-item" draggable="true" data-value="@cardSteps[i]">
+                                    <div class="step-number">@(i + 1)</div>
+                                    <div class="step-text">@cardSteps[i]</div>
+                                </li>
+                            }
+                        </ul>
 
+                        @if (!string.IsNullOrWhiteSpace(Model.CardFeedback))
+                        {
+                            var cardClass = Model.CardCorrect == true ? "alert-success-custom" : "alert-danger-custom";
+                            <div class="alert-box @cardClass">@Model.CardFeedback</div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <div class="step-progress">Step 2 of 3</div>
+
+                        @if (Model.CardCorrect == true)
+                        {
+                            <button type="submit" name="actionType" value="goStep3" class="btn-main">Next</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="actionType" value="checkCards" class="btn-main">Check</button>
+                        }
+                    </div>
                 </div>
-            }
 
+                <div class="step-card" id="step3">
+                    <div class="step-top">
+                        <h3>Question 3 · Identify algorithms</h3>
+                        <div class="instruction-box">
+                            Select the items that are algorithms and briefly explain why or why not.
+                        </div>
+
+                        <div class="mc-grid">
+                            <div class="mc-card">
+                                <div class="mc-header">
+                                    <input asp-for="RecipeSelected" type="checkbox" />
+                                    <label asp-for="RecipeSelected"><strong>A. A recipe for pancakes</strong></label>
+                                </div>
+                                <input asp-for="RecipeExplanation" class="text-input" placeholder="Why or why not?" />
+                            </div>
+
+                            <div class="mc-card">
+                                <div class="mc-header">
+                                    <input asp-for="GroceryListSelected" type="checkbox" />
+                                    <label asp-for="GroceryListSelected"><strong>B. A list of groceries</strong></label>
+                                </div>
+                                <input asp-for="GroceryListExplanation" class="text-input" placeholder="Why or why not?" />
+                            </div>
+
+                            <div class="mc-card">
+                                <div class="mc-header">
+                                    <input asp-for="GpsSelected" type="checkbox" />
+                                    <label asp-for="GpsSelected"><strong>C. GPS directions to a destination</strong></label>
+                                </div>
+                                <input asp-for="GpsExplanation" class="text-input" placeholder="Why or why not?" />
+                            </div>
+
+                            <div class="mc-card">
+                                <div class="mc-header">
+                                    <input asp-for="PhotoSelected" type="checkbox" />
+                                    <label asp-for="PhotoSelected"><strong>D. A photo</strong></label>
+                                </div>
+                                <input asp-for="PhotoExplanation" class="text-input" placeholder="Why or why not?" />
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.IdentifyFeedback))
+                        {
+                            var identifyClass = Model.IdentifyCorrect == true ? "alert-success-custom" : "alert-danger-custom";
+                            <div class="alert-box @identifyClass">@Model.IdentifyFeedback</div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(2)">Back</button>
+                        <div class="step-progress">Step 3 of 3</div>
+                        <button type="submit" name="actionType" value="checkIdentify" class="btn-main">Submit Lesson</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="nav-footer">
+            <a asp-controller="Home" asp-action="Index" class="btn-secondary">Back Home</a>
+            <a asp-controller="UnitOne" asp-action="Algorithms" class="btn-main">Go to Unit 1, Lesson 2</a>
         </div>
     </div>
-
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="UnitOne" asp-action="Algorithms">Unit 1, Lesson 2</a>
-    </li>
-
 </div>
+
+<script>
+    function updateStepNumbers(listId) {
+        const items = document.querySelectorAll(`#${listId} .sortable-item`);
+        items.forEach((item, index) => {
+            const number = item.querySelector('.step-number');
+            if (number) {
+                number.textContent = index + 1;
+            }
+        });
+    }
+
+    function saveOrder(listId, hiddenInputId) {
+        const items = document.querySelectorAll(`#${listId} .sortable-item`);
+        const values = Array.from(items).map(x => x.getAttribute('data-value'));
+        document.getElementById(hiddenInputId).value = values.join('|');
+        updateStepNumbers(listId);
+    }
+
+    function showStep(stepNumber) {
+        document.querySelectorAll('.step-card').forEach(card => {
+            card.classList.remove('active');
+        });
+
+        const target = document.getElementById(`step${stepNumber}`);
+        if (target) {
+            target.classList.add('active');
+        }
+
+        saveOrder('pbList', 'PbSandwichOrder');
+        saveOrder('cardList', 'CardSortOrder');
+    }
+
+    function enableDragSort(listId, hiddenInputId) {
+        const list = document.getElementById(listId);
+        let draggedItem = null;
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.sortable-item:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        list.querySelectorAll('.sortable-item').forEach(item => {
+            item.addEventListener('dragstart', function () {
+                draggedItem = this;
+                this.classList.add('dragging');
+            });
+
+            item.addEventListener('dragend', function () {
+                this.classList.remove('dragging');
+                draggedItem = null;
+                saveOrder(listId, hiddenInputId);
+            });
+        });
+
+        list.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(list, e.clientY);
+            const dragging = list.querySelector('.dragging');
+
+            if (!dragging) return;
+
+            if (afterElement == null) {
+                list.appendChild(dragging);
+            } else {
+                list.insertBefore(dragging, afterElement);
+            }
+        });
+
+        saveOrder(listId, hiddenInputId);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        enableDragSort('pbList', 'PbSandwichOrder');
+        enableDragSort('cardList', 'CardSortOrder');
+
+        const currentStep = @Model.CurrentStep;
+        showStep(currentStep);
+    });
+
+    document.getElementById('lessonForm').addEventListener('submit', function () {
+        saveOrder('pbList', 'PbSandwichOrder');
+        saveOrder('cardList', 'CardSortOrder');
+    });
+</script>
