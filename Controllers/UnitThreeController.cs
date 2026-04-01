@@ -1,13 +1,22 @@
+using DotNetCoreSqlDb.Data;
+using DotNetCoreSqlDb.Models;
+using DotNetCoreSqlDb.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using DotNetCoreSqlDb.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace DotNetCoreSqlDb.Controllers
 {
     [Authorize]
     public class UnitThreeController : Controller
     {
-        // Lesson 11 — Boolean Logic
+        private readonly MyDatabaseContext _context;
+
+        public UnitThreeController(MyDatabaseContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
         public IActionResult BooleanLogic()
@@ -17,7 +26,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult BooleanLogic(BooleanLogicViewModel vm, string actionType)
+        public async Task<IActionResult> BooleanLogic(BooleanLogicViewModel vm, string actionType)
         {
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
@@ -39,7 +48,7 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation" || actionType == "submit")
+            if (actionType == "checkExplanation")
             {
                 bool explanationCorrect =
                     vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase) &&
@@ -54,6 +63,16 @@ namespace DotNetCoreSqlDb.Controllers
                     ? "Correct! Boolean logic helps programs compare values and make decisions."
                     : "Try mentioning true/false, comparing values, and decision making.";
 
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                var saved = await SaveLessonProgressAsync("BooleanLogic");
+                vm.ExplanationCorrect = true;
+                vm.ExplanationFeedback = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
                 return View(vm);
             }
 
@@ -83,8 +102,6 @@ namespace DotNetCoreSqlDb.Controllers
             return View(vm);
         }
 
-        // Lesson 12 — IF Statements
-
         [HttpGet]
         public IActionResult IfStatements()
         {
@@ -93,7 +110,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult IfStatements(IfStatementViewModel vm, string actionType)
+        public async Task<IActionResult> IfStatements(IfStatementViewModel vm, string actionType)
         {
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
@@ -115,15 +132,15 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation" || actionType == "submit")
+            if (actionType == "checkExplanation")
             {
                 bool explanationCorrect =
                     (vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
                      vm.ExplanationAnswer.Contains("check", StringComparison.OrdinalIgnoreCase)) &&
-                    (vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)) &&
+                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase) &&
                     (vm.ExplanationAnswer.Contains("run", StringComparison.OrdinalIgnoreCase) ||
                      vm.ExplanationAnswer.Contains("runs", StringComparison.OrdinalIgnoreCase)) &&
-                    (vm.ExplanationAnswer.Contains("false", StringComparison.OrdinalIgnoreCase)) &&
+                    vm.ExplanationAnswer.Contains("false", StringComparison.OrdinalIgnoreCase) &&
                     (vm.ExplanationAnswer.Contains("skip", StringComparison.OrdinalIgnoreCase) ||
                      vm.ExplanationAnswer.Contains("skipped", StringComparison.OrdinalIgnoreCase));
 
@@ -132,6 +149,16 @@ namespace DotNetCoreSqlDb.Controllers
                     ? "Correct! IF statements run code only when a condition is true."
                     : "Try mentioning a condition, true running code, and false skipping code.";
 
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                var saved = await SaveLessonProgressAsync("IfStatements");
+                vm.ExplanationCorrect = true;
+                vm.ExplanationFeedback = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
                 return View(vm);
             }
 
@@ -161,8 +188,6 @@ namespace DotNetCoreSqlDb.Controllers
             return View(vm);
         }
 
-        // Lesson 13 — IF-ELSE
-
         [HttpGet]
         public IActionResult IfElse()
         {
@@ -171,7 +196,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult IfElse(IfElseViewModel vm, string actionType)
+        public async Task<IActionResult> IfElse(IfElseViewModel vm, string actionType)
         {
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
@@ -193,7 +218,7 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation" || actionType == "submit")
+            if (actionType == "checkExplanation")
             {
                 bool explanationCorrect =
                     vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase) &&
@@ -214,6 +239,16 @@ namespace DotNetCoreSqlDb.Controllers
                     ? "Correct! IF-ELSE lets a program choose one path when true and another when false."
                     : "Try mentioning true, false, and choosing between two different paths.";
 
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                var saved = await SaveLessonProgressAsync("IfElse");
+                vm.ExplanationCorrect = true;
+                vm.ExplanationFeedback = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
                 return View(vm);
             }
 
@@ -243,8 +278,6 @@ namespace DotNetCoreSqlDb.Controllers
             return View(vm);
         }
 
-        // Lesson 14 — Nested Conditions
-
         [HttpGet]
         public IActionResult NestedConditions()
         {
@@ -253,7 +286,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult NestedConditions(NestedConditionsViewModel vm, string actionType)
+        public async Task<IActionResult> NestedConditions(NestedConditionsViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
@@ -276,7 +309,7 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation" || actionType == "submit")
+            if (actionType == "checkExplanation")
             {
                 bool explanationCorrect =
                     (
@@ -302,6 +335,16 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
+            if (actionType == "submit")
+            {
+                var saved = await SaveLessonProgressAsync("NestedConditions");
+                vm.ExplanationCorrect = true;
+                vm.ExplanationFeedback = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
+                return View(vm);
+            }
+
             bool isCorrect =
                 vm.UserAnswer.Contains("90") &&
                 vm.UserAnswer.Contains("75") &&
@@ -317,8 +360,6 @@ namespace DotNetCoreSqlDb.Controllers
             return View(vm);
         }
 
-        // Lesson 15 — Logical Operators
-
         [HttpGet]
         public IActionResult LogicalOperators()
         {
@@ -327,7 +368,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult LogicalOperators(LogicalOperatorsViewModel vm, string actionType)
+        public async Task<IActionResult> LogicalOperators(LogicalOperatorsViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
@@ -350,7 +391,7 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation" || actionType == "submit")
+            if (actionType == "checkExplanation")
             {
                 bool explanationCorrect =
                     (
@@ -375,6 +416,16 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
+            if (actionType == "submit")
+            {
+                var saved = await SaveLessonProgressAsync("LogicalOperators");
+                vm.ExplanationCorrect = true;
+                vm.ExplanationFeedback = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
+                return View(vm);
+            }
+
             bool isCorrect =
                 vm.UserAnswer.Contains("age", StringComparison.OrdinalIgnoreCase) &&
                 vm.UserAnswer.Contains("18") &&
@@ -389,6 +440,51 @@ namespace DotNetCoreSqlDb.Controllers
                 : "Not quite. Try using AND to combine age >= 18 with citizen = true.";
 
             return View(vm);
+        }
+
+        private async Task<bool> SaveLessonProgressAsync(string actionName)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return false;
+            }
+
+            var lesson = await _context.Lessons
+                .FirstOrDefaultAsync(l => l.ControllerName == "UnitThree" && l.ActionName == actionName && l.IsPublished);
+
+            if (lesson == null)
+            {
+                return false;
+            }
+
+            var progress = await _context.UserLessonProgresses
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
+
+            var now = DateTime.UtcNow;
+
+            if (progress == null)
+            {
+                progress = new UserLessonProgress
+                {
+                    UserId = userId,
+                    LessonId = lesson.Id,
+                    IsCompleted = true,
+                    CompletedAtUtc = now,
+                    LastAccessedAtUtc = now
+                };
+
+                _context.UserLessonProgresses.Add(progress);
+            }
+            else
+            {
+                progress.IsCompleted = true;
+                progress.CompletedAtUtc = now;
+                progress.LastAccessedAtUtc = now;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

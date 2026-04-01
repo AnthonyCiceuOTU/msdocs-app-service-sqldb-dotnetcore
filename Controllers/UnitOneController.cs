@@ -81,13 +81,11 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ExplanationCorrect = true;
                 vm.CurrentStep = 2;
 
-                // Save progress here the same way as Lesson 1
-                // Find current user
-                // Find lesson by title "Algorithms"
-                // Insert/update UserLessonProgress
-                // Save changes
+                var saved = await SaveLessonProgressAsync("Algorithms");
+                vm.FeedbackMessage = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
 
-                vm.FeedbackMessage = "Lesson complete! Your progress has been saved.";
                 return View(vm);
             }
 
@@ -155,13 +153,11 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ExplanationCorrect = true;
                 vm.CurrentStep = 2;
 
-                // Save progress here the same way as Lesson 1 and Lesson 2
-                // Find current user
-                // Find lesson by title "Decomposition"
-                // Insert/update UserLessonProgress
-                // Save changes
+                var saved = await SaveLessonProgressAsync("Decomposition");
+                vm.FeedbackMessage = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
 
-                vm.FeedbackMessage = "Lesson complete! Your progress has been saved.";
                 return View(vm);
             }
 
@@ -282,63 +278,66 @@ namespace DotNetCoreSqlDb.Controllers
                     return View(vm);
                 }
 
-                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!Guid.TryParse(userIdClaim, out var userId))
-                {
-                    vm.IsCorrect = false;
-                    vm.IdentifyFeedback = "Your answer was correct, but your user session could not be matched.";
-                    vm.FeedbackMessage = "Could not save lesson progress.";
-                    return View(vm);
-                }
+                var saved = await SaveLessonProgressAsync("WhatIsComputerScience");
 
-                // Adjust this lookup if you prefer finding by slug/title instead.
-                var lesson = await _context.Lessons
-                    .FirstOrDefaultAsync(l => l.Title == "What Is Computer Science?");
-
-                if (lesson == null)
-                {
-                    vm.IsCorrect = false;
-                    vm.IdentifyFeedback = "Your answer was correct, but this lesson could not be found in the database.";
-                    vm.FeedbackMessage = "Could not save lesson progress.";
-                    return View(vm);
-                }
-
-                var progress = await _context.UserLessonProgresses
-                    .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
-
-                var now = DateTime.UtcNow;
-
-                if (progress == null)
-                {
-                    progress = new UserLessonProgress
-                    {
-                        UserId = userId,
-                        LessonId = lesson.Id,
-                        IsCompleted = true,
-                        CompletedAtUtc = now,
-                        LastAccessedAtUtc = now
-                    };
-
-                    _context.UserLessonProgresses.Add(progress);
-                }
-                else
-                {
-                    progress.IsCompleted = true;
-                    progress.CompletedAtUtc = now;
-                    progress.LastAccessedAtUtc = now;
-                }
-
-                await _context.SaveChangesAsync();
-
-                vm.IsCorrect = true;
-                vm.IdentifyFeedback = "Excellent. You correctly identified which examples are algorithms and explained your reasoning.";
-                vm.FeedbackMessage = "Lesson complete! Your progress has been saved.";
+                vm.IsCorrect = saved;
+                vm.IdentifyFeedback = saved
+                    ? "Excellent. You correctly identified which examples are algorithms and explained your reasoning."
+                    : "Your answers were correct, but the lesson progress could not be saved.";
+                vm.FeedbackMessage = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Could not save lesson progress.";
 
                 return View(vm);
             }
 
             vm.CurrentStep = 0;
             return View(vm);
+        }
+
+        private async Task<bool> SaveLessonProgressAsync(string actionName)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return false;
+            }
+
+            var lesson = await _context.Lessons
+                .FirstOrDefaultAsync(l => l.ControllerName == "UnitOne" && l.ActionName == actionName && l.IsPublished);
+
+            if (lesson == null)
+            {
+                return false;
+            }
+
+            var progress = await _context.UserLessonProgresses
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
+
+            var now = DateTime.UtcNow;
+
+            if (progress == null)
+            {
+                progress = new UserLessonProgress
+                {
+                    UserId = userId,
+                    LessonId = lesson.Id,
+                    IsCompleted = true,
+                    CompletedAtUtc = now,
+                    LastAccessedAtUtc = now
+                };
+
+                _context.UserLessonProgresses.Add(progress);
+            }
+            else
+            {
+                progress.IsCompleted = true;
+                progress.CompletedAtUtc = now;
+                progress.LastAccessedAtUtc = now;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

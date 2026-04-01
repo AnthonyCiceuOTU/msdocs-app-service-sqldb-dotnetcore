@@ -45,38 +45,29 @@ namespace DotNetCoreSqlDb.Controllers
                     .ToListAsync();
             }
 
+            var allLessonsOrdered = units
+                .OrderBy(u => u.SortOrder)
+                .ThenBy(u => u.Id)
+                .SelectMany(u => u.Lessons.OrderBy(l => l.SortOrder).ThenBy(l => l.Id))
+                .ToList();
+
             Lesson? currentLesson = null;
 
             if (lessonId.HasValue)
             {
-                currentLesson = units
-                    .SelectMany(u => u.Lessons)
-                    .OrderBy(l => l.Unit.SortOrder)
-                    .ThenBy(l => l.SortOrder)
-                    .ThenBy(l => l.Id)
-                    .FirstOrDefault(l => l.Id == lessonId.Value);
+                currentLesson = allLessonsOrdered.FirstOrDefault(l => l.Id == lessonId.Value);
             }
 
             if (currentLesson == null)
             {
-                currentLesson = units
-                    .SelectMany(u => u.Lessons)
-                    .OrderBy(l => l.Unit.SortOrder)
-                    .ThenBy(l => l.SortOrder)
-                    .ThenBy(l => l.Id)
-                    .FirstOrDefault();
+                currentLesson = GetFirstIncompleteLesson(allLessonsOrdered, progressList, isGuest)
+                    ?? allLessonsOrdered.FirstOrDefault();
             }
 
             if (!isGuest && userId.HasValue && currentLesson != null)
             {
                 await UpsertLastAccessed(userId.Value, currentLesson.Id);
             }
-
-            var allLessonsOrdered = units
-                .OrderBy(u => u.SortOrder)
-                .ThenBy(u => u.Id)
-                .SelectMany(u => u.Lessons.OrderBy(l => l.SortOrder).ThenBy(l => l.Id))
-                .ToList();
 
             int? previousLessonId = null;
             int? nextLessonId = null;
@@ -133,6 +124,7 @@ namespace DotNetCoreSqlDb.Controllers
         public async Task<IActionResult> Start()
         {
             var isGuest = IsGuestUser();
+            var userId = GetCurrentUserId();
 
             var lessonsQuery = _context.Lessons
                 .Include(l => l.Unit)
@@ -144,16 +136,27 @@ namespace DotNetCoreSqlDb.Controllers
                 lessonsQuery = lessonsQuery.Where(l => l.UnitId == 1);
             }
 
-            var firstLesson = await lessonsQuery
+            var lessons = await lessonsQuery
                 .OrderBy(l => l.Unit.SortOrder)
                 .ThenBy(l => l.SortOrder)
                 .ThenBy(l => l.Id)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            if (firstLesson == null)
+            if (!lessons.Any())
                 return RedirectToAction(nameof(Index));
 
-            return RedirectToAction(nameof(Open), new { lessonId = firstLesson.Id });
+            var progressList = new List<UserLessonProgress>();
+            if (!isGuest && userId.HasValue)
+            {
+                progressList = await _context.UserLessonProgresses
+                    .Where(p => p.UserId == userId.Value)
+                    .ToListAsync();
+            }
+
+            var lessonToOpen = GetFirstIncompleteLesson(lessons, progressList, isGuest)
+                ?? lessons.First();
+
+            return RedirectToAction(nameof(Open), new { lessonId = lessonToOpen.Id });
         }
 
         [HttpGet]
@@ -229,7 +232,8 @@ namespace DotNetCoreSqlDb.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), new { lessonId });
+            var nextIncompleteLessonId = await GetFirstIncompleteLessonIdForUser(userId.Value, isGuest);
+            return RedirectToAction(nameof(Index), new { lessonId = nextIncompleteLessonId ?? lessonId });
         }
 
         [HttpGet]
@@ -261,6 +265,47 @@ namespace DotNetCoreSqlDb.Controllers
                 return userId;
 
             return null;
+        }
+
+        private Lesson? GetFirstIncompleteLesson(IEnumerable<Lesson> lessons, IEnumerable<UserLessonProgress> progressList, bool isGuest)
+        {
+            if (isGuest)
+                return lessons.FirstOrDefault();
+
+            var completedLessonIds = progressList
+                .Where(p => p.IsCompleted)
+                .Select(p => p.LessonId)
+                .ToHashSet();
+
+            return lessons.FirstOrDefault(l => !completedLessonIds.Contains(l.Id));
+        }
+
+        private async Task<int?> GetFirstIncompleteLessonIdForUser(Guid userId, bool isGuest)
+        {
+            var lessonsQuery = _context.Lessons
+                .Include(l => l.Unit)
+                .Where(l => l.IsPublished)
+                .AsQueryable();
+
+            if (isGuest)
+            {
+                lessonsQuery = lessonsQuery.Where(l => l.UnitId == 1);
+            }
+
+            var lessons = await lessonsQuery
+                .OrderBy(l => l.Unit.SortOrder)
+                .ThenBy(l => l.SortOrder)
+                .ThenBy(l => l.Id)
+                .ToListAsync();
+
+            if (!lessons.Any())
+                return null;
+
+            var progressList = await _context.UserLessonProgresses
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            return GetFirstIncompleteLesson(lessons, progressList, isGuest)?.Id;
         }
 
         private async Task UpsertLastAccessed(Guid userId, int lessonId)
@@ -342,7 +387,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         private bool IsGuestUser()
         {
-            return User.FindFirst("IsGuest")?.Value == "true";
+            return string.Equals(User.FindFirstValue("IsGuest"), "true", StringComparison.OrdinalIgnoreCase);
         }
 
         private bool CanGuestAccessLesson(Lesson lesson)
