@@ -1,0 +1,43 @@
+@model DotNetCoreSqlDb.ViewModels.CountersViewModel
+
+<div class="container mt-4">
+    <h1>Counters and Accumulators</h1>
+
+    <pre class="bg-light p-3 border rounded">
+sum ← 0
+FOR i ← 1 TO 10
+    sum ← sum + i
+END FOR
+    </pre>
+
+    <p>What is an accumulator?</p>
+
+    <form method="post">
+        <input asp-for="UserAnswer" class="form-control mb-3" />
+
+        <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
+        <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
+        <button name="actionType" value="solution" class="btn btn-success">Solution</button>
+    </form>
+
+    @if (Model.ShowHint)
+    {
+        <div class="alert alert-warning mt-3">
+            It keeps adding values to a variable.
+        </div>
+    }
+
+    @if (Model.ShowSolution)
+    {
+        <div class="alert alert-success mt-3">
+            An accumulator stores a running total.
+        </div>
+    }
+
+    @if (Model.IsCorrect != null)
+    {
+        <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
+            @Model.FeedbackMessage
+        </div>
+    }
+</div>

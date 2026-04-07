@@ -1,0 +1,42 @@
+@model DotNetCoreSqlDb.ViewModels.ForLoopsViewModel
+
+<div class="container mt-4">
+    <h1>FOR Loops</h1>
+
+    <pre class="bg-light p-3 border rounded">
+FOR i ← 1 TO 10
+    PRINT i
+END FOR
+    </pre>
+
+    <p>When would you use a FOR loop?</p>
+
+    <form method="post">
+        <input asp-for="UserAnswer" class="form-control mb-3" />
+
+        <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
+        <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
+        <button name="actionType" value="solution" class="btn btn-success">Solution</button>
+    </form>
+
+    @if (Model.ShowHint)
+    {
+        <div class="alert alert-warning mt-3">
+            Think about when you know how many times to repeat something.
+        </div>
+    }
+
+    @if (Model.ShowSolution)
+    {
+        <div class="alert alert-success mt-3">
+            FOR loops are used when the number of iterations is known.
+        </div>
+    }
+
+    @if (Model.IsCorrect != null)
+    {
+        <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
+            @Model.FeedbackMessage
+        </div>
+    }
+</div>

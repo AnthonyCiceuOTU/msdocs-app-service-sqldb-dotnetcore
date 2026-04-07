@@ -1,0 +1,42 @@
+@model DotNetCoreSqlDb.ViewModels.WhileLoopsViewModel
+
+<div class="container mt-4">
+    <h1>WHILE Loops</h1>
+
+    <pre class="bg-light p-3 border rounded">
+WHILE score &lt; 100
+    score ← score + 10
+END WHILE
+    </pre>
+
+    <p>What does a WHILE loop do?</p>
+
+    <form method="post">
+        <input asp-for="UserAnswer" class="form-control mb-3" />
+
+        <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
+        <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
+        <button name="actionType" value="solution" class="btn btn-success">Solution</button>
+    </form>
+
+    @if (Model.ShowHint)
+    {
+        <div class="alert alert-warning mt-3">
+            It runs while a condition is true.
+        </div>
+    }
+
+    @if (Model.ShowSolution)
+    {
+        <div class="alert alert-success mt-3">
+            A WHILE loop repeats as long as the condition is true.
+        </div>
+    }
+
+    @if (Model.IsCorrect != null)
+    {
+        <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
+            @Model.FeedbackMessage
+        </div>
+    }
+</div>
