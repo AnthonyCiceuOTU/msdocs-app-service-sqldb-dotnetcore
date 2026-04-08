@@ -1,0 +1,36 @@
+@model DotNetCoreSqlDb.ViewModels.ListsViewModel
+
+<div class="container mt-4">
+    <h1>Lists / Arrays</h1>
+
+    <pre class="bg-light p-3 border rounded">
+scores ← [80, 75, 90]
+    </pre>
+
+    <p>What is a list used for?</p>
+
+    <form method="post">
+        <input asp-for="UserAnswer" class="form-control mb-3" />
+
+        <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
+        <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
+        <button name="actionType" value="solution" class="btn btn-success">Solution</button>
+    </form>
+
+    @if (Model.ShowHint)
+    {
+        <div class="alert alert-warning mt-3">Stores many values.</div>
+    }
+
+    @if (Model.ShowSolution)
+    {
+        <div class="alert alert-success mt-3">Lists store multiple values in one variable.</div>
+    }
+
+    @if (Model.IsCorrect != null)
+    {
+        <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
+            @Model.FeedbackMessage
+        </div>
+    }
+</div>

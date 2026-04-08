@@ -1,0 +1,39 @@
+@model DotNetCoreSqlDb.ViewModels.SearchingViewModel
+
+<div class="container mt-4">
+    <h1>Finding Values in Lists</h1>
+
+    <pre class="bg-light p-3 border rounded">
+FOR each item IN list
+    IF item = target THEN
+        PRINT "Found"
+END FOR
+    </pre>
+
+    <p>How do you search for a value?</p>
+
+    <form method="post">
+        <input asp-for="UserAnswer" class="form-control mb-3" />
+
+        <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
+        <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
+        <button name="actionType" value="solution" class="btn btn-success">Solution</button>
+    </form>
+
+    @if (Model.ShowHint)
+    {
+        <div class="alert alert-warning mt-3">Check each item.</div>
+    }
+
+    @if (Model.ShowSolution)
+    {
+        <div class="alert alert-success mt-3">Use a loop + IF condition.</div>
+    }
+
+    @if (Model.IsCorrect != null)
+    {
+        <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
+            @Model.FeedbackMessage
+        </div>
+    }
+</div>
