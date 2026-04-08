@@ -552,7 +552,7 @@ ____
                         <div class="mc-grid">
                             <div class="mc-card">
                                 <div class="mc-header">Your explanation</div>
-                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="For now, type: trueonepathfalseotherpath" />
+                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: It lets a program do one thing when a condition is true and something else when it is false." />
                             </div>
                         </div>
 
@@ -609,9 +609,16 @@ ____
         const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-        if (explanationDone === 'True') {
+        const stepOneComplete =
+            q1.toLowerCase() === 'true' &&
+            q2.toLowerCase() === 'true' &&
+            q3.toLowerCase() === 'true' &&
+            q4.toLowerCase() === 'true';
+
+        if (explanationDone.toLowerCase() === 'true') {
             stepToShow = 2;
-        } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
+        }
+        else if (stepOneComplete) {
             stepToShow = 1;
         }
 

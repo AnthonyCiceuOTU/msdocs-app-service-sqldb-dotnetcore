@@ -3,6 +3,8 @@ using DotNetCoreSqlDb.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetCoreSqlDb.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using DotNetCoreSqlDb.Models.Config;
+using DotNetCoreSqlDb.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,12 +43,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization(options =>
 {
-    // Any page not explicitly marked [AllowAnonymous] requires auth
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
 
-    // Full users only (not guest)
     options.AddPolicy("FullUserOnly", policy =>
     {
         policy.RequireAuthenticatedUser();
@@ -63,6 +63,14 @@ builder.Services.AddSession(options =>
 });
 
 builder.Logging.AddAzureWebAppDiagnostics();
+
+builder.Services.Configure<GeminiOptions>(options =>
+{
+    options.ApiKey = builder.Configuration["GeminiAPIKey"];
+    options.Model = "gemini-2.5-flash";
+});
+
+builder.Services.AddScoped<IAiShortAnswerGrader, GeminiShortAnswerGrader>();
 
 var app = builder.Build();
 

@@ -1,6 +1,8 @@
 using DotNetCoreSqlDb.Data;
 using DotNetCoreSqlDb.Models;
 using DotNetCoreSqlDb.ViewModels;
+using DotNetCoreSqlDb.Services;
+using DotNetCoreSqlDb.Models.AI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +14,14 @@ namespace DotNetCoreSqlDb.Controllers
     public class UnitThreeController : Controller
     {
         private readonly MyDatabaseContext _context;
+        private readonly IAiShortAnswerGrader _aiShortAnswerGrader;
 
-        public UnitThreeController(MyDatabaseContext context)
+        public UnitThreeController(
+            MyDatabaseContext context,
+            IAiShortAnswerGrader aiShortAnswerGrader)
         {
             _context = context;
+            _aiShortAnswerGrader = aiShortAnswerGrader;
         }
 
         [HttpGet]
@@ -220,24 +226,44 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "checkExplanation")
             {
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase) &&
-                    vm.ExplanationAnswer.Contains("false", StringComparison.OrdinalIgnoreCase) &&
-                    (
-                        vm.ExplanationAnswer.Contains("path", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("outcome", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("block", StringComparison.OrdinalIgnoreCase)
-                    ) &&
-                    (
-                        vm.ExplanationAnswer.Contains("other", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("else", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("different", StringComparison.OrdinalIgnoreCase)
-                    );
+                if (string.IsNullOrWhiteSpace(vm.ExplanationAnswer))
+                {
+                    vm.ExplanationCorrect = false;
+                    vm.ExplanationFeedback = "Please enter an explanation first.";
+                    return View(vm);
+                }
 
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Correct! IF-ELSE lets a program choose one path when true and another when false."
-                    : "Try mentioning true, false, and choosing between two different paths.";
+                try
+                {
+                    var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                    {
+                        QuestionText = "Explain why IF-ELSE statements are useful in programming.",
+                        StudentAnswer = vm.ExplanationAnswer,
+                        ExpectedAnswer = "IF-ELSE statements are useful because they let a program choose between two different actions or outcomes based on whether a condition is true or false.",
+                        GradingRubric = """
+To be correct, the answer should clearly show that:
+1. IF-ELSE helps a program make a decision.
+2. One path or action happens when the condition is true.
+3. A different path or action happens when the condition is false.
+
+Accept simple student wording such as:
+- choose between two outcomes
+- do one thing if true and another if false
+- make decisions based on a condition
+
+Do not require advanced vocabulary.
+Reject answers that are too vague or do not mention both true and false outcomes.
+"""
+                    });
+
+                    vm.ExplanationCorrect = result.IsCorrect;
+                    vm.ExplanationFeedback = result.Feedback;
+                }
+                catch
+                {
+                    vm.ExplanationCorrect = false;
+                    vm.ExplanationFeedback = "We could not check your explanation right now. Please try again.";
+                }
 
                 return View(vm);
             }
