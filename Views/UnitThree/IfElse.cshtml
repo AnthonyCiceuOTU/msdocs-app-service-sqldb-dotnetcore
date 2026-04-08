@@ -293,6 +293,14 @@
         color: #ffffff;
     }
 
+    .btn-main:disabled,
+    .btn-secondary:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
     .step-actions {
         display: flex;
         justify-content: space-between;
@@ -331,6 +339,39 @@
         background: rgba(59, 130, 246, 0.12);
         color: #bfdbfe;
         border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .loading-box {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        font-size: 0.92rem;
+    }
+
+    .loading-box.active {
+        display: inline-flex;
+    }
+
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 3px solid rgba(191, 219, 254, 0.25);
+        border-top-color: #bfdbfe;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        flex: 0 0 auto;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .nav-footer {
@@ -556,6 +597,11 @@ ____
                             </div>
                         </div>
 
+                        <div id="aiLoadingBox" class="loading-box">
+                            <div class="spinner"></div>
+                            <span>Checking with AI...</span>
+                        </div>
+
                         @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
                         {
                             <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
@@ -565,7 +611,7 @@ ____
                     </div>
 
                     <div class="step-actions">
-                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <button type="button" class="btn-secondary" onclick="showStep(1)" id="backToStep1Button">Back</button>
                         <div class="step-progress">Step 2 of 2</div>
 
                         @if (Model.ExplanationCorrect == true)
@@ -574,7 +620,7 @@ ____
                         }
                         else
                         {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main" id="checkExplanationButton">Check</button>
                         }
                     </div>
                 </div>
@@ -600,28 +646,74 @@ ____
         }
     }
 
+    function setStepTwoLoadingState(isLoading) {
+        const loadingBox = document.getElementById('aiLoadingBox');
+        const checkButton = document.getElementById('checkExplanationButton');
+        const backButton = document.getElementById('backToStep1Button');
+        const explanationInput = document.getElementById('ExplanationAnswer');
+
+        if (loadingBox) {
+            loadingBox.classList.toggle('active', isLoading);
+        }
+
+        if (checkButton) {
+            checkButton.disabled = isLoading;
+            checkButton.textContent = isLoading ? 'Checking...' : 'Check';
+        }
+
+        if (backButton) {
+            backButton.disabled = isLoading;
+        }
+
+        if (explanationInput) {
+            explanationInput.disabled = isLoading;
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
-        let stepToShow = 0;
+        const forcedStep = '@(ViewBag.ForceStep ?? "")';
 
-        const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")';
-        const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
-        const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
-        const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+        if (forcedStep !== '') {
+            showStep(parseInt(forcedStep));
+        } else {
+            let stepToShow = 0;
 
-        const stepOneComplete =
-            q1.toLowerCase() === 'true' &&
-            q2.toLowerCase() === 'true' &&
-            q3.toLowerCase() === 'true' &&
-            q4.toLowerCase() === 'true';
+            const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")';
+            const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
+            const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
+            const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
+            const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-        if (explanationDone.toLowerCase() === 'true') {
-            stepToShow = 2;
+            const stepOneComplete =
+                q1.toLowerCase() === 'true' &&
+                q2.toLowerCase() === 'true' &&
+                q3.toLowerCase() === 'true' &&
+                q4.toLowerCase() === 'true';
+
+            if (explanationDone.toLowerCase() === 'true') {
+                stepToShow = 2;
+            } else if (stepOneComplete) {
+                stepToShow = 1;
+            }
+
+            showStep(stepToShow);
         }
-        else if (stepOneComplete) {
-            stepToShow = 1;
-        }
 
-        showStep(stepToShow);
+        const lessonForm = document.getElementById('lessonForm');
+        const checkExplanationButton = document.getElementById('checkExplanationButton');
+
+        if (lessonForm && checkExplanationButton) {
+            checkExplanationButton.addEventListener('click', function () {
+                setStepTwoLoadingState(true);
+            });
+
+            lessonForm.addEventListener('submit', function (event) {
+                const submitter = event.submitter;
+
+                if (submitter && submitter.value === 'checkExplanation') {
+                    setStepTwoLoadingState(true);
+                }
+            });
+        }
     });
 </script>
