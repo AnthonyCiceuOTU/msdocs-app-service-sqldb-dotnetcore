@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
+
 namespace DotNetCoreSqlDb.Controllers
 {
     [Authorize]
@@ -15,13 +16,16 @@ namespace DotNetCoreSqlDb.Controllers
     {
         private readonly MyDatabaseContext _context;
         private readonly IAiShortAnswerGrader _aiShortAnswerGrader;
+        private readonly ILogger<UnitThreeController> _logger;     
 
         public UnitThreeController(
             MyDatabaseContext context,
-            IAiShortAnswerGrader aiShortAnswerGrader)
+            IAiShortAnswerGrader aiShortAnswerGrader,
+            ILogger<UnitThreeController> logger)
         {
             _context = context;
             _aiShortAnswerGrader = aiShortAnswerGrader;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -226,35 +230,58 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "checkExplanation")
             {
+                _logger.LogInformation("IfElse checkExplanation triggered.");
+
                 if (string.IsNullOrWhiteSpace(vm.ExplanationAnswer))
                 {
+                    _logger.LogWarning("IfElse explanation was empty.");
                     vm.ExplanationCorrect = false;
                     vm.ExplanationFeedback = "Please enter an explanation first.";
                     ViewBag.ForceStep = 2;
                     return View(vm);
                 }
 
+                _logger.LogInformation("IfElse explanation text: {Explanation}", vm.ExplanationAnswer);
+
                 try
                 {
-                    var result = await _aiShortAnswerGrader.GradeAsync(
-                        new ShortAnswerEvaluationRequest
-                        {
-                            QuestionText = "Explain why IF-ELSE statements are useful in programming.",
-                            StudentAnswer = vm.ExplanationAnswer,
-                            ExpectedAnswer =
-                                "IF-ELSE statements let a program choose between two different actions based on whether a condition is true or false.",
-                            GradingRubric =
-                                "Answer must mention choosing between two paths, true vs false, or decision making."
-                        });
+                    _logger.LogInformation("About to call _aiShortAnswerGrader.GradeAsync for IfElse.");
+
+                    var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                    {
+                        QuestionText = "Explain why IF-ELSE statements are useful in programming.",
+                        StudentAnswer = vm.ExplanationAnswer,
+                        ExpectedAnswer = "IF-ELSE statements are useful because they let a program choose between two different actions or outcomes based on whether a condition is true or false.",
+                        GradingRubric = """
+            To be correct, the answer should clearly show that:
+            1. IF-ELSE helps a program make a decision.
+            2. One path or action happens when the condition is true.
+            3. A different path or action happens when the condition is false.
+
+            Accept simple student wording such as:
+            - choose between two outcomes
+            - do one thing if true and another if false
+            - make decisions based on a condition
+
+            Do not require advanced vocabulary.
+            Reject answers that are too vague or do not mention both true and false outcomes.
+            """
+                    });
+
+                    _logger.LogInformation(
+                        "Gemini grading returned. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                        result.IsCorrect,
+                        result.Score,
+                        result.Feedback);
 
                     vm.ExplanationCorrect = result.IsCorrect;
                     vm.ExplanationFeedback = result.Feedback;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Error while calling Gemini for IfElse explanation check.");
                     vm.ExplanationCorrect = false;
-                    vm.ExplanationFeedback =
-                        "We could not check your explanation right now. Please try again.";
+                    vm.ExplanationFeedback = "We could not check your explanation right now. Please try again.";
                 }
 
                 ViewBag.ForceStep = 2;

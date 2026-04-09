@@ -21,27 +21,42 @@ namespace DotNetCoreSqlDb.Services
 
         public async Task<AiShortAnswerGradeResult> GradeAsync(ShortAnswerEvaluationRequest request)
         {
+            _logger.LogInformation("Gemini GradeAsync started.");
+            _logger.LogInformation("Gemini model configured: {Model}", _options.Model);
+            _logger.LogInformation("Gemini API key present: {HasKey}", !string.IsNullOrWhiteSpace(_options.ApiKey));
+            _logger.LogInformation("QuestionText: {QuestionText}", request.QuestionText);
+            _logger.LogInformation("StudentAnswer: {StudentAnswer}", request.StudentAnswer);
+
             if (string.IsNullOrWhiteSpace(_options.ApiKey))
             {
+                _logger.LogError("Gemini API key is missing before request is sent.");
                 throw new InvalidOperationException("Gemini API key is missing.");
             }
 
-            var client = new Client(apiKey: _options.ApiKey);
-
             string prompt = BuildPrompt(request);
-
-            var response = await client.Models.GenerateContentAsync(
-                model: _options.Model,
-                contents: prompt);
-
-            string rawText = response.Text ?? "";
-
-            _logger.LogInformation("Gemini grading raw response: {RawResponse}", rawText);
+            _logger.LogInformation("Gemini prompt built. Prompt length: {PromptLength}", prompt.Length);
 
             try
             {
+                _logger.LogInformation("Creating Gemini client.");
+                var client = new Client(apiKey: _options.ApiKey);
+
+                _logger.LogInformation("About to send GenerateContentAsync request to Gemini.");
+                var response = await client.Models.GenerateContentAsync(
+                    model: _options.Model,
+                    contents: prompt);
+
+                _logger.LogInformation("Gemini request completed.");
+
+                string rawText = response.Text ?? "";
+                _logger.LogInformation("Gemini raw response length: {Length}", rawText.Length);
+                _logger.LogInformation("Gemini raw response text: {RawResponse}", rawText);
+
+                var cleanedText = CleanJsonResponse(rawText);
+                _logger.LogInformation("Gemini cleaned response text: {CleanedResponse}", cleanedText);
+
                 var result = JsonSerializer.Deserialize<AiShortAnswerGradeResult>(
-                    rawText,
+                    cleanedText,
                     new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
@@ -49,6 +64,7 @@ namespace DotNetCoreSqlDb.Services
 
                 if (result == null)
                 {
+                    _logger.LogError("Gemini JSON deserialized to null.");
                     throw new Exception("Gemini returned empty JSON.");
                 }
 
@@ -56,11 +72,17 @@ namespace DotNetCoreSqlDb.Services
                 result.Feedback ??= "No feedback returned.";
                 result.ReasoningSummary ??= "";
 
+                _logger.LogInformation(
+                    "Gemini parsed result successfully. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                    result.IsCorrect,
+                    result.Score,
+                    result.Feedback);
+
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to parse Gemini grading response.");
+                _logger.LogError(ex, "Gemini request or parsing failed.");
 
                 return new AiShortAnswerGradeResult
                 {
@@ -115,6 +137,32 @@ Grading rubric:
 Student answer:
 {request.StudentAnswer}
 ";
+        }
+
+        private static string CleanJsonResponse(string rawText)
+        {
+            if (string.IsNullOrWhiteSpace(rawText))
+            {
+                return "";
+            }
+
+            var trimmed = rawText.Trim();
+
+            if (trimmed.StartsWith("```json"))
+            {
+                trimmed = trimmed.Substring(7).Trim();
+            }
+            else if (trimmed.StartsWith("```"))
+            {
+                trimmed = trimmed.Substring(3).Trim();
+            }
+
+            if (trimmed.EndsWith("```"))
+            {
+                trimmed = trimmed.Substring(0, trimmed.Length - 3).Trim();
+            }
+
+            return trimmed;
         }
     }
 }

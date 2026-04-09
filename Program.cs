@@ -72,6 +72,14 @@ builder.Services.Configure<GeminiOptions>(options =>
 
 builder.Services.AddScoped<IAiShortAnswerGrader, GeminiShortAnswerGrader>();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.AddAzureWebAppDiagnostics();
+
+Console.WriteLine("GeminiAPIKey exists in configuration: " +
+    !string.IsNullOrWhiteSpace(builder.Configuration["GeminiAPIKey"]));
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
