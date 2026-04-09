@@ -208,6 +208,15 @@ namespace DotNetCoreSqlDb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IfElse(IfElseViewModel vm, string actionType)
         {
+
+            var client = new Client(apiKey: _options.ApiKey);
+            var response = await client.Models.GenerateContentAsync(
+                    model: "gemini-2.5-flash",
+                    contents: "Tell me a fun fact about coding");
+
+            _logger.logInformation("Gemini test response: {Response}", response.Text);
+
+
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
             vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
