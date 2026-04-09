@@ -423,7 +423,8 @@
 
         <form asp-action="IfElse" asp-controller="UnitThree" method="post" id="lessonForm">
             @Html.AntiForgeryToken()
-
+            <input asp-for="ExplanationCorrect" type="hidden" id="ExplanationCorrectHidden" />
+            <input asp-for="ExplanationFeedback" type="hidden" id="ExplanationFeedbackHidden" />
             <div class="panel step-panel">
                 <div class="step-card active" id="step0">
                     <div class="step-top">
@@ -593,7 +594,19 @@ ____
                         <div class="mc-grid">
                             <div class="mc-card">
                                 <div class="mc-header">Your explanation</div>
-                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: It lets a program do one thing when a condition is true and something else when it is false." />
+                                <input asp-for="ExplanationAnswer"
+                                    class="text-input"
+                                    id="ExplanationAnswer"
+                                    placeholder="Example: It lets a program do one thing when a condition is true and something else when it is false." />
+                            </div>
+
+                            <div class="mc-card">
+                                <div class="mc-header">AI feedback</div>
+                                <textarea id="aiFeedbackDisplay"
+                                        class="text-input"
+                                        rows="4"
+                                        readonly
+                                        placeholder="AI feedback will appear here...">@Model.ExplanationFeedback</textarea>
                             </div>
                         </div>
 
@@ -602,26 +615,28 @@ ____
                             <span>Checking with AI...</span>
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-                        {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
-                            </div>
-                        }
+                        <div id="aiFeedbackAlert"
+                            class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")"
+                            style="@(string.IsNullOrWhiteSpace(Model.ExplanationFeedback) ? "display:none;" : "")">
+                            @Model.ExplanationFeedback
+                        </div>
                     </div>
 
                     <div class="step-actions">
                         <button type="button" class="btn-secondary" onclick="showStep(1)" id="backToStep1Button">Back</button>
                         <div class="step-progress">Step 2 of 2</div>
 
-                        @if (Model.ExplanationCorrect == true)
-                        {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
-                        }
-                        else
-                        {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main" id="checkExplanationButton">Check</button>
-                        }
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button type="button" class="btn-main" id="checkExplanationButton">Check</button>
+                            <button type="submit"
+                                    name="actionType"
+                                    value="submit"
+                                    class="btn-main"
+                                    id="submitLessonButton"
+                                    style="@(Model.ExplanationCorrect == true ? "" : "display:none;")">
+                                Submit Lesson
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -665,9 +680,39 @@ ____
             backButton.disabled = isLoading;
         }
 
-        // use readOnly instead of disabled so the value still posts
         if (explanationInput) {
             explanationInput.readOnly = isLoading;
+        }
+    }
+
+    function setAiResult(isCorrect, feedback) {
+        const feedbackDisplay = document.getElementById('aiFeedbackDisplay');
+        const feedbackAlert = document.getElementById('aiFeedbackAlert');
+        const submitLessonButton = document.getElementById('submitLessonButton');
+        const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+        const explanationFeedbackHidden = document.getElementById('ExplanationFeedbackHidden');
+
+        if (feedbackDisplay) {
+            feedbackDisplay.value = feedback || '';
+        }
+
+        if (feedbackAlert) {
+            feedbackAlert.style.display = 'block';
+            feedbackAlert.textContent = feedback || '';
+            feedbackAlert.classList.remove('alert-success-custom', 'alert-danger-custom');
+            feedbackAlert.classList.add(isCorrect ? 'alert-success-custom' : 'alert-danger-custom');
+        }
+
+        if (explanationCorrectHidden) {
+            explanationCorrectHidden.value = isCorrect ? 'true' : 'false';
+        }
+
+        if (explanationFeedbackHidden) {
+            explanationFeedbackHidden.value = feedback || '';
+        }
+
+        if (submitLessonButton) {
+            submitLessonButton.style.display = isCorrect ? '' : 'none';
         }
     }
 
@@ -677,38 +722,72 @@ ____
         if (forcedStep !== '') {
             showStep(parseInt(forcedStep));
         } else {
-            let stepToShow = 0;
-
-            const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")';
-            const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
-            const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
-            const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
-            const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+            const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")'.toLowerCase();
+            const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")'.toLowerCase();
+            const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")'.toLowerCase();
+            const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")'.toLowerCase();
+            const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")'.toLowerCase();
 
             const stepOneComplete =
-                q1.toLowerCase() === 'true' &&
-                q2.toLowerCase() === 'true' &&
-                q3.toLowerCase() === 'true' &&
-                q4.toLowerCase() === 'true';
+                q1 === 'true' &&
+                q2 === 'true' &&
+                q3 === 'true' &&
+                q4 === 'true';
 
-            if (explanationDone.toLowerCase() === 'true') {
-                stepToShow = 2;
+            if (explanationDone === 'true') {
+                showStep(2);
             } else if (stepOneComplete) {
-                stepToShow = 2;
+                showStep(2);
+            } else {
+                showStep(0);
             }
-
-            showStep(stepToShow);
         }
 
-        const lessonForm = document.getElementById('lessonForm');
         const checkExplanationButton = document.getElementById('checkExplanationButton');
+        const explanationInput = document.getElementById('ExplanationAnswer');
+        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
 
-        if (lessonForm && checkExplanationButton) {
-            lessonForm.addEventListener('submit', function (event) {
-                const submitter = event.submitter;
+        if (checkExplanationButton && explanationInput && tokenInput) {
+            checkExplanationButton.addEventListener('click', async function () {
+                const explanation = explanationInput.value.trim();
 
-                if (submitter && submitter.value === 'checkExplanation') {
-                    setStepTwoLoadingState(true);
+                if (!explanation) {
+                    setAiResult(false, 'Please enter an explanation first.');
+                    return;
+                }
+
+                setStepTwoLoadingState(true);
+
+                try {
+                    const formData = new FormData();
+                    formData.append('explanationAnswer', explanation);
+                    formData.append('__RequestVerificationToken', tokenInput.value);
+
+                    const response = await fetch('/UnitThree/CheckIfElseExplanation', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    let data = null;
+                    try {
+                        data = await response.json();
+                    } catch {
+                        data = null;
+                    }
+
+                    if (!response.ok) {
+                        const message = data && data.feedback
+                            ? data.feedback
+                            : 'We could not check your explanation right now. Please try again.';
+                        setAiResult(false, message);
+                        return;
+                    }
+
+                    setAiResult(!!data.isCorrect, data.feedback || '');
+                } catch (error) {
+                    setAiResult(false, 'We could not check your explanation right now. Please try again.');
+                } finally {
+                    setStepTwoLoadingState(false);
                 }
             });
         }

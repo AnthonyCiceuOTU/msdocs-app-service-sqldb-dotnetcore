@@ -208,42 +208,18 @@ namespace DotNetCoreSqlDb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IfElse(IfElseViewModel vm, string actionType)
         {
-            /*try
-            {
-                var testResult = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
-                {
-                    QuestionText = "What does an IF-ELSE statement do?",
-                    StudentAnswer = "It lets a program do one thing if a condition is true and another thing if it is false.",
-                    ExpectedAnswer = "An IF-ELSE statement lets a program choose between two different actions depending on whether a condition is true or false.",
-                    GradingRubric = """
-                    Mark correct if the answer explains that:
-                    1. A condition is checked.
-                    2. One action happens if true.
-                    3. Another action happens if false.
-                    """
-                });
-
-                _logger.LogInformation(
-                    "Gemini hardcoded test result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
-                    testResult.IsCorrect,
-                    testResult.Score,
-                    testResult.Feedback);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Gemini hardcoded test failed in IfElse.");
-            }*/
-
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
             vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
             vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ExplanationFeedback = vm.ExplanationFeedback?.Trim() ?? "";
 
             if (actionType == "hint")
             {
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
+                ViewBag.ForceStep = 1;
                 return View(vm);
             }
 
@@ -251,76 +227,28 @@ namespace DotNetCoreSqlDb.Controllers
             {
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
-                return View(vm);
-            }
-
-            if (actionType == "checkExplanation")
-            {
-                _logger.LogInformation("IfElse checkExplanation triggered.");
-
-                if (string.IsNullOrWhiteSpace(vm.ExplanationAnswer))
-                {
-                    _logger.LogWarning("IfElse explanation was empty.");
-                    vm.ExplanationCorrect = false;
-                    vm.ExplanationFeedback = "Please enter an explanation first.";
-                    ViewBag.ForceStep = 2;
-                    return View(vm);
-                }
-
-                _logger.LogInformation("IfElse explanation text: {Explanation}", vm.ExplanationAnswer);
-
-                try
-                {
-                    _logger.LogInformation("About to call _aiShortAnswerGrader.GradeAsync for IfElse.");
-
-                    var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
-                    {
-                        QuestionText = "Explain why IF-ELSE statements are useful in programming.",
-                        StudentAnswer = vm.ExplanationAnswer,
-                        ExpectedAnswer = "IF-ELSE statements are useful because they let a program choose between two different actions or outcomes based on whether a condition is true or false.",
-                        GradingRubric = """
-                        To be correct, the answer should clearly show that:
-                        1. IF-ELSE helps a program make a decision.
-                        2. One path or action happens when the condition is true.
-                        3. A different path or action happens when the condition is false.
-
-                        Accept simple student wording such as:
-                        - choose between two outcomes
-                        - do one thing if true and another if false
-                        - make decisions based on a condition
-
-                        Do not require advanced vocabulary.
-                        Reject answers that are too vague or do not mention both true and false outcomes.
-                        """
-                    });
-
-                    _logger.LogInformation(
-                        "Gemini grading returned. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
-                        result.IsCorrect,
-                        result.Score,
-                        result.Feedback);
-
-                    vm.ExplanationCorrect = result.IsCorrect;
-                    vm.ExplanationFeedback = result.Feedback;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error while calling Gemini for IfElse explanation check.");
-                    vm.ExplanationCorrect = false;
-                    vm.ExplanationFeedback = "We could not check your explanation right now. Please try again.";
-                }
-
-                ViewBag.ForceStep = 2;
+                ViewBag.ForceStep = 1;
                 return View(vm);
             }
 
             if (actionType == "submit")
             {
+                if (vm.ExplanationCorrect != true)
+                {
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation with AI before submitting."
+                        : vm.ExplanationFeedback;
+
+                    ViewBag.ForceStep = 2;
+                    return View(vm);
+                }
+
                 var saved = await SaveLessonProgressAsync("IfElse");
-                vm.ExplanationCorrect = true;
                 vm.ExplanationFeedback = saved
                     ? "Lesson complete! Your progress has been saved."
                     : "Your answers were submitted, but progress could not be saved.";
+
+                ViewBag.ForceStep = 2;
                 return View(vm);
             }
 
@@ -347,7 +275,78 @@ namespace DotNetCoreSqlDb.Controllers
                 ? "Correct!"
                 : "40 is less than 50, so it prints Fail.";
 
+            ViewBag.ForceStep =
+                vm.IsQ1Correct == true &&
+                vm.IsQ2Correct == true &&
+                vm.IsQ3Correct == true &&
+                vm.IsQ4Correct == true
+                    ? 2
+                    : 1;
+
             return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckIfElseExplanation([FromForm] string explanationAnswer)
+        {
+            explanationAnswer = explanationAnswer?.Trim() ?? "";
+
+            _logger.LogInformation("CheckIfElseExplanation called. Explanation: {Explanation}", explanationAnswer);
+
+            if (string.IsNullOrWhiteSpace(explanationAnswer))
+            {
+                return BadRequest(new
+                {
+                    isCorrect = false,
+                    feedback = "Please enter an explanation first."
+                });
+            }
+
+            try
+            {
+                var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                {
+                    QuestionText = "Explain why IF-ELSE statements are useful in programming.",
+                    StudentAnswer = explanationAnswer,
+                    ExpectedAnswer = "IF-ELSE statements are useful because they let a program choose between two different actions or outcomes based on whether a condition is true or false.",
+                    GradingRubric = """
+                    To be correct, the answer should clearly show that:
+                    1. IF-ELSE helps a program make a decision.
+                    2. One path or action happens when the condition is true.
+                    3. A different path or action happens when the condition is false.
+
+                    Accept simple student wording such as:
+                    - choose between two outcomes
+                    - do one thing if true and another if false
+                    - make decisions based on a condition
+
+                    Do not require advanced vocabulary.
+                    Reject answers that are too vague or do not mention both true and false outcomes.
+                    """
+                });
+
+                _logger.LogInformation(
+                    "CheckIfElseExplanation result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                    result.IsCorrect,
+                    result.Score,
+                    result.Feedback);
+
+                return Json(new
+                {
+                    isCorrect = result.IsCorrect,
+                    feedback = result.Feedback
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking IfElse explanation.");
+                return StatusCode(500, new
+                {
+                    isCorrect = false,
+                    feedback = "We could not check your explanation right now. Please try again."
+                });
+            }
         }
 
         [HttpGet]

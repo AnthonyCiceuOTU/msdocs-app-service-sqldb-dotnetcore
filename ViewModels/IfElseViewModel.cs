@@ -23,5 +23,6 @@ namespace DotNetCoreSqlDb.ViewModels
         public string ExplanationAnswer { get; set; } = "";
         public bool? ExplanationCorrect { get; set; }
         public string ExplanationFeedback { get; set; } = "";
+
     }
 }
