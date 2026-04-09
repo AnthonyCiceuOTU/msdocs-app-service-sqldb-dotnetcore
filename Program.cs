@@ -5,8 +5,17 @@ using DotNetCoreSqlDb.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using DotNetCoreSqlDb.Models.Config;
 using DotNetCoreSqlDb.Services;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load Azure Key Vault
+var vaultUri = new Uri("https://codequest-key-vault.vault.azure.net/");
+
+if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")))
+{
+    builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
+}
 
 builder.Services.AddScoped<LogHelper>();
 
@@ -62,7 +71,13 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 builder.Logging.AddAzureWebAppDiagnostics();
+
+Console.WriteLine("GeminiAPIKey exists in configuration: " +
+    !string.IsNullOrWhiteSpace(builder.Configuration["GeminiAPIKey"]));
 
 builder.Services.Configure<GeminiOptions>(options =>
 {
@@ -71,14 +86,6 @@ builder.Services.Configure<GeminiOptions>(options =>
 });
 
 builder.Services.AddScoped<IAiShortAnswerGrader, GeminiShortAnswerGrader>();
-
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
-builder.Logging.AddAzureWebAppDiagnostics();
-
-Console.WriteLine("GeminiAPIKey exists in configuration: " +
-    !string.IsNullOrWhiteSpace(builder.Configuration["GeminiAPIKey"]));
 
 var app = builder.Build();
 
