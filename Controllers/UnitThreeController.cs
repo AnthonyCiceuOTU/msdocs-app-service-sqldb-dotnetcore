@@ -208,7 +208,7 @@ namespace DotNetCoreSqlDb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IfElse(IfElseViewModel vm, string actionType)
         {
-            try
+            /*try
             {
                 var testResult = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
                 {
@@ -232,7 +232,7 @@ namespace DotNetCoreSqlDb.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Gemini hardcoded test failed in IfElse.");
-            }
+            }*/
 
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";

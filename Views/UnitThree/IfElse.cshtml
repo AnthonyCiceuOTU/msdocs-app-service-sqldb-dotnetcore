@@ -665,8 +665,9 @@ ____
             backButton.disabled = isLoading;
         }
 
+        // use readOnly instead of disabled so the value still posts
         if (explanationInput) {
-            explanationInput.disabled = isLoading;
+            explanationInput.readOnly = isLoading;
         }
     }
 
@@ -693,7 +694,7 @@ ____
             if (explanationDone.toLowerCase() === 'true') {
                 stepToShow = 2;
             } else if (stepOneComplete) {
-                stepToShow = 1;
+                stepToShow = 2;
             }
 
             showStep(stepToShow);
@@ -703,10 +704,6 @@ ____
         const checkExplanationButton = document.getElementById('checkExplanationButton');
 
         if (lessonForm && checkExplanationButton) {
-            checkExplanationButton.addEventListener('click', function () {
-                setStepTwoLoadingState(true);
-            });
-
             lessonForm.addEventListener('submit', function (event) {
                 const submitter = event.submitter;
 
