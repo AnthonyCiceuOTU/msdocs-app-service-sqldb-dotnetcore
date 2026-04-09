@@ -208,14 +208,31 @@ namespace DotNetCoreSqlDb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IfElse(IfElseViewModel vm, string actionType)
         {
+            try
+            {
+                var testResult = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                {
+                    QuestionText = "What does an IF-ELSE statement do?",
+                    StudentAnswer = "It lets a program do one thing if a condition is true and another thing if it is false.",
+                    ExpectedAnswer = "An IF-ELSE statement lets a program choose between two different actions depending on whether a condition is true or false.",
+                    GradingRubric = """
+                    Mark correct if the answer explains that:
+                    1. A condition is checked.
+                    2. One action happens if true.
+                    3. Another action happens if false.
+                    """
+                });
 
-            var client = new Client(apiKey: _options.ApiKey);
-            var response = await client.Models.GenerateContentAsync(
-                    model: "gemini-2.5-flash",
-                    contents: "Tell me a fun fact about coding");
-
-            _logger.logInformation("Gemini test response: {Response}", response.Text);
-
+                _logger.LogInformation(
+                    "Gemini hardcoded test result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                    testResult.IsCorrect,
+                    testResult.Score,
+                    testResult.Feedback);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Gemini hardcoded test failed in IfElse.");
+            }
 
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
@@ -262,19 +279,19 @@ namespace DotNetCoreSqlDb.Controllers
                         StudentAnswer = vm.ExplanationAnswer,
                         ExpectedAnswer = "IF-ELSE statements are useful because they let a program choose between two different actions or outcomes based on whether a condition is true or false.",
                         GradingRubric = """
-            To be correct, the answer should clearly show that:
-            1. IF-ELSE helps a program make a decision.
-            2. One path or action happens when the condition is true.
-            3. A different path or action happens when the condition is false.
+                        To be correct, the answer should clearly show that:
+                        1. IF-ELSE helps a program make a decision.
+                        2. One path or action happens when the condition is true.
+                        3. A different path or action happens when the condition is false.
 
-            Accept simple student wording such as:
-            - choose between two outcomes
-            - do one thing if true and another if false
-            - make decisions based on a condition
+                        Accept simple student wording such as:
+                        - choose between two outcomes
+                        - do one thing if true and another if false
+                        - make decisions based on a condition
 
-            Do not require advanced vocabulary.
-            Reject answers that are too vague or do not mention both true and false outcomes.
-            """
+                        Do not require advanced vocabulary.
+                        Reject answers that are too vague or do not mention both true and false outcomes.
+                        """
                     });
 
                     _logger.LogInformation(
