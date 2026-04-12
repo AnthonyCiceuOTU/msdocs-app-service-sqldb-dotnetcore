@@ -1,36 +1,197 @@
 @model DotNetCoreSqlDb.ViewModels.ListsViewModel
 
-<div class="container mt-4">
-    <h1>Lists / Arrays</h1>
+@{
+    ViewData["Title"] = "Lists / Arrays";
+}
 
-    <pre class="bg-light p-3 border rounded">
-scores ← [80, 75, 90]
-    </pre>
 
-    <p>What is a list used for?</p>
 
-    <form method="post">
-        <input asp-for="UserAnswer" class="form-control mb-3" />
+<div class="lesson-page">
+    <div class="lesson-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">[]</div>
+                <div class="brand-text">
+                    <h1>Code Quest</h1>
+                    <p>Unit 3 · Lists</p>
+                </div>
+            </div>
 
-        <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
-        <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
-        <button name="actionType" value="solution" class="btn btn-success">Solution</button>
-    </form>
-
-    @if (Model.ShowHint)
-    {
-        <div class="alert alert-warning mt-3">Stores many values.</div>
-    }
-
-    @if (Model.ShowSolution)
-    {
-        <div class="alert alert-success mt-3">Lists store multiple values in one variable.</div>
-    }
-
-    @if (Model.IsCorrect != null)
-    {
-        <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
-            @Model.FeedbackMessage
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
-    }
+
+        <form asp-action="Lists" asp-controller="UnitThree" method="post" id="lessonForm">
+            @Html.AntiForgeryToken()
+
+            <div class="panel step-panel">
+
+                <!-- STEP 0 -->
+                <div class="step-card active" id="step0">
+                    <div class="step-top">
+                        <h2>Lists / Arrays</h2>
+
+                        <p>
+                            Lists (or arrays) store multiple values in a single variable.
+                        </p>
+
+                        <div class="code-block">
+scores ← [80, 75, 90]
+fruits ← ["apple", "mango", "banana"]
+                        </div>
+
+                        <div class="instruction-box">
+                            Lists allow you to group related data together. Most languages store
+                            values of the same type, but some allow mixing.
+                        </div>
+
+                        <div class="concept-grid">
+                            <div class="concept-card">
+                                <h4>Multiple Values</h4>
+                                <p>A list stores many values in one variable.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>Indexing</h4>
+                                <p>Each item has a position (index) starting at 0.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>Organization</h4>
+                                <p>Lists help organize and manage related data.</p>
+                            </div>
+                        </div>
+
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Think about why storing many values together is useful.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Lists store multiple values in one variable.
+                            </div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <div class="step-progress">Instructions</div>
+                        <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 1 -->
+                <div class="step-card" id="step1">
+                    <div class="step-top">
+                        <h3>Assignment · Understanding Lists</h3>
+
+                        <div class="instruction-box">
+                            Answer the question below to show your understanding of lists.
+                        </div>
+
+                        <div class="quiz-grid">
+                            <div class="quiz-card">
+                                <div class="quiz-title">What is a list used for?</div>
+
+                                <input asp-for="UserAnswer" class="text-input" placeholder="Type your answer..." />
+
+                                @if (Model.IsCorrect != null)
+                                {
+                                    <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.FeedbackMessage
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+                        <div class="step-progress">Step 1 of 2</div>
+
+                        @if (Model.IsCorrect == true)
+                        {
+                            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+                        }
+                        else
+                        {
+                            <div style="display:flex; gap:10px;">
+                                <button type="submit" name="actionType" value="submit" class="btn-main">Submit</button>
+                                <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
+                                <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div class="step-card" id="step2">
+                    <div class="step-top">
+                        <h3>Reflection</h3>
+
+                        <div class="instruction-box">
+                            In one short sentence, explain why lists are useful in programming.
+                        </div>
+
+                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: storemanyvalues" />
+
+                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+                        {
+                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                                @Model.ExplanationFeedback
+                            </div>
+                        }
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <div class="step-progress">Step 2 of 2</div>
+
+                        @if (Model.ExplanationCorrect == true)
+                        {
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+        <div class="nav-footer">
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back to Lessons</a>
+            <a asp-controller="UnitThree" asp-action="NextLesson" class="btn-main">Next Lesson</a>
+        </div>
+    </div>
 </div>
+
+<script>
+    function showStep(stepNumber) {
+        document.querySelectorAll('.step-card').forEach(card => {
+            card.classList.remove('active');
+        });
+
+        const target = document.getElementById(`step${stepNumber}`);
+        if (target) {
+            target.classList.add('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let stepToShow = 0;
+
+        const answered = '@(Model.IsCorrect?.ToString() ?? "")';
+        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+
+        if (explanationDone === 'True') {
+            stepToShow = 2;
+        } else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
+            stepToShow = 1;
+        }
+
+        showStep(stepToShow);
+    });
+</script>
