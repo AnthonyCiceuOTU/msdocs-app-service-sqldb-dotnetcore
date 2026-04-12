@@ -1,4 +1,4 @@
-function evalExpr(expr, vars, funcs) {
+export function evalExpr(expr, vars, funcs) {
     expr = expr.trim();
 
     // Strings
