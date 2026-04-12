@@ -13,11 +13,11 @@ html {
     --cq-surface: #ffffff;
     --cq-surface-soft: #f8fbff;
     --cq-border: #dbe6f3;
-    --cq-text: #142133;
-    --cq-text-muted: #5f6f86;
+    --cq-text: #e5eefc;
+    --cq-text-muted: #a7b7cf;
     --cq-primary: #2563eb;
     --cq-primary-dark: #1d4ed8;
-    --cq-secondary: #0f172a;
+    --cq-secondary: #ffffff;
     --cq-accent: #38bdf8;
     --cq-success: #16a34a;
     --cq-warning: #f59e0b;
@@ -38,9 +38,9 @@ body,
     margin: 0;
     min-height: 100vh;
     background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.10), transparent 28%),
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.10), transparent 22%),
-        var(--cq-bg);
+        radial-gradient(circle at top left, rgba(16, 185, 129, 0.10), transparent 22%),
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 24%),
+        linear-gradient(180deg, #03111f 0%, #04162b 35%, #051a33 100%);
     color: var(--cq-text);
     font-family: "Segoe UI", Inter, Arial, sans-serif;
     overflow-x: hidden;
@@ -51,10 +51,10 @@ a {
 }
 
 .cq-navbar {
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(5, 17, 34, 0.88);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(219, 230, 243, 0.85);
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    border-bottom: 1px solid rgba(60, 84, 120, 0.35);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
     padding-top: 0.9rem;
     padding-bottom: 0.9rem;
     margin-bottom: 1.5rem;
@@ -66,7 +66,7 @@ a {
     gap: 0.7rem;
     font-size: 1.3rem;
     font-weight: 800;
-    color: var(--cq-secondary) !important;
+    color: #ffffff !important;
     letter-spacing: -0.02em;
 }
 
@@ -84,7 +84,7 @@ a {
 }
 
 .cq-nav-link {
-    color: var(--cq-text-muted) !important;
+    color: rgba(255, 255, 255, 0.88) !important;
     font-weight: 600;
     padding: 0.65rem 0.95rem !important;
     border-radius: 999px;
@@ -93,8 +93,8 @@ a {
 
 .cq-nav-link:hover,
 .cq-nav-link:focus {
-    color: var(--cq-primary-dark) !important;
-    background: rgba(37, 99, 235, 0.08);
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .cq-main-shell {
@@ -108,13 +108,21 @@ a {
 }
 
 .cq-footer {
-    border-top: 1px solid var(--cq-border);
-    background: rgba(255, 255, 255, 0.8);
-    color: var(--cq-text-muted);
+    border-top: 1px solid rgba(60, 84, 120, 0.35);
+    background: rgba(5, 17, 34, 0.92);
+    color: rgba(255, 255, 255, 0.78);
     padding: 1rem 0;
     position: absolute;
     bottom: 0;
     width: 100%;
+}
+
+.cq-footer a {
+    color: #7dd3fc;
+}
+
+.cq-footer a:hover {
+    color: #bae6fd;
 }
 
 h1, h2, h3, h4, h5 {
