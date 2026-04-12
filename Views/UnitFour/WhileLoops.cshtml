@@ -1,42 +1,523 @@
 @model DotNetCoreSqlDb.ViewModels.WhileLoopsViewModel
 
-<div class="container mt-4">
-    <h1>WHILE Loops</h1>
+@{
+    ViewData["Title"] = "WHILE Loops";
+}
 
-    <pre class="bg-light p-3 border rounded">
-WHILE score &lt; 100
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .lesson-page {
+        min-height: 100vh;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
+            linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
+        color: #e5e7eb;
+        padding: 16px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .lesson-shell {
+        max-width: 1100px;
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .brand-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #f8fafc;
+    }
+
+    .brand-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.1;
+    }
+
+    .brand-text p {
+        margin: 4px 0 0 0;
+        color: #94a3b8;
+        font-size: 0.95rem;
+    }
+
+    .panel {
+        background: rgba(17, 24, 39, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 18px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(12px);
+    }
+
+    .step-panel {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+    }
+
+    .step-card {
+        width: 100%;
+        padding: 18px 20px;
+        display: none;
+        overflow: hidden;
+    }
+
+    .step-card.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .step-top h2, .step-top h3 {
+        margin: 0 0 8px 0;
+        color: #ffffff;
+        line-height: 1.15;
+    }
+
+    .step-top h2 { font-size: 1.65rem; }
+    .step-top h3 { font-size: 1.3rem; }
+
+    .step-top p {
+        margin: 0 0 10px 0;
+        color: #94a3b8;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    .instruction-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: #cbd5e1;
+        line-height: 1.5;
+        font-size: 0.94rem;
+        margin-bottom: 10px;
+    }
+
+    .code-block {
+        background: rgba(2, 6, 23, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-family: Consolas, Monaco, monospace;
+        white-space: pre-wrap;
+        line-height: 1.45;
+        font-size: 0.92rem;
+        margin-bottom: 10px;
+    }
+
+    .quiz-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: start;
+    }
+
+    .quiz-card, .concept-card, .mc-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 14px;
+        padding: 12px;
+    }
+
+    .quiz-title, .mc-header {
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .text-input {
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(2, 6, 23, 0.7);
+        color: #f8fafc;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
+        padding: 10px 12px;
+        outline: none;
+        font-size: 0.92rem;
+    }
+
+    .text-input:focus {
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    .radio-row {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .radio-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #e5e7eb;
+        font-size: 0.92rem;
+    }
+
+    .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .concept-card h4 {
+        margin: 0 0 6px 0;
+        color: #ffffff;
+        font-size: 0.95rem;
+    }
+
+    .concept-card p {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
+    .btn-main, .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 16px;
+        cursor: pointer;
+    }
+
+    .btn-main {
+        background: linear-gradient(135deg, #0ea5e9, #22c55e);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.05);
+        color: #e5e7eb;
+    }
+
+    .step-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .step-progress {
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .alert-box {
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: 10px;
+        border: 1px solid transparent;
+        font-size: 0.92rem;
+    }
+
+    .alert-success-custom {
+        background: rgba(34, 197, 94, 0.12);
+        color: #bbf7d0;
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .alert-danger-custom {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fecaca;
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .alert-info-custom {
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .mc-grid {
+        display: grid;
+        gap: 10px;
+    }
+
+    @@media (max-width: 900px) {
+        .brand-text h1 { font-size: 1.7rem; }
+        .step-top h2 { font-size: 1.4rem; }
+        .step-top h3 { font-size: 1.15rem; }
+        .step-card { padding: 16px; overflow-y: auto; }
+        .quiz-grid, .concept-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="lesson-page">
+    <div class="lesson-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <div class="brand-text">
+                    <h1>Code Quest</h1>
+                    <p>Unit 4 · WHILE Loops</p>
+                </div>
+            </div>
+
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
+        </div>
+
+        <form asp-action="WhileLoops" asp-controller="UnitFour" method="post" id="lessonForm">
+            @Html.AntiForgeryToken()
+
+            <div class="panel step-panel">
+                <div class="step-card active" id="step0">
+                    <div class="step-top">
+                        <h2>WHILE Loops</h2>
+                        <p>
+                            A WHILE loop repeats code as long as a condition is true.
+                            It is useful when you do not know exactly how many times the loop will run.
+                        </p>
+
+                        <div class="code-block">WHILE score &lt; 100
     score ← score + 10
-END WHILE
-    </pre>
+END WHILE</div>
 
-    <p>What does a WHILE loop do?</p>
+                        <div class="instruction-box">
+                            In this lesson, you will first answer 4 questions about WHILE loops,
+                            then explain why WHILE loops are useful.
+                        </div>
 
-    <form method="post">
-        <input asp-for="UserAnswer" class="form-control mb-3" />
+                        <div class="concept-grid">
+                            <div class="concept-card">
+                                <h4>Condition</h4>
+                                <p>A WHILE loop checks a condition before running.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>Repeats</h4>
+                                <p>The loop keeps going while the condition stays true.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>Stops</h4>
+                                <p>The loop ends when the condition becomes false.</p>
+                            </div>
+                        </div>
 
-        <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
-        <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
-        <button name="actionType" value="solution" class="btn btn-success">Solution</button>
-    </form>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Think about what must stay true for the loop to continue.
+                            </div>
+                        }
 
-    @if (Model.ShowHint)
-    {
-        <div class="alert alert-warning mt-3">
-            It runs while a condition is true.
-        </div>
-    }
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) score &lt; 100, 2) while the condition is true, 3) WHILE, 4) condition becomes false
+                            </div>
+                        }
+                    </div>
 
-    @if (Model.ShowSolution)
-    {
-        <div class="alert alert-success mt-3">
-            A WHILE loop repeats as long as the condition is true.
-        </div>
-    }
+                    <div class="step-actions">
+                        <div class="step-progress">Instructions</div>
+                        <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
+                    </div>
+                </div>
 
-    @if (Model.IsCorrect != null)
-    {
-        <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
-            @Model.FeedbackMessage
-        </div>
-    }
+                <div class="step-card" id="step1">
+                    <div class="step-top">
+                        <h3>First assignment · Practice WHILE loop logic</h3>
+
+                        <div class="instruction-box">
+                            Complete the four questions below. Check your answers before moving on.
+                        </div>
+
+                        <div class="quiz-grid">
+                            <div class="quiz-card">
+                                <div class="quiz-title">1. What is the condition in the example?</div>
+                                <input asp-for="UserAnswer1" class="text-input" placeholder="Example: score < 100" />
+                                @if (Model.IsQ1Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ1Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback1
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">2. When does a WHILE loop keep running?</div>
+                                <input asp-for="UserAnswer2" class="text-input" placeholder="Type your answer" />
+                                @if (Model.IsQ2Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ2Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback2
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">3. Which keyword starts this loop?</div>
+                                <input asp-for="UserAnswer3" class="text-input" placeholder="Type the keyword" />
+                                @if (Model.IsQ3Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ3Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback3
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">4. When does a WHILE loop stop?</div>
+                                <input asp-for="UserAnswer4" class="text-input" placeholder="Type your answer" />
+                                @if (Model.IsQ4Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ4Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback4
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+                        <div class="step-progress">Step 1 of 2</div>
+
+                        @if (Model.IsQ1Correct == true && Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true)
+                        {
+                            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+                        }
+                        else
+                        {
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                                <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
+                                <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="step-card" id="step2">
+                    <div class="step-top">
+                        <h3>Second assignment · Explain WHILE loops</h3>
+
+                        <div class="instruction-box">
+                            In one short sentence, explain why WHILE loops are useful.
+                        </div>
+
+                        <div class="mc-grid">
+                            <div class="mc-card">
+                                <div class="mc-header">Your explanation</div>
+                                <input asp-for="ExplanationAnswer"
+                                       class="text-input"
+                                       placeholder="Example: A WHILE loop is useful because it repeats code while a condition stays true." />
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+                            {
+                                <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                                    @Model.ExplanationFeedback
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <div class="step-progress">Step 2 of 2</div>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            @if (Model.ExplanationCorrect == true)
+                            {
+                                <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            }
+                            else
+                            {
+                                <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check Explanation</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script>
+    function showStep(stepIndex) {
+        document.querySelectorAll('.step-card').forEach((card, index) => {
+            card.classList.toggle('active', index === stepIndex);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const forcedStep = '@(ViewBag.ForceStep ?? "")';
+
+        if (forcedStep !== '') {
+            showStep(parseInt(forcedStep));
+        } else {
+            const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")'.toLowerCase();
+            const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")'.toLowerCase();
+            const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")'.toLowerCase();
+            const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")'.toLowerCase();
+            const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")'.toLowerCase();
+
+            const stepOneComplete =
+                q1 === 'true' &&
+                q2 === 'true' &&
+                q3 === 'true' &&
+                q4 === 'true';
+
+            if (explanationDone === 'true') {
+                showStep(2);
+            } else if (stepOneComplete) {
+                showStep(2);
+            } else {
+                showStep(0);
+            }
+        }
+    });
+</script>
