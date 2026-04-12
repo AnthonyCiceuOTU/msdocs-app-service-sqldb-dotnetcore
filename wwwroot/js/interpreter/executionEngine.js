@@ -14,7 +14,7 @@ function runFunction(name, args, funcs) {
 
 // INTERPRETER 
 
-function execBlock(lines, vars, funcs) {
+export function execBlock(lines, vars, funcs) {
     let output = [];
 
     for (let i = 0; i < lines.length; i++) {
