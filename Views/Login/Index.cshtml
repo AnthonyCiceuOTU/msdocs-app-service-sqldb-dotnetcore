@@ -373,24 +373,43 @@
         background: radial-gradient(circle, transparent 35%, rgba(2, 6, 23, 0.38) 100%);
     }
 
-    @@media (max-width: 576px) {
-        .login-card-body {
-            padding: 22px;
-        }
-
-        .login-title {
-            font-size: 26px;
-        }
-
-        .editor-body {
-            grid-template-columns: 48px 1fr;
-        }
-
-        .code-area,
-        .line-numbers {
-            font-size: 13px;
-        }
+    @@media (max-width: 900px) {
+    body {
+        overflow-y: auto;
     }
+
+    .login-page {
+        padding: 18px;
+        align-items: center;
+    }
+
+    .editor-window {
+        opacity: 0.18;
+    }
+}
+
+    @@media (max-width: 576px) {
+    .login-page {
+        padding: 12px;
+    }
+
+    .login-card-body {
+        padding: 22px;
+    }
+
+    .login-title {
+        font-size: 26px;
+    }
+
+    .editor-body {
+        grid-template-columns: 48px 1fr;
+    }
+
+    .code-area,
+    .line-numbers {
+        font-size: 13px;
+    }
+}
 </style>
 
 <div class="login-page">

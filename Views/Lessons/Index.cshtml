@@ -376,31 +376,111 @@
         margin: 0;
     }
 
-    @@media (max-width: 1100px) {
-        .lessons-layout {
-            grid-template-columns: 1fr;
-        }
-
-        .lesson-content {
-            position: static;
-        }
+    @@media (max-width: 1200px) {
+    .lessons-layout {
+        grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.9fr);
     }
 
-    @@media (max-width: 680px) {
-        .info-grid,
-        .lesson-actions,
-        .nav-buttons {
-            grid-template-columns: 1fr;
-        }
-
-        .topbar-btn {
-            width: 100%;
-        }
-
-        .topbar {
-            align-items: stretch;
-        }
+    .units-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+}
+
+@@media (max-width: 1100px) {
+    .lessons-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .lesson-content {
+        position: static;
+    }
+}
+
+@@media (max-width: 900px) {
+    .lessons-page {
+        padding: 14px;
+    }
+
+    .lessons-hero,
+    .units-panel,
+    .lesson-content {
+        padding: 14px;
+    }
+
+    .brand-text h1 {
+        font-size: 1.7rem;
+    }
+
+    .lesson-content h1 {
+        font-size: 1.65rem;
+    }
+}
+
+@@media (max-width: 680px) {
+    .topbar {
+        align-items: stretch;
+    }
+
+    .topbar-btn {
+        width: 100%;
+    }
+
+    .units-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-grid,
+    .lesson-actions,
+    .nav-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .lesson-link {
+        font-size: 0.84rem;
+        min-height: 38px;
+    }
+
+    .btn-main,
+    .btn-secondary,
+    .btn-success,
+    .btn-disabled {
+        white-space: normal;
+    }
+}
+
+    @@media (max-width: 480px) {
+    .lessons-page {
+        padding: 10px;
+    }
+
+    .brand {
+        gap: 10px;
+    }
+
+    .brand-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 15px;
+    }
+
+    .brand-text h1 {
+        font-size: 1.45rem;
+    }
+
+    .course-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .lesson-content h1 {
+        font-size: 1.4rem;
+    }
+
+    .units-panel,
+    .lesson-content,
+    .lessons-hero {
+        padding: 12px;
+    }
+}
 </style>
 
 <div class="lessons-page">
