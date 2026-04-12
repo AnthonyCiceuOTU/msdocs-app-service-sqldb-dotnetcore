@@ -1,7 +1,7 @@
-@model DotNetCoreSqlDb.ViewModels.CountersViewModel
+@model DotNetCoreSqlDb.ViewModels.WhyLoopsViewModel
 
 @{
-    ViewData["Title"] = "Counters & Accumulators";
+    ViewData["Title"] = "Why Loops?";
 }
 
 <style>
@@ -368,57 +368,45 @@
 
 <div class="lesson-page">
     <div class="lesson-shell">
-        <div class="topbar">
-            <div class="brand">
-                <div class="brand-icon">#</div>
-                <div class="brand-text">
-                    <h1>Code Quest</h1>
-                    <p>Unit 3 · Counters</p>
-                </div>
-            </div>
 
-            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
-        </div>
+        <form method="post">
 
-        <form method="post" id="lessonForm">
-
-            <div class="panel step-panel">
+            <div class="panel">
 
                 <!-- STEP 0 -->
                 <div class="step-card active" id="step0">
                     <div>
-                        <h2>Counters & Accumulators</h2>
-
-                        <p>Accumulators keep track of a running total inside a loop.</p>
-
-                        <div class="code-block">
-sum ← 0
-FOR i ← 1 TO 10
-    sum ← sum + i
-END FOR
-                        </div>
+                        <h2>Why Loops?</h2>
 
                         <div class="instruction-box">
-                            The variable <b>sum</b> keeps increasing each time the loop runs.
+                            Loops allow programs to repeat tasks automatically instead of writing code over and over again.
                         </div>
+
+                        <div class="code-block">
+Print numbers 1 to 100
+                        </div>
+
+                        <p>
+                            Imagine printing numbers 1–100 manually — loops make this easy.
+                        </p>
 
                         @if (Model.ShowHint)
                         {
                             <div class="alert-box alert-info-custom">
-                                It keeps adding values to a variable.
+                                Loops prevent repeating the same code many times.
                             </div>
                         }
 
                         @if (Model.ShowSolution)
                         {
                             <div class="alert-box alert-info-custom">
-                                An accumulator stores a running total.
+                                Loops are useful because they repeat tasks efficiently.
                             </div>
                         }
                     </div>
 
                     <div class="step-actions">
-                        <span>Instructions</span>
+                        <span>Introduction</span>
                         <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
                     </div>
                 </div>
@@ -426,10 +414,10 @@ END FOR
                 <!-- STEP 1 -->
                 <div class="step-card" id="step1">
                     <div>
-                        <h3>Check Your Understanding</h3>
+                        <h3>Understanding Loops</h3>
 
                         <div class="instruction-box">
-                            What is an accumulator?
+                            Why are loops useful in programming?
                         </div>
 
                         <input asp-for="UserAnswer" class="text-input" placeholder="Type your answer..." />
@@ -466,7 +454,7 @@ END FOR
                         <h3>Reflection</h3>
 
                         <div class="instruction-box">
-                            Why are accumulators useful in programming?
+                            Give an example of when you would use a loop in real life programming.
                         </div>
 
                         <input asp-for="ExplanationAnswer" class="text-input" />
@@ -503,4 +491,16 @@ END FOR
         document.querySelectorAll('.step-card').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + step).classList.add('active');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let step = 0;
+
+        const answered = '@(Model.IsCorrect?.ToString() ?? "")';
+        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+
+        if (explanationDone === 'True') step = 2;
+        else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) step = 1;
+
+        showStep(step);
+    });
 </script>
