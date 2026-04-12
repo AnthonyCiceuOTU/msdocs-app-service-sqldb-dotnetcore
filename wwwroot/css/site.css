@@ -43,6 +43,7 @@ body,
         var(--cq-bg);
     color: var(--cq-text);
     font-family: "Segoe UI", Inter, Arial, sans-serif;
+    overflow-x: hidden;
 }
 
 a {
@@ -116,7 +117,6 @@ a {
     width: 100%;
 }
 
-/* Generic page headings */
 h1, h2, h3, h4, h5 {
     color: var(--cq-secondary);
     font-weight: 750;
@@ -133,7 +133,6 @@ p {
     line-height: 1.65;
 }
 
-/* Cards */
 .card {
     border: 1px solid var(--cq-border);
     border-radius: var(--cq-radius-lg);
@@ -155,7 +154,6 @@ p {
     margin-bottom: 0.75rem;
 }
 
-/* Buttons */
 .btn {
     border-radius: 12px;
     font-weight: 700;
@@ -194,7 +192,6 @@ p {
     box-shadow: 0 12px 24px rgba(71, 85, 105, 0.18);
 }
 
-/* Forms */
 .form-control {
     border-radius: 12px;
     border: 1px solid #cdd9e6;
@@ -211,7 +208,6 @@ p {
     color: var(--cq-secondary);
 }
 
-/* Alerts */
 .alert {
     border-radius: 14px;
     border: none;
@@ -244,7 +240,6 @@ p {
     border: 1px solid var(--cq-border);
 }
 
-/* Code / pseudocode blocks */
 pre,
 .font-monospace,
 code {
@@ -268,7 +263,6 @@ code {
     border-radius: 6px;
 }
 
-/* Nav item links used inside pages */
 .nav-item {
     list-style: none;
 }
@@ -283,7 +277,6 @@ code {
     color: var(--cq-secondary) !important;
 }
 
-/* Todo / lists / tables */
 .table {
     background: white;
     border-radius: 16px;
@@ -302,7 +295,6 @@ code {
     vertical-align: middle;
 }
 
-/* Utility polish */
 .container.mt-4 {
     margin-top: 1.5rem !important;
 }
@@ -333,7 +325,6 @@ code {
     box-shadow: var(--cq-shadow) !important;
 }
 
-/* Better spacing for lesson pages */
 .container > h1:first-child {
     margin-top: 0.25rem;
 }
@@ -342,7 +333,18 @@ code {
     margin-bottom: 1.25rem;
 }
 
-/* Mobile */
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+table {
+    width: 100%;
+}
+
 @media (max-width: 991.98px) {
     .cq-navbar {
         padding-top: 0.75rem;
@@ -365,134 +367,70 @@ code {
     .btn.me-2 {
         margin-right: 0 !important;
     }
+
+    .container,
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .cq-brand,
+    .navbar-brand {
+        font-size: 1.1rem;
+        line-height: 1.2;
+        white-space: normal;
+    }
 }
 
-/* ===== Responsive fixes only — add at the VERY BOTTOM of your existing CSS ===== */
+@media (max-width: 767.98px) {
+    .container,
+    .container-fluid {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
 
-html, body {
-  overflow-x: hidden;
+    .btn,
+    button,
+    input[type="submit"],
+    input[type="button"] {
+        white-space: normal;
+        line-height: 1.2;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    [class*="col-"] {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
 }
 
-img,
-svg,
-video,
-canvas {
-  max-width: 100%;
-  height: auto;
-}
+@media (max-width: 575.98px) {
+    h1 {
+        font-size: 1.6rem;
+    }
 
-table {
-  width: 100%;
-}
+    h2 {
+        font-size: 1.3rem;
+    }
 
-@media (max-width: 1200px) {
-  h1 {
-    font-size: clamp(2rem, 3vw, 2.8rem);
-  }
+    h3 {
+        font-size: 1.1rem;
+    }
 
-  h2 {
-    font-size: clamp(1.6rem, 2.4vw, 2.2rem);
-  }
-
-  h3 {
-    font-size: clamp(1.25rem, 2vw, 1.8rem);
-  }
-}
-
-@media (max-width: 992px) {
-  .container,
-  .container-fluid {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .navbar-brand {
-    font-size: 1.1rem;
-    line-height: 1.2;
-    white-space: normal;
-  }
-
-  .btn,
-  button,
-  input[type="submit"],
-  input[type="button"],
-  .form-control,
-  .form-select {
-    font-size: 0.95rem;
-  }
-
-  h1 {
-    font-size: clamp(1.8rem, 4vw, 2.4rem);
-    line-height: 1.15;
-  }
-
-  h2 {
-    font-size: clamp(1.4rem, 3vw, 1.9rem);
-    line-height: 1.2;
-  }
-
-  h3 {
-    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
-    line-height: 1.25;
-  }
-
-  p,
-  li,
-  a,
-  label,
-  span {
-    line-height: 1.5;
-  }
-}
-
-@media (max-width: 768px) {
-  .container,
-  .container-fluid {
-    padding-left: 0.85rem;
-    padding-right: 0.85rem;
-  }
-
-  .btn,
-  button,
-  input[type="submit"],
-  input[type="button"] {
-    white-space: normal;
-  }
-
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  .row {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  [class*="col-"] {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-}
-
-@media (max-width: 576px) {
-  h1 {
-    font-size: 1.6rem;
-  }
-
-  h2 {
-    font-size: 1.3rem;
-  }
-
-  h3 {
-    font-size: 1.1rem;
-  }
-
-  .btn,
-  button,
-  input[type="submit"],
-  input[type="button"] {
-    width: 100%;
-  }
+    .btn,
+    button,
+    input[type="submit"],
+    input[type="button"] {
+        width: 100%;
+    }
 }
