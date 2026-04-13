@@ -1,11 +1,32 @@
-using Microsoft.AspNetCore.Mvc;
+using DotNetCoreSqlDb.Data;
+using DotNetCoreSqlDb.Models;
+using DotNetCoreSqlDb.Models.AI;
+using DotNetCoreSqlDb.Services;
 using DotNetCoreSqlDb.ViewModels;
-using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace DotNetCoreSqlDb.Controllers
 {
+    [Authorize]
     public class UnitFourController : Controller
     {
+        private readonly MyDatabaseContext _context;
+        private readonly IAiShortAnswerGrader _aiShortAnswerGrader;
+        private readonly ILogger<UnitFourController> _logger;
+
+        public UnitFourController(
+            MyDatabaseContext context,
+            IAiShortAnswerGrader aiShortAnswerGrader,
+            ILogger<UnitFourController> logger)
+        {
+            _context = context;
+            _aiShortAnswerGrader = aiShortAnswerGrader;
+            _logger = logger;
+        }
+
         [HttpGet]
         public IActionResult WhyLoops()
         {
@@ -292,9 +313,14 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Counters(CountersViewModel vm, string actionType)
+        public async Task<IActionResult> Counters(CountersViewModel vm, string actionType)
         {
-            TrimAll(vm);
+            vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
+            vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
+            vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
+            vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
+            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ExplanationFeedback = vm.ExplanationFeedback?.Trim() ?? "";
 
             if (actionType == "hint")
             {
@@ -312,36 +338,23 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation")
-            {
-                vm.ExplanationCorrect =
-                    (
-                        vm.ExplanationAnswer.Contains("running total", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("keeps adding", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("adds values", StringComparison.OrdinalIgnoreCase)
-                    );
-
-                vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                    ? "Correct! An accumulator stores a running total."
-                    : "Try mentioning that it keeps adding values or stores a running total.";
-
-                ViewBag.ForceStep = 2;
-                return View(vm);
-            }
-
             if (actionType == "submit")
             {
                 if (vm.ExplanationCorrect != true)
                 {
                     vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
-                        ? "Please check your explanation before submitting."
+                        ? "Please check your explanation with AI before submitting."
                         : vm.ExplanationFeedback;
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
                 }
 
-                vm.ExplanationFeedback = "Lesson complete!";
+                var saved = await SaveLessonProgressAsync("Counters");
+                vm.ExplanationFeedback = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
+
                 ViewBag.ForceStep = 2;
                 return View(vm);
             }
@@ -352,27 +365,102 @@ namespace DotNetCoreSqlDb.Controllers
             vm.IsQ1Correct = vm.UserAnswer1.Equals("sum", StringComparison.OrdinalIgnoreCase);
             vm.Feedback1 = vm.IsQ1Correct == true
                 ? "Correct!"
-                : "Which variable is storing the total?";
+                : "Look for the variable storing the total.";
 
-            vm.IsQ2Correct = vm.UserAnswer2.Equals("running total", StringComparison.OrdinalIgnoreCase)
-                             || vm.UserAnswer2.Contains("total", StringComparison.OrdinalIgnoreCase);
+            vm.IsQ2Correct =
+                vm.UserAnswer2.Equals("running total", StringComparison.OrdinalIgnoreCase) ||
+                vm.UserAnswer2.Contains("total", StringComparison.OrdinalIgnoreCase);
             vm.Feedback2 = vm.IsQ2Correct == true
                 ? "Correct!"
                 : "An accumulator keeps a running total.";
 
-            vm.IsQ3Correct = vm.UserAnswer3.Equals("sum = sum + i", StringComparison.OrdinalIgnoreCase)
-                             || vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase);
+            vm.IsQ3Correct =
+                vm.UserAnswer3.Equals("sum = sum + i", StringComparison.OrdinalIgnoreCase) ||
+                vm.UserAnswer3.Equals("sum ← sum + i", StringComparison.OrdinalIgnoreCase) ||
+                (vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase) &&
+                 vm.UserAnswer3.Contains("+", StringComparison.OrdinalIgnoreCase));
             vm.Feedback3 = vm.IsQ3Correct == true
                 ? "Correct!"
-                : "Look at the line that updates the total.";
+                : "Look at the line that updates the total each loop.";
 
             vm.IsQ4Correct = vm.UserAnswer4.Equals("accumulator", StringComparison.OrdinalIgnoreCase);
             vm.Feedback4 = vm.IsQ4Correct == true
                 ? "Correct!"
                 : "A variable that stores a running total is called an accumulator.";
 
-            ViewBag.ForceStep = AllCorrect(vm) ? 2 : 1;
+            ViewBag.ForceStep =
+                vm.IsQ1Correct == true &&
+                vm.IsQ2Correct == true &&
+                vm.IsQ3Correct == true &&
+                vm.IsQ4Correct == true
+                    ? 2
+                    : 1;
+
             return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckCountersExplanation([FromForm] string explanationAnswer)
+        {
+            explanationAnswer = explanationAnswer?.Trim() ?? "";
+
+            _logger.LogInformation("CheckCountersExplanation called. Explanation: {Explanation}", explanationAnswer);
+
+            if (string.IsNullOrWhiteSpace(explanationAnswer))
+            {
+                return BadRequest(new
+                {
+                    isCorrect = false,
+                    feedback = "Please enter an explanation first."
+                });
+            }
+
+            try
+            {
+                var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                {
+                    QuestionText = "Explain why counters or accumulators are useful in programming.",
+                    StudentAnswer = explanationAnswer,
+                    ExpectedAnswer = "Counters and accumulators are useful because they help a program keep track of values in a loop, such as counting how many times something happens or keeping a running total.",
+                    GradingRubric = """
+                    To be correct, the answer should clearly show that:
+                    1. A counter or accumulator keeps track of something while code repeats.
+                    2. It may count occurrences or store a running total.
+                    3. It is useful in loops or repeated steps.
+
+                    Accept simple student wording such as:
+                    - keeps track of a total
+                    - counts how many times something happens
+                    - updates a value in a loop
+                    - stores a running total
+
+                    Do not require advanced vocabulary.
+                    Reject answers that are too vague or do not mention tracking/counting/totaling.
+                    """
+                });
+
+                _logger.LogInformation(
+                    "CheckCountersExplanation result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                    result.IsCorrect,
+                    result.Score,
+                    result.Feedback);
+
+                return Json(new
+                {
+                    isCorrect = result.IsCorrect,
+                    feedback = result.Feedback
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking Counters explanation.");
+                return StatusCode(500, new
+                {
+                    isCorrect = false,
+                    feedback = "We could not check your explanation right now. Please try again."
+                });
+            }
         }
 
         [HttpGet]
@@ -489,5 +577,52 @@ namespace DotNetCoreSqlDb.Controllers
                    vm.IsQ3Correct == true &&
                    vm.IsQ4Correct == true;
         }
+
+        private async Task<bool> SaveLessonProgressAsync(string actionName)
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                            ?? User.FindFirstValue("UserID");
+
+            if (!Guid.TryParse(userIdValue, out var userId))
+            {
+                return false;
+            }
+
+            var lesson = await _context.Lessons
+                .FirstOrDefaultAsync(l => l.ActionName == actionName);
+
+            if (lesson == null)
+            {
+                return false;
+            }
+
+            var progress = await _context.UserLessonProgresses
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
+
+            if (progress == null)
+            {
+                progress = new UserLessonProgress
+                {
+                    UserId = userId,
+                    LessonId = lesson.Id,
+                    IsCompleted = true,
+                    CompletedAtUtc = DateTime.UtcNow,
+                    LastAccessedAtUtc = DateTime.UtcNow
+                };
+
+                _context.UserLessonProgresses.Add(progress);
+            }
+            else
+            {
+                progress.IsCompleted = true;
+                progress.CompletedAtUtc ??= DateTime.UtcNow;
+                progress.LastAccessedAtUtc = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
+
+
 }
