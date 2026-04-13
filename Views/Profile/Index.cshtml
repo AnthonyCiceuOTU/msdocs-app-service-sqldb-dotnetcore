@@ -10,7 +10,6 @@
     }
 
     int totalWeeks = (int)Math.Ceiling(allDates.Count / 7.0);
-    var unlockedCount = Model.Achievements.Count(a => a.IsUnlocked);
 }
 
 <div class="profile-page">
@@ -19,208 +18,43 @@
         <div class="profile-header">
             <div>
                 <h1 class="profile-title">Profile</h1>
-                <p class="profile-subtitle">Track your progress, achievements, and learning activity in CodeQuest.</p>
+                <p class="profile-subtitle">Your CodeQuest account and sign-in activity</p>
             </div>
 
             <div class="profile-actions">
                 <a asp-controller="Home" asp-action="Index" class="profile-btn secondary">Home</a>
-                <a asp-controller="Lessons" asp-action="Index" class="profile-btn secondary">Lessons</a>
             </div>
         </div>
 
-        <div class="profile-card hero-card">
-            <div class="hero-grid">
-                <div>
-                    <div class="profile-kicker">Student Dashboard</div>
-                    <h2 class="welcome-title">Welcome back, @Model.Username</h2>
-                    <p class="welcome-copy">
-                        You have completed <strong>@Model.CompletedLessons</strong> out of <strong>@Model.TotalLessons</strong> lessons.
-                        Keep building momentum and continue with your next recommended lesson.
-                    </p>
-
-                    <div class="progress-block">
-                        <div class="progress-row">
-                            <span>Overall course progress</span>
-                            <span>@Model.OverallProgressPercent.ToString("0.#")%</span>
-                        </div>
-                        <div class="progress-track large">
-                            <div class="progress-fill" style="width:@Model.OverallProgressPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
-                        </div>
-                    </div>
-
-                    @if (Model.NextRecommendedLesson != null)
-                    {
-                        <div class="next-lesson-card">
-                            <div class="mini-label">Recommended next lesson</div>
-                            <div class="next-lesson-title">@Model.NextRecommendedLesson.UnitTitle — @Model.NextRecommendedLesson.LessonTitle</div>
-                            <a asp-controller="Lessons"
-                               asp-action="Open"
-                               asp-route-lessonId="@Model.NextRecommendedLesson.LessonId"
-                               class="profile-btn primary next-btn">
-                                Continue Learning
-                            </a>
-                        </div>
-                    }
+        <div class="profile-card">
+            <div class="profile-info-grid">
+                <div class="info-box">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">@Model.Username</span>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="info-box">
-                        <span class="info-label">Lessons Completed</span>
-                        <span class="info-value">@Model.CompletedLessons</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">Lessons Remaining</span>
-                        <span class="info-value">@Model.RemainingLessons</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">Units Completed</span>
-                        <span class="info-value">@Model.CompletedUnits / @Model.TotalUnits</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">Current Streak</span>
-                        <span class="info-value">@Model.CurrentStreakDays day@(Model.CurrentStreakDays == 1 ? "" : "s")</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">Achievements Unlocked</span>
-                        <span class="info-value">@unlockedCount / @Model.Achievements.Count</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">Units Started</span>
-                        <span class="info-value">@Model.DistinctUnitsStarted</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="profile-grid">
-            <div class="profile-card">
-                <div class="section-header">
-                    <h2>Progress by Unit</h2>
-                    <p>See how far you have moved through each unit.</p>
+                <div class="info-box">
+                    <span class="info-label">User ID</span>
+                    <span class="info-value small">@Model.UserId</span>
                 </div>
 
-                <div class="unit-progress-list">
-                    @foreach (var unit in Model.UnitProgress)
-                    {
-                        <div class="unit-progress-item">
-                            <div class="unit-progress-top">
-                                <div>
-                                    <div class="unit-title">@unit.UnitTitle</div>
-                                    <div class="unit-meta">@unit.CompletedLessons / @unit.TotalLessons lessons completed</div>
-                                </div>
-                                <div class="unit-percent">@unit.ProgressPercent.ToString("0.#")%</div>
-                            </div>
-
-                            <div class="progress-track">
-                                <div class="progress-fill" style="width:@unit.ProgressPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></div>
-                            </div>
-
-                            @if (unit.IsComplete)
-                            {
-                                <div class="unit-complete-badge">Completed</div>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <div class="profile-card">
-                <div class="section-header">
-                    <h2>Achievements</h2>
-                    <p>Small milestones that make progress feel more rewarding.</p>
+                <div class="info-box">
+                    <span class="info-label">Total Sign-ins</span>
+                    <span class="info-value">@Model.TotalSignIns</span>
                 </div>
 
-                <div class="achievement-grid">
-                    @foreach (var achievement in Model.Achievements)
-                    {
-                        <div class="achievement-card @(achievement.IsUnlocked ? "unlocked" : "locked")">
-                            <div class="achievement-icon">@achievement.Icon</div>
-                            <div class="achievement-content">
-                                <div class="achievement-title">@achievement.Title</div>
-                                <div class="achievement-description">@achievement.Description</div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <div class="profile-grid">
-            <div class="profile-card">
-                <div class="section-header">
-                    <h2>Recent Completed Lessons</h2>
-                    <p>Your most recent learning wins.</p>
+                <div class="info-box">
+                    <span class="info-label">First Sign-in</span>
+                    <span class="info-value">
+                        @(Model.FirstSignIn?.ToString("MMM d, yyyy") ?? "No sign-ins yet")
+                    </span>
                 </div>
 
-                @if (Model.RecentCompletedLessons.Any())
-                {
-                    <div class="recent-list">
-                        @foreach (var lesson in Model.RecentCompletedLessons)
-                        {
-                            <div class="recent-item">
-                                <div>
-                                    <div class="recent-title">@lesson.UnitTitle — @lesson.LessonTitle</div>
-                                    <div class="recent-meta">
-                                        Completed @(lesson.CompletedAtUtc?.ToLocalTime().ToString("MMM d, yyyy h:mm tt") ?? "recently")
-                                    </div>
-                                </div>
-
-                                <a asp-controller="Lessons"
-                                   asp-action="Open"
-                                   asp-route-lessonId="@lesson.LessonId"
-                                   class="profile-btn secondary compact-btn">
-                                    Review
-                                </a>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="empty-message">You have not completed any lessons yet. Start one from the lessons page.</div>
-                }
-            </div>
-
-            <div class="profile-card">
-                <div class="section-header">
-                    <h2>Account Activity</h2>
-                    <p>General account details and sign-in history.</p>
-                </div>
-
-                <div class="profile-info-grid">
-                    <div class="info-box">
-                        <span class="info-label">Username</span>
-                        <span class="info-value">@Model.Username</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">User ID</span>
-                        <span class="info-value small">@Model.UserId</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">Total Sign-ins</span>
-                        <span class="info-value">@Model.TotalSignIns</span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">First Sign-in</span>
-                        <span class="info-value">
-                            @(Model.FirstSignIn?.ToString("MMM d, yyyy") ?? "No sign-ins yet")
-                        </span>
-                    </div>
-
-                    <div class="info-box">
-                        <span class="info-label">Last Sign-in</span>
-                        <span class="info-value">
-                            @(Model.LastSignIn?.ToString("MMM d, yyyy h:mm tt") ?? "No sign-ins yet")
-                        </span>
-                    </div>
+                <div class="info-box">
+                    <span class="info-label">Last Sign-in</span>
+                    <span class="info-value">
+                        @(Model.LastSignIn?.ToString("MMM d, yyyy h:mm tt") ?? "No sign-ins yet")
+                    </span>
                 </div>
             </div>
         </div>
@@ -228,7 +62,6 @@
         <div class="profile-card">
             <div class="calendar-header">
                 <h2>Sign-in History</h2>
-                <p>Your sign-in activity over the last year.</p>
             </div>
 
             <div class="contribution-wrapper">
@@ -274,7 +107,8 @@
                                         _ => "level-4"
                                     };
 
-                                    <div class="day-cell @levelClass" title="@date.ToString("MMMM d, yyyy"): @count sign-in(s)"></div>
+                                    <div class="day-cell @levelClass" title="@date.ToString("MMMM d, yyyy"): @count sign-in(s)">
+                                    </div>
                                 }
                                 else
                                 {
@@ -305,17 +139,15 @@
         margin: 0;
         padding: 0;
         width: 100%;
-        min-height: 100%;
-    }
-
-    body {
-        overflow-x: hidden;
+        height: 100%;
+        overflow: hidden;
     }
 
     .profile-page {
         min-height: 100vh;
         width: 100%;
         box-sizing: border-box;
+        overflow: hidden;
         background:
             radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
             radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
@@ -326,11 +158,11 @@
     }
 
     .profile-container {
-        max-width: 1200px;
+        max-width: 1100px;
+        height: 100%;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        gap: 16px;
     }
 
     .profile-header {
@@ -338,6 +170,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 16px;
+        margin-bottom: 16px;
         flex-wrap: wrap;
     }
 
@@ -356,7 +189,6 @@
     .profile-actions {
         display: flex;
         gap: 12px;
-        flex-wrap: wrap;
     }
 
     .profile-btn {
@@ -366,9 +198,6 @@
         font-weight: 600;
         transition: 0.2s ease;
         border: 1px solid rgba(255, 255, 255, 0.08);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .profile-btn.secondary {
@@ -376,19 +205,9 @@
         color: #e5e7eb;
     }
 
-    .profile-btn.primary {
-        background: linear-gradient(135deg, #0ea5e9, #22c55e);
-        color: #ffffff;
-    }
-
     .profile-btn:hover {
         transform: translateY(-1px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-        color: #ffffff;
-    }
-
-    .compact-btn {
-        min-width: 92px;
     }
 
     .profile-card {
@@ -397,127 +216,8 @@
         border-radius: 18px;
         padding: 18px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
+        margin-bottom: 16px;
         backdrop-filter: blur(12px);
-    }
-
-    .hero-card {
-        padding: 22px;
-    }
-
-    .hero-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.9fr);
-        gap: 18px;
-        align-items: start;
-    }
-
-    .profile-kicker {
-        color: #22c55e;
-        font-size: 0.82rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 8px;
-    }
-
-    .welcome-title {
-        margin: 0 0 10px 0;
-        color: #ffffff;
-        font-size: 1.7rem;
-    }
-
-    .welcome-copy {
-        margin: 0 0 16px 0;
-        color: #9fb0c4;
-        line-height: 1.65;
-    }
-
-    .progress-block {
-        margin-bottom: 18px;
-    }
-
-    .progress-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 8px;
-        color: #e5e7eb;
-        font-weight: 600;
-    }
-
-    .progress-track {
-        width: 100%;
-        height: 10px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        overflow: hidden;
-    }
-
-    .progress-track.large {
-        height: 12px;
-    }
-
-    .progress-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #0ea5e9, #22c55e);
-    }
-
-    .next-lesson-card {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 16px;
-    }
-
-    .mini-label {
-        color: #94a3b8;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 6px;
-    }
-
-    .next-lesson-title {
-        color: #ffffff;
-        font-size: 1rem;
-        font-weight: 700;
-        line-height: 1.45;
-        margin-bottom: 12px;
-    }
-
-    .next-btn {
-        width: 100%;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-    }
-
-    .profile-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
-    }
-
-    .section-header {
-        margin-bottom: 14px;
-    }
-
-    .section-header h2,
-    .calendar-header h2 {
-        margin: 0;
-        color: #ffffff;
-    }
-
-    .section-header p,
-    .calendar-header p {
-        margin: 8px 0 0 0;
-        color: #94a3b8;
-        line-height: 1.55;
     }
 
     .profile-info-grid {
@@ -531,7 +231,6 @@
         border: 1px solid rgba(148, 163, 184, 0.12);
         border-radius: 14px;
         padding: 16px;
-        min-width: 0;
     }
 
     .info-label {
@@ -555,150 +254,27 @@
         font-size: 0.9rem;
     }
 
-    .unit-progress-list {
-        display: grid;
-        gap: 12px;
-    }
-
-    .unit-progress-item {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 14px;
-    }
-
-    .unit-progress-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 10px;
-    }
-
-    .unit-title {
+    .calendar-header h2 {
+        margin: 0;
         color: #ffffff;
-        font-size: 0.98rem;
-        font-weight: 700;
     }
 
-    .unit-meta {
+    .calendar-header p {
+        margin: 8px 0 20px 0;
         color: #94a3b8;
-        font-size: 0.88rem;
-        margin-top: 4px;
-    }
-
-    .unit-percent {
-        color: #e5e7eb;
-        font-weight: 700;
-        white-space: nowrap;
-    }
-
-    .unit-complete-badge {
-        display: inline-flex;
-        align-items: center;
-        margin-top: 10px;
-        padding: 5px 10px;
-        border-radius: 999px;
-        background: rgba(34, 197, 94, 0.14);
-        color: #86efac;
-        font-size: 0.8rem;
-        font-weight: 700;
-    }
-
-    .achievement-grid {
-        display: grid;
-        gap: 12px;
-    }
-
-    .achievement-card {
-        display: grid;
-        grid-template-columns: 44px minmax(0, 1fr);
-        gap: 12px;
-        align-items: start;
-        border-radius: 14px;
-        padding: 14px;
-        border: 1px solid rgba(148, 163, 184, 0.12);
-    }
-
-    .achievement-card.unlocked {
-        background: rgba(34, 197, 94, 0.08);
-    }
-
-    .achievement-card.locked {
-        background: rgba(255, 255, 255, 0.03);
-        opacity: 0.78;
-    }
-
-    .achievement-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.06);
-        color: #ffffff;
-        font-size: 1.05rem;
-        font-weight: 700;
-    }
-
-    .achievement-title {
-        color: #ffffff;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
-
-    .achievement-description {
-        color: #9fb0c4;
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-
-    .recent-list {
-        display: grid;
-        gap: 12px;
-    }
-
-    .recent-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 14px;
-    }
-
-    .recent-title {
-        color: #ffffff;
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-
-    .recent-meta {
-        color: #94a3b8;
-        font-size: 0.88rem;
-    }
-
-    .empty-message {
-        color: #94a3b8;
-        line-height: 1.6;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 14px;
     }
 
     .contribution-wrapper {
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 6px;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
     }
 
     .month-row {
         display: grid;
-        grid-template-columns: 30px repeat(@totalWeeks, 14px);
+        grid-template-columns: 30px repeat(
+                @totalWeeks
+                , 14px);
         gap: 4px;
         margin-bottom: 8px;
         min-width: fit-content;
@@ -779,62 +355,20 @@
         font-size: 0.8rem;
     }
 
-    @@media (max-width: 980px) {
-        .hero-grid,
-        .profile-grid {
-            grid-template-columns: 1fr;
-        }
+    .profile-card:last-child {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
     }
 
     @@media (max-width: 768px) {
-        .profile-page {
-            padding: 16px;
+        .profile-card {
+            padding: 18px;
         }
 
         .profile-title {
-            font-size: 1.85rem;
-        }
-
-        .profile-header {
-            align-items: stretch;
-        }
-
-        .profile-actions {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .profile-btn {
-            width: 100%;
-            text-align: center;
-        }
-
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .recent-item {
-            flex-direction: column;
-            align-items: stretch;
-        }
-    }
-
-    @@media (max-width: 560px) {
-        .profile-page {
-            padding: 12px;
-        }
-
-        .profile-actions {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-info-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-title {
-            font-size: 1.55rem;
+            font-size: 1.8rem;
         }
     }
 </style>

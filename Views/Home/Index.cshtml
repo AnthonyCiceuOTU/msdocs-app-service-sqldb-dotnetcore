@@ -33,11 +33,11 @@
     }
 
     .home-shell {
-        max-width: 1240px;
+        max-width: 1100px;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        gap: 18px;
+        gap: 14px;
         box-sizing: border-box;
     }
 
@@ -77,12 +77,6 @@
         line-height: 1.1;
     }
 
-    .brand-text p {
-        margin: 4px 0 0 0;
-        color: #94a3b8;
-        font-size: 0.92rem;
-    }
-
     .panel {
         background: rgba(17, 24, 39, 0.88);
         border: 1px solid rgba(148, 163, 184, 0.18);
@@ -92,59 +86,36 @@
     }
 
     .hero {
-        padding: clamp(20px, 2.5vw, 30px);
+        padding: clamp(18px, 2.3vw, 28px);
         margin-top: 4px;
     }
 
     .hero-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
-        gap: 20px;
+        grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr);
+        gap: 18px;
         align-items: stretch;
-    }
-
-    .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 12px;
-        padding: 7px 11px;
-        border-radius: 999px;
-        background: rgba(14, 165, 233, 0.12);
-        border: 1px solid rgba(14, 165, 233, 0.22);
-        color: #7dd3fc;
-        font-size: 0.82rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
     }
 
     .hero h2 {
         margin: 0 0 12px 0;
-        font-size: clamp(1.8rem, 3vw, 2.35rem);
-        line-height: 1.12;
+        font-size: clamp(1.6rem, 3vw, 1.95rem);
+        line-height: 1.15;
         color: #ffffff;
-        max-width: 760px;
     }
 
     .hero p {
         margin: 0 0 18px 0;
         color: #94a3b8;
-        font-size: clamp(0.96rem, 1.7vw, 1rem);
-        line-height: 1.68;
-        max-width: 720px;
+        font-size: clamp(0.95rem, 1.7vw, 1rem);
+        line-height: 1.65;
+        max-width: 700px;
     }
 
     .hero-actions {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
-        margin-bottom: 16px;
-    }
-
-    .hero-note {
-        color: #9fb3c8;
-        font-size: 0.9rem;
-        line-height: 1.55;
     }
 
     .btn-main,
@@ -155,11 +126,10 @@
         text-decoration: none;
         border-radius: 10px;
         font-weight: 600;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        transition: 0.2s ease;
         border: 1px solid rgba(255,255,255,0.08);
         padding: 11px 16px;
         min-height: 42px;
-        white-space: nowrap;
     }
 
     .btn-main {
@@ -179,210 +149,40 @@
         color: #ffffff;
     }
 
-    .hero-side {
-        display: grid;
-        gap: 12px;
-    }
-
-    .info-card {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 15px;
-    }
-
-    .info-label {
-        color: #94a3b8;
-        font-size: 0.78rem;
-        margin-bottom: 7px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .info-value {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #f8fafc;
-        line-height: 1.45;
-    }
-
-    .info-text {
-        margin-top: 6px;
-        color: #9fb0c4;
-        font-size: 0.9rem;
-        line-height: 1.55;
-    }
-
-    .section-grid {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 16px;
-    }
-
-    .section-panel {
-        padding: clamp(16px, 2vw, 22px);
-    }
-
-    .section-heading {
-        margin-bottom: 14px;
-    }
-
-    .section-heading h3 {
-        margin: 0 0 6px 0;
-        font-size: 1.2rem;
-        color: #ffffff;
-    }
-
-    .section-heading p {
-        margin: 0;
-        color: #94a3b8;
-        line-height: 1.6;
-        font-size: 0.94rem;
-    }
-
-    .steps-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-    }
-
-    .step-card {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 14px;
-    }
-
-    .step-number {
-        width: 30px;
-        height: 30px;
-        border-radius: 999px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(14, 165, 233, 0.16);
-        color: #7dd3fc;
-        font-weight: 700;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-    }
-
-    .step-card h4 {
-        margin: 0 0 8px 0;
-        color: #ffffff;
-        font-size: 0.98rem;
-    }
-
-    .step-card p {
-        margin: 0;
-        color: #9fb0c4;
-        font-size: 0.9rem;
-        line-height: 1.55;
-    }
-
-    .feature-list {
+    .hero-stats {
         display: grid;
         gap: 10px;
     }
 
-    .feature-item {
-        display: grid;
-        grid-template-columns: 40px minmax(0, 1fr);
-        gap: 12px;
-        align-items: start;
-        background: rgba(255,255,255,0.04);
+    .stat-card {
+        background: rgba(255,255,255,0.03);
         border: 1px solid rgba(148, 163, 184, 0.12);
         border-radius: 14px;
         padding: 14px;
     }
 
-    .feature-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(34, 197, 94, 0.12);
-        color: #86efac;
-        font-weight: 700;
-        font-size: 0.95rem;
+    .stat-card .label {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 
-    .feature-item h4 {
-        margin: 0 0 6px 0;
-        color: #ffffff;
-        font-size: 0.98rem;
+    .stat-card .value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #f8fafc;
+        line-height: 1.4;
     }
 
-    .feature-item p {
-        margin: 0;
-        color: #9fb0c4;
-        font-size: 0.9rem;
-        line-height: 1.55;
-    }
-
-    .cta-band {
-        padding: clamp(16px, 2vw, 22px);
-        display: grid;
-        grid-template-columns: minmax(0, 1.2fr) auto;
-        gap: 16px;
-        align-items: center;
-    }
-
-    .cta-band h3 {
-        margin: 0 0 6px 0;
-        color: #ffffff;
-        font-size: 1.2rem;
-    }
-
-    .cta-band p {
-        margin: 0;
-        color: #9fb0c4;
-        line-height: 1.6;
-        font-size: 0.94rem;
-        max-width: 760px;
-    }
-
-    .fade-section {
-        opacity: 0.18;
-        transform: translateY(32px);
-        transition: opacity 0.55s ease, transform 0.55s ease, filter 0.55s ease;
-        filter: blur(2px);
-        will-change: opacity, transform, filter;
-    }
-
-    .fade-section.is-visible {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-    }
-
-    .fade-fast {
-        transition-delay: 0.03s;
-    }
-
-    .fade-mid {
-        transition-delay: 0.09s;
-    }
-
-    .fade-slow {
-        transition-delay: 0.15s;
-    }
-
-    @@media (max-width: 980px) {
-        .hero-grid,
-        .section-grid,
-        .cta-band {
-            grid-template-columns: 1fr;
-        }
-
-        .steps-grid {
+    @@media (max-width: 900px) {
+        .hero-grid {
             grid-template-columns: 1fr;
         }
     }
 
-    @@media (max-width: 680px) {
+    @@media (max-width: 640px) {
         .topbar {
             align-items: stretch;
         }
@@ -392,36 +192,19 @@
         }
 
         .hero-actions a,
-        .topbar .btn-secondary,
-        .cta-band .btn-main {
+        .topbar .btn-secondary {
             width: 100%;
-        }
-    }
-
-    @@media (prefers-reduced-motion: reduce) {
-        .fade-section,
-        .fade-section.is-visible {
-            opacity: 1;
-            transform: none;
-            filter: none;
-            transition: none;
-        }
-
-        .btn-main,
-        .btn-secondary {
-            transition: none;
         }
     }
 </style>
 
 <div class="home-page">
     <div class="home-shell">
-        <div class="topbar fade-section fade-fast">
+        <div class="topbar">
             <div class="brand">
                 <div class="brand-icon">&lt;/&gt;</div>
                 <div class="brand-text">
                     <h1>Code Quest</h1>
-                    <p>Learn core coding ideas step by step with guided practice.</p>
                 </div>
             </div>
 
@@ -439,180 +222,37 @@
             }
         </div>
 
-        <div class="panel hero fade-section fade-fast">
+        <div class="panel hero">
             <div class="hero-grid">
                 <div>
-                    <div class="eyebrow">Structured learning for beginners</div>
-                    <h2>Start with a clear path, build logic first, and practice coding concepts without getting overwhelmed.</h2>
+                    <h2>Build coding skills through structured lessons and hands-on practice.</h2>
                     <p>
-                        Code Quest is designed to teach introductory computer science in a more guided way. Instead of jumping
-                        straight into syntax, learners move through focused lessons, simple practice, and step-by-step concept building.
+                        Browse the lessons page and the app will automatically load your first unfinished lesson.
+                        From there, use Open Lesson to jump straight into the lesson you should work on next.
                     </p>
 
                     <div class="hero-actions">
                         <a asp-controller="Lessons" asp-action="Index" class="btn-main">
-                            Start Learning
+                            Browse Lessons
                         </a>
-
-                        @if (!isGuest)
-                        {
-                            <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
-                                View Progress
-                            </a>
-                        }
-                    </div>
-
-                    <div class="hero-note">
-                        New here? Open the lessons page and select a lesson. The app is built so you can move in order,
-                        review older material, or jump to a concept you want to practice.
                     </div>
                 </div>
 
-                <div class="hero-side">
-                    <div class="info-card fade-section fade-fast">
-                        <div class="info-label">Why use it</div>
-                        <div class="info-value">Focused beginner-friendly learning</div>
-                        <div class="info-text">
-                            Lessons are broken into small steps so users can understand the logic behind programming instead of just memorizing code.
-                        </div>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="label">Current path</div>
+                        <div class="value">Intro to Coding</div>
                     </div>
-
-                    <div class="info-card fade-section fade-mid">
-                        <div class="info-label">How it works</div>
-                        <div class="info-value">Browse → preview → start lesson</div>
-                        <div class="info-text">
-                            Each lesson has a clear preview page, guided navigation, and practice activities to reinforce the concept.
-                        </div>
+                    <div class="stat-card">
+                        <div class="label">Learning mode</div>
+                        <div class="value">Structured lessons</div>
                     </div>
-
-                    <div class="info-card fade-section fade-slow">
-                        <div class="info-label">Learning style</div>
-                        <div class="info-value">Pseudocode, concepts, and hands-on practice</div>
-                        <div class="info-text">
-                            The goal is to help learners understand computational thinking before they get stuck on syntax details.
-                        </div>
+                    <div class="stat-card">
+                        <div class="label">Navigation</div>
+                        <div class="value">Responsive on desktop and mobile</div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="section-grid">
-            <div class="panel section-panel fade-section fade-fast">
-                <div class="section-heading">
-                    <h3>How to get started</h3>
-                    <p>Move through the platform with a simple, clear flow.</p>
-                </div>
-
-                <div class="steps-grid">
-                    <div class="step-card fade-section fade-fast">
-                        <div class="step-number">1</div>
-                        <h4>Open the lessons page</h4>
-                        <p>Browse the course content and pick the topic you want to work on next.</p>
-                    </div>
-
-                    <div class="step-card fade-section fade-mid">
-                        <div class="step-number">2</div>
-                        <h4>Preview the lesson</h4>
-                        <p>Read the summary, check the overview, and confirm the lesson you want to start.</p>
-                    </div>
-
-                    <div class="step-card fade-section fade-slow">
-                        <div class="step-number">3</div>
-                        <h4>Practice and review</h4>
-                        <p>Complete the activity, move to the next lesson, or go back to review older concepts.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel section-panel fade-section fade-mid">
-                <div class="section-heading">
-                    <h3>What makes Code Quest different</h3>
-                    <p>Learn programming step by step with structured lessons, clear explanations, and hands-on practice.</p>
-                </div>
-
-                <div class="feature-list">
-                    <div class="feature-item fade-section fade-fast">
-                        <div class="feature-icon">01</div>
-                        <div>
-                            <h4>Pseudocode-first learning</h4>
-                            <p>Build problem-solving skills and logic before worrying about full programming syntax.</p>
-                        </div>
-                    </div>
-
-                    <div class="feature-item fade-section fade-mid">
-                        <div class="feature-icon">02</div>
-                        <div>
-                            <h4>Small, structured lessons</h4>
-                            <p>Each lesson focuses on one idea at a time so learners can move at a manageable pace.</p>
-                        </div>
-                    </div>
-
-                    <div class="feature-item fade-section fade-slow">
-                        <div class="feature-icon">03</div>
-                        <div>
-                            <h4>Practice-driven flow</h4>
-                            <p>Users are not only reading content. They preview, interact, and apply concepts while moving through the course.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel cta-band fade-section fade-mid">
-            <div>
-                <h3>Ready to continue?</h3>
-                <p>
-                    Head to the lessons page to continue your path, review an earlier topic, or explore another concept in the course.
-                </p>
-            </div>
-
-            <a asp-controller="Lessons" asp-action="Index" class="btn-main">
-                Go to Lessons
-            </a>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        (function () {
-            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (prefersReducedMotion) {
-                document.querySelectorAll('.fade-section').forEach((el) => {
-                    el.classList.add('is-visible');
-                });
-                return;
-            }
-
-            const items = Array.from(document.querySelectorAll('.fade-section'));
-
-            function updateVisibility() {
-                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-                items.forEach((item) => {
-                    const rect = item.getBoundingClientRect();
-
-                    const visibleTop = rect.top < viewportHeight * 0.88;
-                    const visibleBottom = rect.bottom > viewportHeight * 0.12;
-                    const isOnScreen = visibleTop && visibleBottom;
-
-                    if (isOnScreen) {
-                        item.classList.add('is-visible');
-                    } else {
-                        item.classList.remove('is-visible');
-                    }
-                });
-            }
-
-            window.addEventListener('scroll', updateVisibility, { passive: true });
-            window.addEventListener('resize', updateVisibility);
-
-            window.addEventListener('load', function () {
-                updateVisibility();
-            });
-
-            requestAnimationFrame(updateVisibility);
-            setTimeout(updateVisibility, 60);
-        })();
-    </script>
-}
