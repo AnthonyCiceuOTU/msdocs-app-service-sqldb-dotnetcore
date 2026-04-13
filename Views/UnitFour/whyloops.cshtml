@@ -1,0 +1,46 @@
+@model DotNetCoreSqlDb.ViewModels.WhyLoopsViewModel
+
+<div class="container mt-4">
+    <h1>Why Loops?</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p>Loops allow programs to repeat tasks automatically.</p>
+
+            <pre class="bg-light p-3 border rounded">
+Print numbers 1 to 100
+            </pre>
+
+            <p><strong>Question:</strong> Why are loops useful?</p>
+
+            <form method="post">
+                <input asp-for="UserAnswer" class="form-control mb-3" />
+
+                <button name="actionType" value="submit" class="btn btn-primary">Submit</button>
+                <button name="actionType" value="hint" class="btn btn-warning">Hint</button>
+                <button name="actionType" value="solution" class="btn btn-success">Solution</button>
+            </form>
+
+            @if (Model.ShowHint)
+            {
+                <div class="alert alert-warning mt-3">
+                    Loops prevent repeating the same code many times.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert alert-success mt-3">
+                    Loops are useful because they repeat tasks efficiently.
+                </div>
+            }
+
+            @if (Model.IsCorrect != null)
+            {
+                <div class="alert @(Model.IsCorrect == true ? "alert-success" : "alert-danger") mt-3">
+                    @Model.FeedbackMessage
+                </div>
+            }
+        </div>
+    </div>
+</div>
