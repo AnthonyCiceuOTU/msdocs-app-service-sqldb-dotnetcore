@@ -344,28 +344,30 @@
         max-width: 760px;
     }
 
-    .reveal {
-        opacity: 0;
-        transform: translateY(40px);
-        transition: opacity 0.8s ease, transform 0.8s ease;
-        will-change: opacity, transform;
+    .fade-section {
+        opacity: 0.18;
+        transform: translateY(32px);
+        transition: opacity 0.55s ease, transform 0.55s ease, filter 0.55s ease;
+        filter: blur(2px);
+        will-change: opacity, transform, filter;
     }
 
-    .reveal.is-visible {
+    .fade-section.is-visible {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
     }
 
-    .reveal-delay-1 {
-        transition-delay: 0.08s;
+    .fade-fast {
+        transition-delay: 0.03s;
     }
 
-    .reveal-delay-2 {
-        transition-delay: 0.16s;
+    .fade-mid {
+        transition-delay: 0.09s;
     }
 
-    .reveal-delay-3 {
-        transition-delay: 0.24s;
+    .fade-slow {
+        transition-delay: 0.15s;
     }
 
     @@media (max-width: 980px) {
@@ -397,10 +399,11 @@
     }
 
     @@media (prefers-reduced-motion: reduce) {
-        .reveal,
-        .reveal.is-visible {
+        .fade-section,
+        .fade-section.is-visible {
             opacity: 1;
             transform: none;
+            filter: none;
             transition: none;
         }
 
@@ -413,7 +416,7 @@
 
 <div class="home-page">
     <div class="home-shell">
-        <div class="topbar reveal is-visible">
+        <div class="topbar fade-section fade-fast">
             <div class="brand">
                 <div class="brand-icon">&lt;/&gt;</div>
                 <div class="brand-text">
@@ -436,7 +439,7 @@
             }
         </div>
 
-        <div class="panel hero reveal is-visible">
+        <div class="panel hero fade-section fade-fast">
             <div class="hero-grid">
                 <div>
                     <div class="eyebrow">Structured learning for beginners</div>
@@ -466,7 +469,7 @@
                 </div>
 
                 <div class="hero-side">
-                    <div class="info-card reveal reveal-delay-1">
+                    <div class="info-card fade-section fade-fast">
                         <div class="info-label">Why use it</div>
                         <div class="info-value">Focused beginner-friendly learning</div>
                         <div class="info-text">
@@ -474,7 +477,7 @@
                         </div>
                     </div>
 
-                    <div class="info-card reveal reveal-delay-2">
+                    <div class="info-card fade-section fade-mid">
                         <div class="info-label">How it works</div>
                         <div class="info-value">Browse → preview → start lesson</div>
                         <div class="info-text">
@@ -482,7 +485,7 @@
                         </div>
                     </div>
 
-                    <div class="info-card reveal reveal-delay-3">
+                    <div class="info-card fade-section fade-slow">
                         <div class="info-label">Learning style</div>
                         <div class="info-value">Pseudocode, concepts, and hands-on practice</div>
                         <div class="info-text">
@@ -494,26 +497,26 @@
         </div>
 
         <div class="section-grid">
-            <div class="panel section-panel reveal">
+            <div class="panel section-panel fade-section fade-fast">
                 <div class="section-heading">
                     <h3>How to get started</h3>
                     <p>Move through the platform with a simple, clear flow.</p>
                 </div>
 
                 <div class="steps-grid">
-                    <div class="step-card reveal reveal-delay-1">
+                    <div class="step-card fade-section fade-fast">
                         <div class="step-number">1</div>
                         <h4>Open the lessons page</h4>
                         <p>Browse the course content and pick the topic you want to work on next.</p>
                     </div>
 
-                    <div class="step-card reveal reveal-delay-2">
+                    <div class="step-card fade-section fade-mid">
                         <div class="step-number">2</div>
                         <h4>Preview the lesson</h4>
                         <p>Read the summary, check the overview, and confirm the lesson you want to start.</p>
                     </div>
 
-                    <div class="step-card reveal reveal-delay-3">
+                    <div class="step-card fade-section fade-slow">
                         <div class="step-number">3</div>
                         <h4>Practice and review</h4>
                         <p>Complete the activity, move to the next lesson, or go back to review older concepts.</p>
@@ -521,14 +524,14 @@
                 </div>
             </div>
 
-            <div class="panel section-panel reveal">
+            <div class="panel section-panel fade-section fade-mid">
                 <div class="section-heading">
                     <h3>What makes Code Quest different</h3>
                     <p>Learn programming step by step with structured lessons, clear explanations, and hands-on practice.</p>
                 </div>
 
                 <div class="feature-list">
-                    <div class="feature-item reveal reveal-delay-1">
+                    <div class="feature-item fade-section fade-fast">
                         <div class="feature-icon">01</div>
                         <div>
                             <h4>Pseudocode-first learning</h4>
@@ -536,7 +539,7 @@
                         </div>
                     </div>
 
-                    <div class="feature-item reveal reveal-delay-2">
+                    <div class="feature-item fade-section fade-mid">
                         <div class="feature-icon">02</div>
                         <div>
                             <h4>Small, structured lessons</h4>
@@ -544,7 +547,7 @@
                         </div>
                     </div>
 
-                    <div class="feature-item reveal reveal-delay-3">
+                    <div class="feature-item fade-section fade-slow">
                         <div class="feature-icon">03</div>
                         <div>
                             <h4>Practice-driven flow</h4>
@@ -555,7 +558,7 @@
             </div>
         </div>
 
-        <div class="panel cta-band reveal">
+        <div class="panel cta-band fade-section fade-mid">
             <div>
                 <h3>Ready to continue?</h3>
                 <p>
@@ -574,27 +577,42 @@
     <script>
         (function () {
             const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (prefersReducedMotion) return;
+            if (prefersReducedMotion) {
+                document.querySelectorAll('.fade-section').forEach((el) => {
+                    el.classList.add('is-visible');
+                });
+                return;
+            }
 
-            const revealItems = document.querySelectorAll('.reveal');
+            const items = Array.from(document.querySelectorAll('.fade-section'));
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
+            function updateVisibility() {
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+                items.forEach((item) => {
+                    const rect = item.getBoundingClientRect();
+
+                    const visibleTop = rect.top < viewportHeight * 0.88;
+                    const visibleBottom = rect.bottom > viewportHeight * 0.12;
+                    const isOnScreen = visibleTop && visibleBottom;
+
+                    if (isOnScreen) {
+                        item.classList.add('is-visible');
+                    } else {
+                        item.classList.remove('is-visible');
                     }
                 });
-            }, {
-                threshold: 0.12,
-                rootMargin: '0px 0px -40px 0px'
+            }
+
+            window.addEventListener('scroll', updateVisibility, { passive: true });
+            window.addEventListener('resize', updateVisibility);
+
+            window.addEventListener('load', function () {
+                updateVisibility();
             });
 
-            revealItems.forEach((item) => {
-                if (!item.classList.contains('is-visible')) {
-                    observer.observe(item);
-                }
-            });
+            requestAnimationFrame(updateVisibility);
+            setTimeout(updateVisibility, 60);
         })();
     </script>
 }
