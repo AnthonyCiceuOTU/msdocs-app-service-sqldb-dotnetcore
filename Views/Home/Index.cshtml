@@ -208,24 +208,26 @@
                 </div>
             </div>
 
-            @if (isGuest)
-            {
-                <span class="btn-secondary" style="opacity:0.5; pointer-events:none;">
-                    Profile
-                </span>
-                <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">
-                    Lessons
-                </a>
-            }
-            else
-            {
-                <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
-                    Profile
-                </a>
-                <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">
-                    Lessons
-                </a>
-            }
+            <div class="topbar-actions">
+                @if (isGuest)
+                {
+                    <span class="btn-secondary" style="opacity:0.5; pointer-events:none;">
+                        Profile
+                    </span>
+                    <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">
+                        Lessons
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
+                        Profile
+                    </a>
+                    <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">
+                        Lessons
+                    </a>
+                }
+            </div>
         </div>
 
         <div class="panel hero">
