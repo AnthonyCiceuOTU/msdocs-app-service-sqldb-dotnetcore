@@ -27,14 +27,14 @@ namespace DotNetCoreSqlDb.ViewModels
         // Compatibility properties for older Unit Four views
         public string UserAnswer
         {
-            get => UserAnswer;
-            set => UserAnswer = value ?? "";
+            get => UserAnswer1;
+            set => UserAnswer1 = value ?? "";
         }
 
         public bool? IsCorrect
         {
-            get => IsCorrect;
-            set => IsCorrect = value;
+            get => IsQ1Correct;
+            set => IsQ1Correct = value;
         }
 
         public string FeedbackMessage
