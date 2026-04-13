@@ -213,11 +213,17 @@
                 <span class="btn-secondary" style="opacity:0.5; pointer-events:none;">
                     Profile
                 </span>
+                <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">
+                    Lessons
+                </a>
             }
             else
             {
                 <a asp-controller="Profile" asp-action="Index" class="btn-secondary">
                     Profile
+                </a>
+                <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">
+                    Lessons
                 </a>
             }
         </div>
