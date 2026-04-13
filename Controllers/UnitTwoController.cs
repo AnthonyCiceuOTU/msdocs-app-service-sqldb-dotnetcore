@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetCoreSqlDb.ViewModels;
+using System;
 
 namespace DotNetCoreSqlDb.Controllers
 {
@@ -16,13 +17,14 @@ namespace DotNetCoreSqlDb.Controllers
         public IActionResult Variables(VariablesViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
 
             if (actionType == "hint")
             {
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: assign the number directly to the variable.";
+                vm.FeedbackMessage = "Hint: assign the number directly to the variable using the equals sign.";
                 return View(vm);
             }
 
@@ -35,7 +37,43 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            bool isCorrect = vm.UserAnswer.Equals("25", StringComparison.OrdinalIgnoreCase);
+            if (actionType == "checkExplanation")
+            {
+                vm.IsCorrect = true;
+
+                bool explanationCorrect =
+                    vm.ExplanationAnswer.Contains("store", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("save", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("hold", StringComparison.OrdinalIgnoreCase);
+
+                explanationCorrect = explanationCorrect &&
+                    (
+                        vm.ExplanationAnswer.Contains("value", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("data", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("information", StringComparison.OrdinalIgnoreCase)
+                    );
+
+                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
+
+                vm.ExplanationCorrect = explanationCorrect;
+                vm.ExplanationFeedback = explanationCorrect
+                    ? "Good explanation. Variables store values so a program can use them later."
+                    : "Try mentioning that a variable stores or saves a value so the program can use it later.";
+
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                vm.IsCorrect = true;
+                vm.ExplanationCorrect = true;
+                vm.FeedbackMessage = "Lesson complete!";
+                return View(vm);
+            }
+
+            bool isCorrect =
+                vm.UserAnswer.Equals("25", StringComparison.OrdinalIgnoreCase) ||
+                vm.UserAnswer.Equals("points = 25", StringComparison.OrdinalIgnoreCase);
 
             vm.IsCorrect = isCorrect;
             vm.ShowHint = false;
