@@ -25,7 +25,6 @@ namespace DotNetCoreSqlDb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Try to get the signed-in user's username from claims
             var username = User.FindFirstValue(ClaimTypes.Name);
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -40,7 +39,6 @@ namespace DotNetCoreSqlDb.Controllers
                 currentUserId = parsedId;
             }
 
-            // Pull the user record
             User? user = null;
 
             if (currentUserId.HasValue)
@@ -60,24 +58,21 @@ namespace DotNetCoreSqlDb.Controllers
                 return RedirectToAction("NotAuthorized", "Login");
             }
 
-            // Build a GitHub-style 1-year calendar
             var today = DateTime.Today;
             var endDate = today;
-
-            // Start roughly 1 year back, then align to Sunday so grid looks clean
             var rawStart = today.AddDays(-364);
             var startDate = rawStart.AddDays(-(int)rawStart.DayOfWeek);
 
-            var logsQuery = _context.SignInLog
-                .Where(x => x.UserName == user.Username &&
-                            x.DateTime.Date >= startDate.Date &&
-                            x.DateTime.Date <= endDate.Date);
-
-            var logs = await logsQuery
+            var signInLogs = await _context.SignInLog
+                .Where(x => x.UserName == user.Username)
                 .OrderBy(x => x.DateTime)
                 .ToListAsync();
 
-            var grouped = logs
+            var calendarLogs = signInLogs
+                .Where(x => x.DateTime.Date >= startDate.Date && x.DateTime.Date <= endDate.Date)
+                .ToList();
+
+            var grouped = calendarLogs
                 .GroupBy(x => x.DateTime.Date)
                 .ToDictionary(g => g.Key, g => g.Count());
 
@@ -105,29 +100,182 @@ namespace DotNetCoreSqlDb.Controllers
                 weekIndex++;
             }
 
-            var totalAllTimeSignIns = await _context.SignInLog
-                .Where(x => x.UserName == user.Username)
-                .CountAsync();
+            var publishedUnits = await _context.Units
+                .Include(u => u.Lessons.Where(l => l.IsPublished))
+                .OrderBy(u => u.SortOrder)
+                .ThenBy(u => u.Id)
+                .ToListAsync();
 
-            var firstSignIn = await _context.SignInLog
-                .Where(x => x.UserName == user.Username)
-                .OrderBy(x => x.DateTime)
-                .Select(x => (DateTime?)x.DateTime)
-                .FirstOrDefaultAsync();
+            var totalLessons = publishedUnits.Sum(u => u.Lessons.Count);
 
-            var lastSignIn = await _context.SignInLog
-                .Where(x => x.UserName == user.Username)
-                .OrderByDescending(x => x.DateTime)
-                .Select(x => (DateTime?)x.DateTime)
-                .FirstOrDefaultAsync();
+            var progressList = await _context.UserLessonProgresses
+                .Include(p => p.Lesson)
+                    .ThenInclude(l => l.Unit)
+                .Where(p => p.UserId == user.ID && p.Lesson.IsPublished)
+                .ToListAsync();
+
+            var completedProgress = progressList
+                .Where(p => p.IsCompleted)
+                .ToList();
+
+            var completedLessonIds = completedProgress
+                .Select(p => p.LessonId)
+                .Distinct()
+                .ToHashSet();
+
+            var completedLessons = completedLessonIds.Count;
+            var overallProgressPercent = totalLessons == 0
+                ? 0
+                : Math.Round((double)completedLessons / totalLessons * 100, 1);
+
+            var allLessonsOrdered = publishedUnits
+                .SelectMany(u => u.Lessons.OrderBy(l => l.SortOrder).ThenBy(l => l.Id))
+                .ToList();
+
+            var nextLesson = allLessonsOrdered
+                .FirstOrDefault(l => !completedLessonIds.Contains(l.Id));
+
+            var unitProgress = publishedUnits
+                .Select(u =>
+                {
+                    var unitTotal = u.Lessons.Count;
+                    var unitCompleted = u.Lessons.Count(l => completedLessonIds.Contains(l.Id));
+                    var percent = unitTotal == 0 ? 0 : Math.Round((double)unitCompleted / unitTotal * 100, 1);
+
+                    return new ProfileUnitProgressViewModel
+                    {
+                        UnitId = u.Id,
+                        UnitTitle = u.Title,
+                        TotalLessons = unitTotal,
+                        CompletedLessons = unitCompleted,
+                        ProgressPercent = percent,
+                        IsComplete = unitTotal > 0 && unitCompleted == unitTotal
+                    };
+                })
+                .ToList();
+
+            var completedUnits = unitProgress.Count(u => u.IsComplete);
+            var distinctUnitsStarted = progressList
+                .Select(p => p.Lesson.UnitId)
+                .Distinct()
+                .Count();
+
+            var recentCompletedLessons = completedProgress
+                .Where(p => p.CompletedAtUtc.HasValue)
+                .OrderByDescending(p => p.CompletedAtUtc)
+                .Take(5)
+                .Select(p => new ProfileLessonSummaryViewModel
+                {
+                    LessonId = p.LessonId,
+                    UnitId = p.Lesson.UnitId,
+                    UnitTitle = p.Lesson.Unit.Title,
+                    LessonTitle = p.Lesson.Title,
+                    CompletedAtUtc = p.CompletedAtUtc
+                })
+                .ToList();
+
+            var nextRecommendedLesson = nextLesson == null
+                ? null
+                : new ProfileLessonSummaryViewModel
+                {
+                    LessonId = nextLesson.Id,
+                    UnitId = nextLesson.UnitId,
+                    UnitTitle = nextLesson.Unit.Title,
+                    LessonTitle = nextLesson.Title
+                };
+
+            var distinctSignInDates = signInLogs
+                .Select(x => x.DateTime.Date)
+                .Distinct()
+                .OrderByDescending(d => d)
+                .ToList();
+
+            int currentStreakDays = CalculateStreak(distinctSignInDates, today);
+
+            bool unitOneComplete = unitProgress.Any(u => u.UnitId == 1 && u.IsComplete);
+            bool halfwayDone = overallProgressPercent >= 50;
+            bool explorer = distinctUnitsStarted >= 2;
+            bool consistentLearner = distinctSignInDates.Count >= 3;
+            bool dedicationWeek = currentStreakDays >= 7;
+
+            var achievements = new List<ProfileAchievementViewModel>
+            {
+                new ProfileAchievementViewModel
+                {
+                    Title = "First Step",
+                    Description = "Complete your first lesson.",
+                    IsUnlocked = completedLessons >= 1,
+                    Icon = "★"
+                },
+                new ProfileAchievementViewModel
+                {
+                    Title = "Getting Started",
+                    Description = "Complete 3 lessons.",
+                    IsUnlocked = completedLessons >= 3,
+                    Icon = "✓"
+                },
+                new ProfileAchievementViewModel
+                {
+                    Title = "Momentum Builder",
+                    Description = "Complete 5 lessons.",
+                    IsUnlocked = completedLessons >= 5,
+                    Icon = "⬈"
+                },
+                new ProfileAchievementViewModel
+                {
+                    Title = "Unit One Complete",
+                    Description = "Finish all lessons in Unit 1.",
+                    IsUnlocked = unitOneComplete,
+                    Icon = "🏁"
+                },
+                new ProfileAchievementViewModel
+                {
+                    Title = "Halfway There",
+                    Description = "Reach 50% overall course progress.",
+                    IsUnlocked = halfwayDone,
+                    Icon = "◐"
+                },
+                new ProfileAchievementViewModel
+                {
+                    Title = "Course Explorer",
+                    Description = "Start lessons in at least 2 different units.",
+                    IsUnlocked = explorer,
+                    Icon = "🧭"
+                },
+                new ProfileAchievementViewModel
+                {
+                    Title = "Consistent Learner",
+                    Description = "Sign in on 3 different days.",
+                    IsUnlocked = consistentLearner,
+                    Icon = "📅"
+                },
+                new ProfileAchievementViewModel
+                {
+                    Title = "Dedication Week",
+                    Description = "Build a 7-day sign-in streak.",
+                    IsUnlocked = dedicationWeek,
+                    Icon = "🔥"
+                }
+            };
 
             var vm = new ProfileViewModel
             {
                 UserId = user.ID,
                 Username = user.Username,
-                TotalSignIns = totalAllTimeSignIns,
-                FirstSignIn = firstSignIn,
-                LastSignIn = lastSignIn,
+                TotalSignIns = signInLogs.Count,
+                FirstSignIn = signInLogs.FirstOrDefault()?.DateTime,
+                LastSignIn = signInLogs.LastOrDefault()?.DateTime,
+                CurrentStreakDays = currentStreakDays,
+                TotalLessons = totalLessons,
+                CompletedLessons = completedLessons,
+                OverallProgressPercent = overallProgressPercent,
+                TotalUnits = publishedUnits.Count,
+                CompletedUnits = completedUnits,
+                DistinctUnitsStarted = distinctUnitsStarted,
+                UnitProgress = unitProgress,
+                RecentCompletedLessons = recentCompletedLessons,
+                NextRecommendedLesson = nextRecommendedLesson,
+                Achievements = achievements,
                 CalendarStart = startDate.Date,
                 CalendarEnd = endDate.Date,
                 SignInsByDate = grouped,
@@ -135,6 +283,40 @@ namespace DotNetCoreSqlDb.Controllers
             };
 
             return View(vm);
+        }
+
+        private static int CalculateStreak(List<DateTime> distinctDatesDescending, DateTime today)
+        {
+            if (!distinctDatesDescending.Any())
+                return 0;
+
+            var normalizedDates = distinctDatesDescending
+                .Select(d => d.Date)
+                .Distinct()
+                .OrderByDescending(d => d)
+                .ToList();
+
+            var firstDate = normalizedDates[0];
+            if (firstDate != today.Date && firstDate != today.Date.AddDays(-1))
+                return 0;
+
+            int streak = 0;
+            var expectedDate = firstDate;
+
+            foreach (var date in normalizedDates)
+            {
+                if (date == expectedDate)
+                {
+                    streak++;
+                    expectedDate = expectedDate.AddDays(-1);
+                }
+                else if (date < expectedDate)
+                {
+                    break;
+                }
+            }
+
+            return streak;
         }
     }
 }
