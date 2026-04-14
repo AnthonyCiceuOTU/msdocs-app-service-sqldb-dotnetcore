@@ -121,6 +121,7 @@
     .lessons-layout {
         display: grid;
         grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
+        grid-template-areas: "content units";
         gap: clamp(14px, 1.8vw, 18px);
         align-items: start;
     }
@@ -135,6 +136,7 @@
     }
 
     .units-panel {
+        grid-area: units;
         display: flex;
         flex-direction: column;
         gap: 14px;
@@ -247,6 +249,7 @@
     }
 
     .lesson-content {
+        grid-area: content;
         display: grid;
         gap: 14px;
         align-content: start;
@@ -343,7 +346,7 @@
 
     .lesson-actions {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
         gap: 10px;
         align-items: stretch;
     }
@@ -358,6 +361,7 @@
     .complete-form {
         display: flex;
         width: 100%;
+        min-width: 0;
     }
 
     .btn-main,
@@ -367,6 +371,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        text-align: center;
         text-decoration: none;
         border-radius: 10px;
         font-weight: 600;
@@ -374,11 +379,15 @@
         border: 1px solid rgba(255,255,255,0.08);
         padding: 10px 14px;
         cursor: pointer;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        line-height: 1.25;
         font-size: 0.92rem;
         min-height: 42px;
         box-sizing: border-box;
         width: 100%;
+        min-width: 0;
     }
 
     .btn-main {
@@ -424,7 +433,8 @@
 
     @@media (max-width: 1200px) {
         .lessons-layout {
-            grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.9fr);
+            grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.95fr);
+            grid-template-areas: "content units";
         }
 
         .units-grid {
@@ -435,6 +445,9 @@
     @@media (max-width: 1100px) {
         .lessons-layout {
             grid-template-columns: 1fr;
+            grid-template-areas:
+                "content"
+                "units";
         }
 
         .lesson-content {
@@ -460,6 +473,10 @@
         .lesson-content h1 {
             font-size: 1.65rem;
         }
+
+        .lesson-actions {
+            grid-template-columns: 1fr;
+        }
     }
 
     @@media (max-width: 680px) {
@@ -482,7 +499,6 @@
         }
 
         .info-grid,
-        .lesson-actions,
         .nav-buttons {
             grid-template-columns: 1fr;
         }
@@ -496,8 +512,8 @@
         .btn-secondary,
         .btn-success,
         .btn-disabled {
-            white-space: normal;
-            line-height: 1.2;
+            font-size: 0.88rem;
+            padding: 9px 12px;
         }
     }
 
@@ -560,7 +576,7 @@
             <div class="course-header">
                 <div>
                     <h2>Course Content</h2>
-                    <p>Select any lesson on the left. The right panel gives a quick preview, and the main action button starts the selected lesson.</p>
+                    <p>Select any lesson on the right. The left panel gives a quick preview, and the main action button starts the selected lesson.</p>
                 </div>
             </div>
 
@@ -569,7 +585,7 @@
                     <div>
                         <div class="section-kicker">Lesson Browser</div>
                         <div class="section-title">Browse by unit</div>
-                        <p class="section-subtitle">Pick a unit, choose a lesson, then start it from the preview panel.</p>
+                        <p class="section-subtitle">Pick a unit, choose a lesson, then start it from the preview panel on the left.</p>
                     </div>
 
                     @if (!Model.Units.Any())
@@ -658,7 +674,7 @@
 
                         <div class="help-card">
                             <h3>How this page works</h3>
-                            <p>Choose a lesson on the left, preview it here, then use <strong>Start Lesson</strong>. You can also move through lessons with Previous and Next.</p>
+                            <p>Choose a lesson on the right, preview it here, then use <strong>Start Lesson</strong>. You can also move through lessons with Previous and Next.</p>
                         </div>
 
                         <div class="overview-card">
