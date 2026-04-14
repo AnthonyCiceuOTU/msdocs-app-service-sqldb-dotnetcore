@@ -68,10 +68,9 @@ namespace DotNetCoreSqlDb.Controllers
 
                 if (vm.ExplanationCorrect != true)
                 {
-                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
-                    {
-                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
-                    }
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation before submitting."
+                        : vm.ExplanationFeedback;
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
@@ -153,10 +152,9 @@ namespace DotNetCoreSqlDb.Controllers
 
                 if (vm.ExplanationCorrect != true)
                 {
-                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
-                    {
-                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
-                    }
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation before submitting."
+                        : vm.ExplanationFeedback;
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
@@ -238,10 +236,9 @@ namespace DotNetCoreSqlDb.Controllers
 
                 if (vm.ExplanationCorrect != true)
                 {
-                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
-                    {
-                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
-                    }
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation before submitting."
+                        : vm.ExplanationFeedback;
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
@@ -451,10 +448,9 @@ namespace DotNetCoreSqlDb.Controllers
 
                 if (vm.ExplanationCorrect != true)
                 {
-                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
-                    {
-                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
-                    }
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation before submitting."
+                        : vm.ExplanationFeedback;
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
