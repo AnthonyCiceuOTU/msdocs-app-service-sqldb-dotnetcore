@@ -705,7 +705,7 @@
                                 }
                             </div>
 
-                            <form asp-controller="Lessons" asp-action="Complete" method="post" class="complete-form">
+                            @*<form asp-controller="Lessons" asp-action="Complete" method="post" class="complete-form">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="lessonId" value="@Model.CurrentLessonId" />
 
@@ -717,7 +717,7 @@
                                 {
                                     <button type="submit" class="btn-main">Mark Complete</button>
                                 }
-                            </form>
+                            </form>*@
                         </div>
                     }
                 </main>
