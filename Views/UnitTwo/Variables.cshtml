@@ -383,20 +383,6 @@ DISPLAY score
                                 <p>The value inside a variable can be updated as the program runs.</p>
                             </div>
                         </div>
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Think about what goes on the right side when you want the variable to store 25.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                The variable should be assigned the value 25.
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -425,6 +411,20 @@ END
                                 </div>
 
                                 <input asp-for="UserAnswer" class="text-input" placeholder="Type the missing value..." />
+
+                                @if (Model.ShowHint)
+                                {
+                                    <div class="alert-box alert-info-custom">
+                                        Think about what goes on the right side when you want the variable to store 25.
+                                    </div>
+                                }
+
+                                @if (Model.ShowSolution)
+                                {
+                                    <div class="alert-box alert-info-custom">
+                                        The variable should be assigned the value 25.
+                                    </div>
+                                }
 
                                 @if (Model.IsCorrect != null)
                                 {
