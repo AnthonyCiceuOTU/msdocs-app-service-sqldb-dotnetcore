@@ -131,46 +131,113 @@ public IActionResult DataProcessing(DataProcessingViewModel vm, string actionTyp
             return View(new SimulationViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Simulation(SimulationViewModel vm, string actionType)
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+public IActionResult Simulation(SimulationViewModel vm, string actionType)
+{
+    // Normalize inputs
+    vm.Q1Answer = vm.Q1Answer?.Trim() ?? "";
+    vm.Q2Answer = vm.Q2Answer?.Trim() ?? "";
+    vm.Q3Answer = vm.Q3Answer?.Trim() ?? "";
+    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+
+    // -----------------------------
+    // HINT
+    // -----------------------------
+    if (actionType == "hint")
+    {
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
+        return View(vm);
+    }
+
+    // -----------------------------
+    // SOLUTION
+    // -----------------------------
+    if (actionType == "solution")
+    {
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
+        return View(vm);
+    }
+
+    // -----------------------------
+    // CHECK QUIZ (Step 1)
+    // -----------------------------
+    if (actionType == "check")
+    {
+        // Q1: definition of simulation
+        if (vm.Q1Answer.Contains("model", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q1Answer.Contains("simulate", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q1Answer.Contains("real", StringComparison.OrdinalIgnoreCase))
         {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: think about modelling real systems like dice rolls or weather.";
-                return View(vm);
-            }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
-                return View(vm);
-            }
-
-            bool isCorrect =
-                vm.UserAnswer.Contains("dice", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Contains("random", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Contains("model", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Simulations model real-world systems like dice rolls."
-                : "Not quite. Think about randomness and modelling real systems.";
-
-            return View(vm);
+            vm.IsQ1Correct = true;
+            vm.Feedback1 = "Correct! A simulation models real-world systems.";
+        }
+        else
+        {
+            vm.IsQ1Correct = false;
+            vm.Feedback1 = "Hint: it represents or models real-world behavior.";
         }
 
+        // Q2: random(1,6)
+        if (vm.Q2Answer.Contains("dice", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q2Answer.Contains("roll", StringComparison.OrdinalIgnoreCase))
+        {
+            vm.IsQ2Correct = true;
+            vm.Feedback2 = "Correct! It simulates a dice roll.";
+        }
+        else
+        {
+            vm.IsQ2Correct = false;
+            vm.Feedback2 = "Think about what has 6 possible random outcomes.";
+        }
+
+        // Q3: multiple choice
+        if (vm.Q3Answer == "dice")
+        {
+            vm.IsQ3Correct = true;
+            vm.Feedback3 = "Correct!";
+        }
+        else
+        {
+            vm.IsQ3Correct = false;
+            vm.Feedback3 = "A dice roll is a simulation.";
+        }
+
+        return View(vm);
+    }
+
+    // -----------------------------
+    // CHECK EXPLANATION (Step 2)
+    // -----------------------------
+    if (actionType == "checkExplanation")
+    {
+        bool isCorrect =
+            vm.ExplanationAnswer.Contains("real", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("model", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("predict", StringComparison.OrdinalIgnoreCase);
+
+        vm.ExplanationCorrect = isCorrect;
+
+        vm.ExplanationFeedback = isCorrect
+            ? "Correct! Simulations help model or predict real-world systems."
+            : "Try mentioning modeling or predicting real-world behavior.";
+
+        return View(vm);
+    }
+
+    // -----------------------------
+    // FINAL SUBMIT
+    // -----------------------------
+    if (actionType == "submit")
+    {
+        return RedirectToAction("DesigningProgram");
+    }
+
+    return View(vm);
+}
         // -----------------------------
         // Lesson 35 — Designing a Program
         // -----------------------------
@@ -180,46 +247,115 @@ public IActionResult DataProcessing(DataProcessingViewModel vm, string actionTyp
             return View(new DesigningProgramViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DesigningProgram(DesigningProgramViewModel vm, string actionType)
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult DesigningProgram(DesigningProgramViewModel vm, string actionType)
+{
+    // Normalize inputs
+    vm.Q1Answer = vm.Q1Answer?.Trim() ?? "";
+    vm.Q2Answer = vm.Q2Answer?.Trim() ?? "";
+    vm.Q3Answer = vm.Q3Answer?.Trim() ?? "";
+    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+
+    // -----------------------------
+    // HINT
+    // -----------------------------
+    if (actionType == "hint")
+    {
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
+        return View(vm);
+    }
+
+    // -----------------------------
+    // SOLUTION
+    // -----------------------------
+    if (actionType == "solution")
+    {
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
+        return View(vm);
+    }
+
+    // -----------------------------
+    // CHECK QUIZ (Step 1)
+    // -----------------------------
+    if (actionType == "check")
+    {
+        // Q1: designing program
+        if (vm.Q1Answer.Contains("plan", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q1Answer.Contains("structure", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q1Answer.Contains("break", StringComparison.OrdinalIgnoreCase))
         {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: think about breaking a problem into smaller parts (modules).";
-                return View(vm);
-            }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
-                return View(vm);
-            }
-
-            bool isCorrect =
-                vm.UserAnswer.Contains("module", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Contains("planning", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Contains("break", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Designing a program involves breaking problems into modules."
-                : "Not quite. Think about planning and splitting problems into parts.";
-
-            return View(vm);
+            vm.IsQ1Correct = true;
+            vm.Feedback1 = "Correct! Designing involves planning and structuring a program.";
+        }
+        else
+        {
+            vm.IsQ1Correct = false;
+            vm.Feedback1 = "Hint: think about planning before coding.";
         }
 
+        // Q2: modules benefit
+        if (vm.Q2Answer.Contains("easy", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q2Answer.Contains("manage", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q2Answer.Contains("debug", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q2Answer.Contains("reuse", StringComparison.OrdinalIgnoreCase))
+        {
+            vm.IsQ2Correct = true;
+            vm.Feedback2 = "Correct! Modules make programs easier to manage and reuse.";
+        }
+        else
+        {
+            vm.IsQ2Correct = false;
+            vm.Feedback2 = "Think about organization, reuse, or debugging.";
+        }
+
+        // Q3: correct option
+        if (vm.Q3Answer == "input")
+        {
+            vm.IsQ3Correct = true;
+            vm.Feedback3 = "Correct! Input is part of program structure.";
+        }
+        else
+        {
+            vm.IsQ3Correct = false;
+            vm.Feedback3 = "Incorrect. Programs typically include input, process, and output.";
+        }
+
+        return View(vm);
+    }
+
+    // -----------------------------
+    // CHECK EXPLANATION (Step 2)
+    // -----------------------------
+    if (actionType == "checkExplanation")
+    {
+        bool isCorrect =
+            vm.ExplanationAnswer.Contains("plan", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("organize", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("structure", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("manage", StringComparison.OrdinalIgnoreCase);
+
+        vm.ExplanationCorrect = isCorrect;
+
+        vm.ExplanationFeedback = isCorrect
+            ? "Correct! Designing helps organize and manage programs effectively."
+            : "Try mentioning planning, organizing, or structuring programs.";
+
+        return View(vm);
+    }
+
+    // -----------------------------
+    // FINAL SUBMIT
+    // -----------------------------
+    if (actionType == "submit")
+    {
+        return RedirectToAction("Index", "Lessons");
+    }
+
+    return View(vm);
+}
         // -----------------------------
         // Index
         // -----------------------------
