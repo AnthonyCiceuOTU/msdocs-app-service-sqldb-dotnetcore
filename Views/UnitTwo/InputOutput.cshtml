@@ -76,9 +76,10 @@
 
         <form asp-action="InputOutput" asp-controller="UnitTwo" method="post">
             @Html.AntiForgeryToken()
+            <input asp-for="CurrentStep" type="hidden" id="CurrentStep" />
 
             <div class="panel step-panel">
-                <div class="step-card active" id="step0">
+                <div class="step-card" id="step0">
                     <div class="step-top">
                         <h2>Input and Output</h2>
                         <p>Input gets information into a program. Output shows information from a program.</p>
@@ -234,26 +235,15 @@ DISPLAY ___
         if (target) {
             target.classList.add('active');
         }
+
+        const hiddenStep = document.getElementById('CurrentStep');
+        if (hiddenStep) {
+            hiddenStep.value = stepNumber;
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        let stepToShow = 0;
-
-        const answered = '@(Model.IsCorrect?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
-
-        const showHint = @Model.ShowHint.ToString().ToLower();
-        const showSolution = @Model.ShowSolution.ToString().ToLower();
-
-        const hasExplanationAnswer = @(!string.IsNullOrWhiteSpace(Model.ExplanationAnswer)).ToString().ToLower();
-        const hasExplanationFeedback = @(!string.IsNullOrWhiteSpace(Model.ExplanationFeedback)).ToString().ToLower();
-
-        if (explanationDone === 'True' || hasExplanationAnswer || hasExplanationFeedback) {
-            stepToShow = 2;
-        } else if (answered || showHint || showSolution) {
-            stepToShow = 1;
-        }
-
-        showStep(stepToShow);
+        const currentStep = parseInt(document.getElementById('CurrentStep')?.value || '0');
+        showStep(currentStep);
     });
 </script>

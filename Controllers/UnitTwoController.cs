@@ -9,7 +9,7 @@ namespace DotNetCoreSqlDb.Controllers
         [HttpGet]
         public IActionResult Variables()
         {
-            return View(new VariablesViewModel());
+            return View(new VariablesViewModel { CurrentStep = 0 });
         }
 
         [HttpPost]
@@ -21,6 +21,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "hint")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
@@ -30,6 +31,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "solution")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
@@ -37,8 +39,27 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
+            if (actionType == "check")
+            {
+                vm.CurrentStep = 1;
+
+                bool isCorrect =
+                    vm.UserAnswer.Equals("25", StringComparison.OrdinalIgnoreCase) ||
+                    vm.UserAnswer.Equals("points = 25", StringComparison.OrdinalIgnoreCase);
+
+                vm.IsCorrect = isCorrect;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
+                vm.FeedbackMessage = isCorrect
+                    ? "Correct! The variable points now stores the value 25."
+                    : "Not quite. Try assigning the value 25 to the variable.";
+
+                return View(vm);
+            }
+
             if (actionType == "checkExplanation")
             {
+                vm.CurrentStep = 2;
                 vm.IsCorrect = true;
 
                 bool explanationCorrect =
@@ -68,24 +89,14 @@ namespace DotNetCoreSqlDb.Controllers
                 return RedirectToAction(nameof(DataTypes));
             }
 
-            bool isCorrect =
-                vm.UserAnswer.Equals("25", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Equals("points = 25", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! The variable points now stores the value 25."
-                : "Not quite. Try assigning the value 25 to the variable.";
-
+            vm.CurrentStep = 0;
             return View(vm);
         }
 
         [HttpGet]
         public IActionResult DataTypes()
         {
-            return View(new DataTypesViewModel());
+            return View(new DataTypesViewModel { CurrentStep = 0 });
         }
 
         [HttpPost]
@@ -97,6 +108,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "hint")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
@@ -106,6 +118,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "solution")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
@@ -113,8 +126,27 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
+            if (actionType == "check")
+            {
+                vm.CurrentStep = 1;
+
+                bool isCorrect =
+                    vm.UserAnswer.Equals("\"Alex\"", StringComparison.OrdinalIgnoreCase) ||
+                    vm.UserAnswer.Equals("'Alex'", StringComparison.OrdinalIgnoreCase);
+
+                vm.IsCorrect = isCorrect;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
+                vm.FeedbackMessage = isCorrect
+                    ? "Correct! Alex is text, so it should be written in quotation marks."
+                    : "Not quite. Text values should be written in quotation marks.";
+
+                return View(vm);
+            }
+
             if (actionType == "checkExplanation")
             {
+                vm.CurrentStep = 2;
                 vm.IsCorrect = true;
 
                 bool explanationCorrect =
@@ -143,24 +175,14 @@ namespace DotNetCoreSqlDb.Controllers
                 return RedirectToAction(nameof(ArithmeticExpressions));
             }
 
-            bool isCorrect =
-                vm.UserAnswer.Equals("\"Alex\"", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Equals("'Alex'", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Alex is text, so it should be written in quotation marks."
-                : "Not quite. Text values should be written in quotation marks.";
-
+            vm.CurrentStep = 0;
             return View(vm);
         }
 
         [HttpGet]
         public IActionResult ArithmeticExpressions()
         {
-            return View(new ArithmeticExpressionsViewModel());
+            return View(new ArithmeticExpressionsViewModel { CurrentStep = 0 });
         }
 
         [HttpPost]
@@ -172,6 +194,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "hint")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
@@ -181,6 +204,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "solution")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
@@ -188,8 +212,28 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
+            if (actionType == "check")
+            {
+                vm.CurrentStep = 1;
+
+                var normalized = vm.UserAnswer.Replace(" ", "").ToLowerInvariant();
+                bool isCorrect =
+                    normalized == "apples+oranges" ||
+                    normalized == "oranges+apples";
+
+                vm.IsCorrect = isCorrect;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
+                vm.FeedbackMessage = isCorrect
+                    ? "Correct! The total is found by adding apples and oranges."
+                    : "Not quite. Use both variables in one addition expression.";
+
+                return View(vm);
+            }
+
             if (actionType == "checkExplanation")
             {
+                vm.CurrentStep = 2;
                 vm.IsCorrect = true;
 
                 bool explanationCorrect =
@@ -219,25 +263,14 @@ namespace DotNetCoreSqlDb.Controllers
                 return RedirectToAction(nameof(InputOutput));
             }
 
-            var normalized = vm.UserAnswer.Replace(" ", "").ToLowerInvariant();
-            bool isCorrect =
-                normalized == "apples+oranges" ||
-                normalized == "oranges+apples";
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! The total is found by adding apples and oranges."
-                : "Not quite. Use both variables in one addition expression.";
-
+            vm.CurrentStep = 0;
             return View(vm);
         }
 
         [HttpGet]
         public IActionResult InputOutput()
         {
-            return View(new InputOutputViewModel());
+            return View(new InputOutputViewModel { CurrentStep = 0 });
         }
 
         [HttpPost]
@@ -249,6 +282,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "hint")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
@@ -258,6 +292,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "solution")
             {
+                vm.CurrentStep = 1;
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
@@ -265,8 +300,25 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
+            if (actionType == "check")
+            {
+                vm.CurrentStep = 1;
+
+                bool isCorrect = vm.UserAnswer.Equals("name", StringComparison.OrdinalIgnoreCase);
+
+                vm.IsCorrect = isCorrect;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
+                vm.FeedbackMessage = isCorrect
+                    ? "Correct! The program gets the name as input and then displays it."
+                    : "Not quite. Use the same variable that stores the user's name.";
+
+                return View(vm);
+            }
+
             if (actionType == "checkExplanation")
             {
+                vm.CurrentStep = 2;
                 vm.IsCorrect = true;
 
                 bool explanationCorrect =
@@ -295,15 +347,7 @@ namespace DotNetCoreSqlDb.Controllers
                 return RedirectToAction("Index", "Lessons");
             }
 
-            bool isCorrect = vm.UserAnswer.Equals("name", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! The program gets the name as input and then displays it."
-                : "Not quite. Use the same variable that stores the user's name.";
-
+            vm.CurrentStep = 0;
             return View(vm);
         }
 
