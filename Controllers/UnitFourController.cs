@@ -35,7 +35,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult WhyLoops(WhyLoopsViewModel vm, string actionType)
+        public async Task<IActionResult> WhyLoops(WhyLoopsViewModel vm, string actionType)
         {
             TrimAll(vm);
 
@@ -85,9 +85,8 @@ namespace DotNetCoreSqlDb.Controllers
                     return View(vm);
                 }
 
-                vm.ExplanationFeedback = "Lesson complete!";
-                ViewBag.ForceStep = 2;
-                return View(vm);
+                await SaveLessonProgressAsync("WhyLoops");
+                return RedirectToAction(nameof(WhileLoops));
             }
 
             vm.ShowHint = false;
@@ -129,7 +128,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult WhileLoops(WhileLoopsViewModel vm, string actionType)
+        public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actionType)
         {
             TrimAll(vm);
 
@@ -175,9 +174,8 @@ namespace DotNetCoreSqlDb.Controllers
                     return View(vm);
                 }
 
-                vm.ExplanationFeedback = "Lesson complete!";
-                ViewBag.ForceStep = 2;
-                return View(vm);
+                await SaveLessonProgressAsync("WhileLoops");
+                return RedirectToAction(nameof(ForLoops));
             }
 
             vm.ShowHint = false;
@@ -219,7 +217,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ForLoops(ForLoopsViewModel vm, string actionType)
+        public async Task<IActionResult> ForLoops(ForLoopsViewModel vm, string actionType)
         {
             TrimAll(vm);
 
@@ -269,9 +267,8 @@ namespace DotNetCoreSqlDb.Controllers
                     return View(vm);
                 }
 
-                vm.ExplanationFeedback = "Lesson complete!";
-                ViewBag.ForceStep = 2;
-                return View(vm);
+                await SaveLessonProgressAsync("ForLoops");
+                return RedirectToAction(nameof(Counters));
             }
 
             vm.ShowHint = false;
@@ -363,39 +360,15 @@ namespace DotNetCoreSqlDb.Controllers
             vm.ShowSolution = false;
 
             vm.IsQ1Correct = vm.UserAnswer1.Equals("sum", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback1 = vm.IsQ1Correct == true
-                ? "Correct!"
-                : "Look for the variable storing the total.";
-
-            vm.IsQ2Correct =
-                vm.UserAnswer2.Equals("running total", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer2.Contains("total", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback2 = vm.IsQ2Correct == true
-                ? "Correct!"
-                : "An accumulator keeps a running total.";
-
-            vm.IsQ3Correct =
-                vm.UserAnswer3.Equals("sum = sum + i", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer3.Equals("sum ← sum + i", StringComparison.OrdinalIgnoreCase) ||
-                (vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase) &&
-                 vm.UserAnswer3.Contains("+", StringComparison.OrdinalIgnoreCase));
-            vm.Feedback3 = vm.IsQ3Correct == true
-                ? "Correct!"
-                : "Look at the line that updates the total each loop.";
-
+            vm.Feedback1 = vm.IsQ1Correct == true ? "Correct!" : "Look for the variable storing the total.";
+            vm.IsQ2Correct = vm.UserAnswer2.Equals("running total", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer2.Contains("total", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback2 = vm.IsQ2Correct == true ? "Correct!" : "An accumulator keeps a running total.";
+            vm.IsQ3Correct = vm.UserAnswer3.Equals("sum = sum + i", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer3.Equals("sum ← sum + i", StringComparison.OrdinalIgnoreCase) || (vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase) && vm.UserAnswer3.Contains("+", StringComparison.OrdinalIgnoreCase));
+            vm.Feedback3 = vm.IsQ3Correct == true ? "Correct!" : "Look at the line that updates the total each loop.";
             vm.IsQ4Correct = vm.UserAnswer4.Equals("accumulator", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback4 = vm.IsQ4Correct == true
-                ? "Correct!"
-                : "A variable that stores a running total is called an accumulator.";
+            vm.Feedback4 = vm.IsQ4Correct == true ? "Correct!" : "A variable that stores a running total is called an accumulator.";
 
-            ViewBag.ForceStep =
-                vm.IsQ1Correct == true &&
-                vm.IsQ2Correct == true &&
-                vm.IsQ3Correct == true &&
-                vm.IsQ4Correct == true
-                    ? 2
-                    : 1;
-
+            ViewBag.ForceStep = vm.IsQ1Correct == true && vm.IsQ2Correct == true && vm.IsQ3Correct == true && vm.IsQ4Correct == true ? 2 : 1;
             return View(vm);
         }
 
@@ -409,11 +382,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (string.IsNullOrWhiteSpace(explanationAnswer))
             {
-                return BadRequest(new
-                {
-                    isCorrect = false,
-                    feedback = "Please enter an explanation first."
-                });
+                return BadRequest(new { isCorrect = false, feedback = "Please enter an explanation first." });
             }
 
             try
@@ -440,26 +409,13 @@ namespace DotNetCoreSqlDb.Controllers
                     """
                 });
 
-                _logger.LogInformation(
-                    "CheckCountersExplanation result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
-                    result.IsCorrect,
-                    result.Score,
-                    result.Feedback);
-
-                return Json(new
-                {
-                    isCorrect = result.IsCorrect,
-                    feedback = result.Feedback
-                });
+                _logger.LogInformation("CheckCountersExplanation result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}", result.IsCorrect, result.Score, result.Feedback);
+                return Json(new { isCorrect = result.IsCorrect, feedback = result.Feedback });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while checking Counters explanation.");
-                return StatusCode(500, new
-                {
-                    isCorrect = false,
-                    feedback = "We could not check your explanation right now. Please try again."
-                });
+                return StatusCode(500, new { isCorrect = false, feedback = "We could not check your explanation right now. Please try again." });
             }
         }
 
@@ -471,7 +427,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult LoopErrors(LoopErrorsViewModel vm, string actionType)
+        public async Task<IActionResult> LoopErrors(LoopErrorsViewModel vm, string actionType)
         {
             TrimAll(vm);
 
@@ -524,37 +480,21 @@ namespace DotNetCoreSqlDb.Controllers
                     return View(vm);
                 }
 
-                vm.ExplanationFeedback = "Lesson complete!";
-                ViewBag.ForceStep = 2;
-                return View(vm);
+                await SaveLessonProgressAsync("LoopErrors");
+                return RedirectToAction("Index", "Lessons");
             }
 
             vm.ShowHint = false;
             vm.ShowSolution = false;
 
             vm.IsQ1Correct = vm.UserAnswer1.Contains("infinite", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback1 = vm.IsQ1Correct == true
-                ? "Correct!"
-                : "One common error is a loop that never stops.";
-
-            vm.IsQ2Correct = vm.UserAnswer2.Contains("off-by-one", StringComparison.OrdinalIgnoreCase)
-                             || vm.UserAnswer2.Contains("off by one", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback2 = vm.IsQ2Correct == true
-                ? "Correct!"
-                : "Another common error is off-by-one.";
-
-            vm.IsQ3Correct = vm.UserAnswer3.Contains("never stops", StringComparison.OrdinalIgnoreCase)
-                             || vm.UserAnswer3.Contains("runs forever", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback3 = vm.IsQ3Correct == true
-                ? "Correct!"
-                : "What happens in an infinite loop?";
-
-            vm.IsQ4Correct = vm.UserAnswer4.Contains("one too many", StringComparison.OrdinalIgnoreCase)
-                             || vm.UserAnswer4.Contains("one too few", StringComparison.OrdinalIgnoreCase)
-                             || vm.UserAnswer4.Contains("incorrect number", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback4 = vm.IsQ4Correct == true
-                ? "Correct!"
-                : "Off-by-one means the loop counts one too many or one too few times.";
+            vm.Feedback1 = vm.IsQ1Correct == true ? "Correct!" : "One common error is a loop that never stops.";
+            vm.IsQ2Correct = vm.UserAnswer2.Contains("off-by-one", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer2.Contains("off by one", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback2 = vm.IsQ2Correct == true ? "Correct!" : "Another common error is off-by-one.";
+            vm.IsQ3Correct = vm.UserAnswer3.Contains("never stops", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer3.Contains("runs forever", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback3 = vm.IsQ3Correct == true ? "Correct!" : "What happens in an infinite loop?";
+            vm.IsQ4Correct = vm.UserAnswer4.Contains("one too many", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer4.Contains("one too few", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer4.Contains("incorrect number", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback4 = vm.IsQ4Correct == true ? "Correct!" : "Off-by-one means the loop counts one too many or one too few times.";
 
             ViewBag.ForceStep = AllCorrect(vm) ? 2 : 1;
             return View(vm);
@@ -572,33 +512,18 @@ namespace DotNetCoreSqlDb.Controllers
 
         private static bool AllCorrect(UnitFourLessonViewModel vm)
         {
-            return vm.IsQ1Correct == true &&
-                   vm.IsQ2Correct == true &&
-                   vm.IsQ3Correct == true &&
-                   vm.IsQ4Correct == true;
+            return vm.IsQ1Correct == true && vm.IsQ2Correct == true && vm.IsQ3Correct == true && vm.IsQ4Correct == true;
         }
 
         private async Task<bool> SaveLessonProgressAsync(string actionName)
         {
-            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                            ?? User.FindFirstValue("UserID");
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("UserID");
+            if (!Guid.TryParse(userIdValue, out var userId)) return false;
 
-            if (!Guid.TryParse(userIdValue, out var userId))
-            {
-                return false;
-            }
+            var lesson = await _context.Lessons.FirstOrDefaultAsync(l => l.ActionName == actionName);
+            if (lesson == null) return false;
 
-            var lesson = await _context.Lessons
-                .FirstOrDefaultAsync(l => l.ActionName == actionName);
-
-            if (lesson == null)
-            {
-                return false;
-            }
-
-            var progress = await _context.UserLessonProgresses
-                .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
-
+            var progress = await _context.UserLessonProgresses.FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
             if (progress == null)
             {
                 progress = new UserLessonProgress
@@ -609,7 +534,6 @@ namespace DotNetCoreSqlDb.Controllers
                     CompletedAtUtc = DateTime.UtcNow,
                     LastAccessedAtUtc = DateTime.UtcNow
                 };
-
                 _context.UserLessonProgresses.Add(progress);
             }
             else
@@ -623,6 +547,4 @@ namespace DotNetCoreSqlDb.Controllers
             return true;
         }
     }
-
-
 }

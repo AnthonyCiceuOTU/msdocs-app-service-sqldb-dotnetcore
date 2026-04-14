@@ -173,17 +173,6 @@
         font-size: 0.95rem;
     }
 
-    .mini-code {
-        background: rgba(2, 6, 23, 0.7);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 10px;
-        padding: 10px 12px;
-        color: #e2e8f0;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-    }
-
     .text-input {
         width: 100%;
         box-sizing: border-box;
@@ -199,67 +188,6 @@
     .text-input:focus {
         border-color: rgba(34, 197, 94, 0.5);
         box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
-    }
-
-    .radio-row {
-        display: flex;
-        gap: 18px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-    }
-
-    .radio-option {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: #e5e7eb;
-        font-size: 0.92rem;
-    }
-
-    .mc-grid {
-        display: grid;
-        gap: 10px;
-    }
-
-    .mc-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 12px;
-        padding: 10px 12px;
-    }
-
-    .mc-header {
-        color: #e5e7eb;
-        margin-bottom: 6px;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-
-    .concept-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 8px;
-    }
-
-    .concept-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 12px;
-        padding: 12px;
-    }
-
-    .concept-card h4 {
-        margin: 0 0 6px 0;
-        color: #ffffff;
-        font-size: 0.95rem;
-    }
-
-    .concept-card p {
-        margin: 0;
-        color: #94a3b8;
-        font-size: 0.88rem;
-        line-height: 1.45;
     }
 
     .btn-main,
@@ -284,13 +212,6 @@
     .btn-secondary {
         background: rgba(255,255,255,0.05);
         color: #e5e7eb;
-    }
-
-    .btn-main:hover,
-    .btn-secondary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-        color: #ffffff;
     }
 
     .step-actions {
@@ -342,45 +263,35 @@
     }
 
     @@media (max-width: 900px) {
-        .brand-text h1 {
-            font-size: 1.7rem;
-        }
-
-        .step-top h2 {
-            font-size: 1.4rem;
-        }
-
-        .step-top h3 {
-            font-size: 1.15rem;
-        }
-
-        .step-card {
-            padding: 16px;
-            overflow-y: auto;
-        }
-
-        .quiz-grid,
-        .concept-grid {
-            grid-template-columns: 1fr;
-        }
+        .brand-text h1 { font-size: 1.7rem; }
+        .step-top h2 { font-size: 1.4rem; }
+        .step-top h3 { font-size: 1.15rem; }
+        .step-card { padding: 16px; overflow-y: auto; }
+        .quiz-grid { grid-template-columns: 1fr; }
     }
 </style>
 
 <div class="lesson-page">
     <div class="lesson-shell">
+        <div class="topbar">
+            <div class="brand">
+                <div class="brand-icon">#</div>
+                <div class="brand-text">
+                    <h1>CodeQuest</h1>
+                    <p>Unit 4 · FOR Loops</p>
+                </div>
+            </div>
+
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
+        </div>
 
         <form method="post">
-
-            <div class="panel">
-
-                <!-- STEP 0 -->
+            <div class="panel step-panel">
                 <div class="step-card active" id="step0">
-                    <div>
+                    <div class="step-top">
                         <h2>FOR Loops</h2>
 
-                        <p>
-                            FOR loops are used when you know how many times something will repeat.
-                        </p>
+                        <p>FOR loops are used when you know how many times something will repeat.</p>
 
                         <div class="code-block">
 FOR i ← 1 TO 10
@@ -391,58 +302,68 @@ END FOR
                         <div class="instruction-box">
                             This loop runs a fixed number of times.
                         </div>
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Think about counting from 1 to 10.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                It prints numbers from 1 to 10.
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
-                        <span>Instructions</span>
+                        <div class="step-progress">Instructions</div>
                         <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
                     </div>
                 </div>
 
-                <!-- STEP 1 -->
                 <div class="step-card" id="step1">
-                    <div>
+                    <div class="step-top">
                         <h3>Understanding FOR Loops</h3>
 
                         <div class="instruction-box">
                             What does this FOR loop do?
                         </div>
 
-                        <input asp-for="UserAnswer" class="text-input" />
+                        <div class="quiz-grid">
+                            <div class="quiz-card">
+                                <div class="quiz-title">Write your answer</div>
+                                <input asp-for="UserAnswer1" class="text-input" />
 
-                        @if (Model.IsCorrect != null)
-                        {
-                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.FeedbackMessage
+                                @if (Model.ShowHint)
+                                {
+                                    <div class="alert-box alert-info-custom">
+                                        Think about counting from 1 to 10.
+                                    </div>
+                                }
+
+                                @if (Model.ShowSolution)
+                                {
+                                    <div class="alert-box alert-info-custom">
+                                        It prints numbers from 1 to 10.
+                                    </div>
+                                }
+
+                                @if (Model.IsQ1Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ1Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback1
+                                    </div>
+                                }
                             </div>
-                        }
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">What to remember</div>
+                                <p>A FOR loop repeats for a fixed range or number of times.</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="step-actions">
                         <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+                        <div class="step-progress">Step 1 of 2</div>
 
-                        @if (Model.IsCorrect == true)
+                        @if (Model.IsQ1Correct == true)
                         {
                             <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
                         }
                         else
                         {
-                            <div>
-                                <button type="submit" name="actionType" value="submit" class="btn-main">Submit</button>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
                                 <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
                                 <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
                             </div>
@@ -450,9 +371,8 @@ END FOR
                     </div>
                 </div>
 
-                <!-- STEP 2 -->
                 <div class="step-card" id="step2">
-                    <div>
+                    <div class="step-top">
                         <h3>Reflection</h3>
 
                         <div class="instruction-box">
@@ -471,10 +391,11 @@ END FOR
 
                     <div class="step-actions">
                         <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <div class="step-progress">Step 2 of 2</div>
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
                         }
                         else
                         {
@@ -482,9 +403,13 @@ END FOR
                         }
                     </div>
                 </div>
-
             </div>
         </form>
+
+        <div class="nav-footer">
+            <a asp-controller="UnitFour" asp-action="WhileLoops" class="btn-secondary">Previous Lesson</a>
+            <a asp-controller="UnitFour" asp-action="Counters" class="btn-main">Next Lesson</a>
+        </div>
     </div>
 </div>
 
@@ -495,14 +420,19 @@ END FOR
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        let step = 0;
+        const forcedStep = '@(ViewBag.ForceStep ?? "")';
 
-        const answered = '@(Model.IsCorrect?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+        if (forcedStep !== '') {
+            showStep(parseInt(forcedStep));
+        } else {
+            let step = 0;
+            const answered = '@(Model.IsQ1Correct?.ToString() ?? "")';
+            const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-        if (explanationDone === 'True') step = 2;
-        else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) step = 1;
+            if (explanationDone === 'True') step = 2;
+            else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) step = 1;
 
-        showStep(step);
+            showStep(step);
+        }
     });
 </script>
