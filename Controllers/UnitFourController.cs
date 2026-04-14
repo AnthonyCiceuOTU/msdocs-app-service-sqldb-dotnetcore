@@ -359,8 +359,13 @@ namespace DotNetCoreSqlDb.Controllers
                              || (vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase) && vm.UserAnswer3.Contains("+", StringComparison.OrdinalIgnoreCase));
             vm.Feedback3 = vm.IsQ3Correct == true ? "Correct!" : "Look at the line that updates the total each loop.";
 
-            vm.IsQ4Correct = vm.UserAnswer4.Equals("accumulator", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback4 = vm.IsQ4Correct == true ? "Correct!" : "A variable that stores a running total is called an accumulator.";
+            vm.IsQ4Correct =
+    vm.UserAnswer4.Equals("accumulator", StringComparison.OrdinalIgnoreCase)
+    || vm.UserAnswer4.Contains("accumulator", StringComparison.OrdinalIgnoreCase);
+
+vm.Feedback4 = vm.IsQ4Correct == true
+    ? "Correct!"
+    : "A variable that stores a running total is called an accumulator.";
 
             ViewBag.ForceStep = vm.IsQ1Correct == true && vm.IsQ2Correct == true && vm.IsQ3Correct == true && vm.IsQ4Correct == true ? 2 : 1;
             return View(vm);
