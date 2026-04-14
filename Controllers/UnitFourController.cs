@@ -117,83 +117,96 @@ namespace DotNetCoreSqlDb.Controllers
             return View(new WhileLoopsViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actionType)
+       [HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actionType)
+{
+    TrimAll(vm);
+
+    if (actionType == "hint")
+    {
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
+        ViewBag.ForceStep = 1;
+        return View(vm);
+    }
+
+    if (actionType == "solution")
+    {
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
+        ViewBag.ForceStep = 1;
+        return View(vm);
+    }
+
+    if (actionType == "checkExplanation")
+    {
+        EvaluateWhileLoopsExplanation(vm);
+        ViewBag.ForceStep = 2;
+        return View(vm);
+    }
+
+    if (actionType == "submit")
+    {
+        EvaluateWhileLoopsExplanation(vm);
+
+        if (vm.ExplanationCorrect != true)
         {
-            TrimAll(vm);
+            vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                ? "Please check your explanation before submitting."
+                : vm.ExplanationFeedback;
 
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                ViewBag.ForceStep = 1;
-                return View(vm);
-            }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                ViewBag.ForceStep = 1;
-                return View(vm);
-            }
-
-            if (actionType == "checkExplanation")
-            {
-                EvaluateWhileLoopsExplanation(vm);
-                ViewBag.ForceStep = 2;
-                return View(vm);
-            }
-
-            if (actionType == "submit")
-            {
-                EvaluateWhileLoopsExplanation(vm);
-
-                if (vm.ExplanationCorrect != true)
-                {
-                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
-                        ? "Please check your explanation before submitting."
-                        : vm.ExplanationFeedback;
-
-                    ViewBag.ForceStep = 2;
-                    return View(vm);
-                }
-
-                await SaveLessonProgressAsync("WhileLoops");
-                return RedirectToAction(nameof(ForLoops));
-            }
-
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-
-            vm.IsQ1Correct = vm.UserAnswer1.Contains("score < 100", StringComparison.OrdinalIgnoreCase)
-                             || (vm.UserAnswer1.Contains("<") && vm.UserAnswer1.Contains("100"));
-            vm.Feedback1 = vm.IsQ1Correct == true
-                ? "Correct!"
-                : "Check the condition in the example.";
-
-            vm.IsQ2Correct = vm.UserAnswer2.Equals("while the condition is true", StringComparison.OrdinalIgnoreCase)
-                             || (vm.UserAnswer2.Contains("condition", StringComparison.OrdinalIgnoreCase)
-                                 && vm.UserAnswer2.Contains("true", StringComparison.OrdinalIgnoreCase));
-            vm.Feedback2 = vm.IsQ2Correct == true
-                ? "Correct!"
-                : "A WHILE loop continues as long as its condition is true.";
-
-            vm.IsQ3Correct = vm.UserAnswer3.Equals("WHILE", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback3 = vm.IsQ3Correct == true
-                ? "Correct!"
-                : "The missing keyword is WHILE.";
-
-            vm.IsQ4Correct = vm.UserAnswer4.Equals("condition becomes false", StringComparison.OrdinalIgnoreCase)
-                             || vm.UserAnswer4.Contains("false", StringComparison.OrdinalIgnoreCase);
-            vm.Feedback4 = vm.IsQ4Correct == true
-                ? "Correct!"
-                : "A WHILE loop stops when the condition becomes false.";
-
-            ViewBag.ForceStep = AllCorrect(vm) ? 2 : 1;
+            ViewBag.ForceStep = 2;
             return View(vm);
         }
+
+        await SaveLessonProgressAsync("WhileLoops");
+        return RedirectToAction(nameof(ForLoops));
+    }
+
+    vm.ShowHint = false;
+    vm.ShowSolution = false;
+
+    vm.IsQ1Correct =
+        (
+            vm.UserAnswer1.Contains("condition", StringComparison.OrdinalIgnoreCase) &&
+            vm.UserAnswer1.Contains("true", StringComparison.OrdinalIgnoreCase)
+        )
+        ||
+        vm.UserAnswer1.Contains("repeats while its condition is true", StringComparison.OrdinalIgnoreCase)
+        ||
+        vm.UserAnswer1.Contains("while the condition is true", StringComparison.OrdinalIgnoreCase);
+
+    vm.Feedback1 = vm.IsQ1Correct == true
+        ? "Correct!"
+        : "Try mentioning that a WHILE loop repeats while its condition is true.";
+
+    vm.IsQ2Correct =
+        vm.UserAnswer2.Equals("while the condition is true", StringComparison.OrdinalIgnoreCase)
+        || (vm.UserAnswer2.Contains("condition", StringComparison.OrdinalIgnoreCase)
+            && vm.UserAnswer2.Contains("true", StringComparison.OrdinalIgnoreCase));
+
+    vm.Feedback2 = vm.IsQ2Correct == true
+        ? "Correct!"
+        : "A WHILE loop continues as long as its condition is true.";
+
+    vm.IsQ3Correct = vm.UserAnswer3.Equals("WHILE", StringComparison.OrdinalIgnoreCase);
+    vm.Feedback3 = vm.IsQ3Correct == true
+        ? "Correct!"
+        : "The missing keyword is WHILE.";
+
+    vm.IsQ4Correct =
+        vm.UserAnswer4.Equals("condition becomes false", StringComparison.OrdinalIgnoreCase)
+        || vm.UserAnswer4.Contains("false", StringComparison.OrdinalIgnoreCase)
+        || vm.UserAnswer4.Contains("stops when the condition is false", StringComparison.OrdinalIgnoreCase);
+
+    vm.Feedback4 = vm.IsQ4Correct == true
+        ? "Correct!"
+        : "A WHILE loop stops when the condition becomes false.";
+
+    ViewBag.ForceStep = AllCorrect(vm) ? 2 : 1;
+    return View(vm);
+}
 
         [HttpGet]
         public IActionResult ForLoops()
@@ -500,25 +513,26 @@ namespace DotNetCoreSqlDb.Controllers
         }
 
         private static void EvaluateWhileLoopsExplanation(WhileLoopsViewModel vm)
-        {
-            vm.ExplanationCorrect =
-                (
-                    vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("until", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)
-                ) &&
-                (
-                    vm.ExplanationAnswer.Contains("unknown", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("don't know", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("not known", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("depends", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("not fixed", StringComparison.OrdinalIgnoreCase)
-                );
+{
+    vm.ExplanationCorrect =
+        (
+            vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("until", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)
+        ) &&
+        (
+            vm.ExplanationAnswer.Contains("unknown", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("don't know", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("not known", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("depends", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("not fixed", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase)
+        );
 
-            vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                ? "Correct! WHILE loops are useful when repetition depends on a condition and the number of repeats is not known in advance."
-                : "Try mentioning that a WHILE loop is useful when repetition depends on a condition and the number of repeats is not fixed.";
-        }
+    vm.ExplanationFeedback = vm.ExplanationCorrect == true
+        ? "Correct! WHILE loops are useful when repetition depends on a condition."
+        : "Try mentioning that a WHILE loop is useful when repetition depends on a condition.";
+}
 
         private static void EvaluateForLoopsExplanation(ForLoopsViewModel vm)
         {
