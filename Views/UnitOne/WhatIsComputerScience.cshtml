@@ -24,7 +24,7 @@
             radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
             linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
         color: #e5e7eb;
-        padding: 16px;
+        padding: 14px;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -35,48 +35,50 @@
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
+        min-height: 0;
     }
 
     .topbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 16px;
-        margin-bottom: 14px;
+        gap: 14px;
+        margin-bottom: 12px;
         flex-wrap: wrap;
+        flex: 0 0 auto;
     }
 
     .brand {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
     }
 
     .brand-icon {
-        width: 46px;
-        height: 46px;
+        width: 42px;
+        height: 42px;
         border-radius: 14px;
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(148, 163, 184, 0.18);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 17px;
         color: #f8fafc;
     }
 
     .brand-text h1 {
         margin: 0;
-        font-size: 2rem;
+        font-size: 1.85rem;
         font-weight: 700;
         color: #ffffff;
-        line-height: 1.1;
+        line-height: 1.05;
     }
 
     .brand-text p {
         margin: 4px 0 0 0;
         color: #94a3b8;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
     }
 
     .panel {
@@ -91,51 +93,59 @@
         flex: 1;
         min-height: 0;
         display: flex;
+        overflow: hidden;
     }
 
     .step-card {
         width: 100%;
-        padding: 18px 20px;
+        padding: 16px 18px;
         display: none;
         overflow: hidden;
+        min-height: 0;
     }
 
     .step-card.active {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        min-height: 0;
+        gap: 10px;
+    }
+
+    .step-top {
+        min-height: 0;
     }
 
     .step-top h2,
     .step-top h3 {
         margin: 0 0 8px 0;
         color: #ffffff;
-        line-height: 1.15;
+        line-height: 1.12;
     }
 
     .step-top h2 {
-        font-size: 1.65rem;
+        font-size: 1.5rem;
     }
 
     .step-top h3 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .step-top p {
         margin: 0 0 10px 0;
         color: #94a3b8;
-        line-height: 1.5;
-        font-size: 0.95rem;
+        line-height: 1.45;
+        font-size: 0.93rem;
     }
 
     .instruction-box {
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(148, 163, 184, 0.12);
         border-radius: 14px;
-        padding: 12px 14px;
+        padding: 10px 12px;
         color: #cbd5e1;
-        line-height: 1.5;
-        font-size: 0.94rem;
+        line-height: 1.45;
+        font-size: 0.92rem;
         margin-bottom: 10px;
     }
 
@@ -144,17 +154,17 @@
         border: 1px solid rgba(148, 163, 184, 0.15);
         color: #e2e8f0;
         border-radius: 14px;
-        padding: 12px 14px;
+        padding: 11px 13px;
         font-family: Consolas, Monaco, monospace;
         white-space: pre-wrap;
-        line-height: 1.45;
-        font-size: 0.92rem;
+        line-height: 1.4;
+        font-size: 0.9rem;
         margin-bottom: 10px;
     }
 
     .drag-hint {
         color: #94a3b8;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         margin-bottom: 10px;
     }
 
@@ -170,7 +180,7 @@
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(148, 163, 184, 0.14);
         border-radius: 12px;
-        padding: 10px 12px;
+        padding: 9px 11px;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -188,9 +198,9 @@
     }
 
     .step-number {
-        width: 30px;
-        height: 30px;
-        flex: 0 0 30px;
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
         border-radius: 9px;
         background: rgba(14, 165, 233, 0.15);
         color: #bae6fd;
@@ -198,15 +208,15 @@
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
     }
 
     .step-text {
         flex: 1;
         color: #e5e7eb;
         font-weight: 500;
-        font-size: 0.95rem;
-        line-height: 1.35;
+        font-size: 0.93rem;
+        line-height: 1.3;
     }
 
     .mc-grid {
@@ -223,18 +233,21 @@
 
     .mc-header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 10px;
         margin-bottom: 8px;
     }
 
     .mc-header label {
         color: #e5e7eb;
-        font-size: 0.95rem;
+        font-size: 0.93rem;
+        line-height: 1.35;
+        flex: 1;
     }
 
     .mc-header input[type="checkbox"] {
-        transform: scale(1.1);
+        transform: scale(1.05);
+        margin-top: 3px;
     }
 
     .text-input {
@@ -244,14 +257,18 @@
         color: #f8fafc;
         border: 1px solid rgba(148, 163, 184, 0.18);
         border-radius: 10px;
-        padding: 10px 12px;
+        padding: 9px 11px;
         outline: none;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
     }
 
     .text-input:focus {
         border-color: rgba(34, 197, 94, 0.5);
         box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    textarea.text-input {
+        resize: none;
     }
 
     .btn-main,
@@ -264,8 +281,9 @@
         font-weight: 600;
         transition: 0.2s ease;
         border: 1px solid rgba(255,255,255,0.08);
-        padding: 10px 16px;
+        padding: 9px 15px;
         cursor: pointer;
+        font-size: 0.92rem;
     }
 
     .btn-main {
@@ -299,20 +317,22 @@
         align-items: center;
         gap: 10px;
         flex-wrap: wrap;
-        margin-top: 12px;
+        margin-top: 6px;
+        flex: 0 0 auto;
     }
 
     .step-progress {
         color: #94a3b8;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
     }
 
     .alert-box {
         border-radius: 12px;
-        padding: 10px 12px;
+        padding: 9px 11px;
         margin-top: 10px;
         border: 1px solid transparent;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
     }
 
     .alert-success-custom {
@@ -337,13 +357,13 @@
         display: none;
         align-items: center;
         gap: 10px;
-        margin-top: 12px;
-        padding: 10px 12px;
+        margin-top: 10px;
+        padding: 9px 11px;
         border-radius: 12px;
         background: rgba(59, 130, 246, 0.12);
         color: #bfdbfe;
         border: 1px solid rgba(59, 130, 246, 0.2);
-        font-size: 0.92rem;
+        font-size: 0.9rem;
     }
 
     .loading-box.active {
@@ -367,29 +387,183 @@
     }
 
     .nav-footer {
-        margin-top: 14px;
+        margin-top: 12px;
         display: flex;
         justify-content: space-between;
         gap: 12px;
         flex-wrap: wrap;
+        flex: 0 0 auto;
+    }
+
+    .question3-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr);
+        gap: 12px;
+        min-height: 0;
+        align-items: start;
+    }
+
+    .question3-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-content: start;
+    }
+
+    .question3-options .mc-card {
+        min-height: 0;
+    }
+
+    .question3-side {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 0;
+    }
+
+    .feedback-panel-title {
+        margin: 0 0 8px 0;
+        color: #ffffff;
+        font-size: 0.98rem;
+        font-weight: 700;
+    }
+
+    .feedback-textarea {
+        min-height: 160px;
+    }
+
+    .step3-card .step-top {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .step3-main {
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    @@media (max-width: 1200px) {
+        .lesson-page {
+            padding: 12px;
+        }
+
+        .brand-text h1 {
+            font-size: 1.65rem;
+        }
+
+        .step-top h2 {
+            font-size: 1.35rem;
+        }
+
+        .step-top h3 {
+            font-size: 1.12rem;
+        }
+
+        .question3-layout {
+            grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+            gap: 10px;
+        }
+
+        .question3-options {
+            gap: 8px;
+        }
+
+        .mc-card {
+            padding: 9px 10px;
+        }
+
+        .text-input {
+            padding: 8px 10px;
+            font-size: 0.88rem;
+        }
+
+        .feedback-textarea {
+            min-height: 140px;
+        }
     }
 
     @@media (max-width: 900px) {
         .brand-text h1 {
-            font-size: 1.7rem;
-        }
-
-        .step-top h2 {
-            font-size: 1.4rem;
-        }
-
-        .step-top h3 {
-            font-size: 1.15rem;
+            font-size: 1.55rem;
         }
 
         .step-card {
-            padding: 16px;
+            padding: 14px;
             overflow-y: auto;
+        }
+
+        .question3-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .question3-options {
+            grid-template-columns: 1fr;
+        }
+
+        .feedback-textarea {
+            min-height: 120px;
+        }
+    }
+
+    @@media (max-height: 860px) and (min-width: 901px) {
+        .lesson-page {
+            padding: 10px;
+        }
+
+        .topbar {
+            margin-bottom: 10px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 16px;
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+        }
+
+        .brand-text p {
+            font-size: 0.88rem;
+        }
+
+        .step-card {
+            padding: 14px 16px;
+        }
+
+        .step-top h2 {
+            font-size: 1.28rem;
+        }
+
+        .step-top h3 {
+            font-size: 1.08rem;
+        }
+
+        .instruction-box,
+        .code-block,
+        .alert-box,
+        .loading-box {
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        .question3-options {
+            gap: 8px;
+        }
+
+        .mc-card {
+            padding: 8px 10px;
+        }
+
+        .feedback-textarea {
+            min-height: 110px;
+        }
+
+        .nav-footer {
+            margin-top: 10px;
         }
     }
 </style>
@@ -546,86 +720,90 @@ END</div>
                     </div>
                 </div>
 
-                <div class="step-card" id="step3">
+                <div class="step-card step3-card" id="step3">
                     <div class="step-top">
                         <h3>Question 3 · Identify algorithms</h3>
+
                         <div class="instruction-box">
                             Select the items that are algorithms and briefly explain why or why not.
                             Then use AI to check your explanations before submitting the lesson.
                         </div>
 
-                        <div class="mc-grid">
-                            <div class="mc-card">
-                                <div class="mc-header">
-                                    <input asp-for="RecipeSelected" type="checkbox" id="RecipeSelected" />
-                                    <label asp-for="RecipeSelected"><strong>A. A recipe for pancakes</strong></label>
+                        <div class="step3-main">
+                            <div class="question3-layout">
+                                <div class="question3-options">
+                                    <div class="mc-card">
+                                        <div class="mc-header">
+                                            <input asp-for="RecipeSelected" type="checkbox" id="RecipeSelected" />
+                                            <label asp-for="RecipeSelected"><strong>A. A recipe for pancakes</strong></label>
+                                        </div>
+                                        <input asp-for="RecipeExplanation"
+                                               id="RecipeExplanation"
+                                               class="text-input"
+                                               placeholder="Why is this or is this not an algorithm?" />
+                                    </div>
+
+                                    <div class="mc-card">
+                                        <div class="mc-header">
+                                            <input asp-for="GroceryListSelected" type="checkbox" id="GroceryListSelected" />
+                                            <label asp-for="GroceryListSelected"><strong>B. A list of groceries</strong></label>
+                                        </div>
+                                        <input asp-for="GroceryListExplanation"
+                                               id="GroceryListExplanation"
+                                               class="text-input"
+                                               placeholder="Why is this or is this not an algorithm?" />
+                                    </div>
+
+                                    <div class="mc-card">
+                                        <div class="mc-header">
+                                            <input asp-for="GpsSelected" type="checkbox" id="GpsSelected" />
+                                            <label asp-for="GpsSelected"><strong>C. GPS directions to a destination</strong></label>
+                                        </div>
+                                        <input asp-for="GpsExplanation"
+                                               id="GpsExplanation"
+                                               class="text-input"
+                                               placeholder="Why is this or is this not an algorithm?" />
+                                    </div>
+
+                                    <div class="mc-card">
+                                        <div class="mc-header">
+                                            <input asp-for="PhotoSelected" type="checkbox" id="PhotoSelected" />
+                                            <label asp-for="PhotoSelected"><strong>D. A photo</strong></label>
+                                        </div>
+                                        <input asp-for="PhotoExplanation"
+                                               id="PhotoExplanation"
+                                               class="text-input"
+                                               placeholder="Why is this or is this not an algorithm?" />
+                                    </div>
                                 </div>
-                                <input asp-for="RecipeExplanation"
-                                       id="RecipeExplanation"
-                                       class="text-input"
-                                       placeholder="Explain why this is or is not an algorithm." />
-                            </div>
 
-                            <div class="mc-card">
-                                <div class="mc-header">
-                                    <input asp-for="GroceryListSelected" type="checkbox" id="GroceryListSelected" />
-                                    <label asp-for="GroceryListSelected"><strong>B. A list of groceries</strong></label>
+                                <div class="question3-side">
+                                    <div class="mc-card">
+                                        <div class="feedback-panel-title">AI feedback</div>
+                                        <textarea id="aiFeedbackDisplay"
+                                                  class="text-input feedback-textarea"
+                                                  readonly
+                                                  placeholder="AI feedback will appear here...">@Model.ExplanationFeedback</textarea>
+                                    </div>
+
+                                    <div id="aiLoadingBox" class="loading-box">
+                                        <div class="spinner"></div>
+                                        <span>Checking with AI...</span>
+                                    </div>
+
+                                    <div id="aiFeedbackAlert"
+                                         class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")"
+                                         style="@(string.IsNullOrWhiteSpace(Model.ExplanationFeedback) ? "display:none;" : "")">
+                                        @Model.ExplanationFeedback
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(Model.IdentifyFeedback))
+                                    {
+                                        var identifyClass = Model.IdentifyCorrect == true ? "alert-success-custom" : "alert-danger-custom";
+                                        <div class="alert-box @identifyClass">@Model.IdentifyFeedback</div>
+                                    }
                                 </div>
-                                <input asp-for="GroceryListExplanation"
-                                       id="GroceryListExplanation"
-                                       class="text-input"
-                                       placeholder="Explain why this is or is not an algorithm." />
                             </div>
-
-                            <div class="mc-card">
-                                <div class="mc-header">
-                                    <input asp-for="GpsSelected" type="checkbox" id="GpsSelected" />
-                                    <label asp-for="GpsSelected"><strong>C. GPS directions to a destination</strong></label>
-                                </div>
-                                <input asp-for="GpsExplanation"
-                                       id="GpsExplanation"
-                                       class="text-input"
-                                       placeholder="Explain why this is or is not an algorithm." />
-                            </div>
-
-                            <div class="mc-card">
-                                <div class="mc-header">
-                                    <input asp-for="PhotoSelected" type="checkbox" id="PhotoSelected" />
-                                    <label asp-for="PhotoSelected"><strong>D. A photo</strong></label>
-                                </div>
-                                <input asp-for="PhotoExplanation"
-                                       id="PhotoExplanation"
-                                       class="text-input"
-                                       placeholder="Explain why this is or is not an algorithm." />
-                            </div>
-
-                            <div class="mc-card">
-                                <div class="mc-header">
-                                    <label><strong>AI feedback</strong></label>
-                                </div>
-                                <textarea id="aiFeedbackDisplay"
-                                          class="text-input"
-                                          rows="5"
-                                          readonly
-                                          placeholder="AI feedback will appear here...">@Model.ExplanationFeedback</textarea>
-                            </div>
-                        </div>
-
-                        @if (!string.IsNullOrWhiteSpace(Model.IdentifyFeedback))
-                        {
-                            var identifyClass = Model.IdentifyCorrect == true ? "alert-success-custom" : "alert-danger-custom";
-                            <div class="alert-box @identifyClass">@Model.IdentifyFeedback</div>
-                        }
-
-                        <div id="aiLoadingBox" class="loading-box">
-                            <div class="spinner"></div>
-                            <span>Checking with AI...</span>
-                        </div>
-
-                        <div id="aiFeedbackAlert"
-                             class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")"
-                             style="@(string.IsNullOrWhiteSpace(Model.ExplanationFeedback) ? "display:none;" : "")">
-                            @Model.ExplanationFeedback
                         </div>
                     </div>
 
