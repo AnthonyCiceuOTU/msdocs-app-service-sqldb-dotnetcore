@@ -375,14 +375,16 @@ namespace DotNetCoreSqlDb.Controllers
 
         private async Task<bool> SaveLessonProgressAsync(string actionName)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId))
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                            ?? User.FindFirstValue("UserID");
+
+            if (!Guid.TryParse(userIdValue, out var userId))
             {
                 return false;
             }
 
             var lesson = await _context.Lessons
-                .FirstOrDefaultAsync(l => l.ControllerName == "UnitTwo" && l.ActionName == actionName && l.IsPublished);
+                .FirstOrDefaultAsync(l => l.ActionName == actionName);
 
             if (lesson == null)
             {
@@ -392,8 +394,6 @@ namespace DotNetCoreSqlDb.Controllers
             var progress = await _context.UserLessonProgresses
                 .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
 
-            var now = DateTime.UtcNow;
-
             if (progress == null)
             {
                 progress = new UserLessonProgress
@@ -401,8 +401,8 @@ namespace DotNetCoreSqlDb.Controllers
                     UserId = userId,
                     LessonId = lesson.Id,
                     IsCompleted = true,
-                    CompletedAtUtc = now,
-                    LastAccessedAtUtc = now
+                    CompletedAtUtc = DateTime.UtcNow,
+                    LastAccessedAtUtc = DateTime.UtcNow
                 };
 
                 _context.UserLessonProgresses.Add(progress);
@@ -410,8 +410,8 @@ namespace DotNetCoreSqlDb.Controllers
             else
             {
                 progress.IsCompleted = true;
-                progress.CompletedAtUtc = now;
-                progress.LastAccessedAtUtc = now;
+                progress.CompletedAtUtc ??= DateTime.UtcNow;
+                progress.LastAccessedAtUtc = DateTime.UtcNow;
             }
 
             await _context.SaveChangesAsync();
