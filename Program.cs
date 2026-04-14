@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Load Azure Key Vault
 var vaultUri = new Uri("https://codequest-key-vault.vault.azure.net/");
 
-if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")))
+if (!builder.Environment.IsDevelopment() &&
+    string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")))
 {
     builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
 }

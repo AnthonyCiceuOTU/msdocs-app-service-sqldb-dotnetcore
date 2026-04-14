@@ -205,19 +205,6 @@ Console.WriteLine(myDog.Name); // Rex</div>
                             </div>
                         </div>
 
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Look at the line that creates the object. The keyword before the class name is the answer to question 1.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Solutions: 1) new, 2) Dog, 3) Rex, 4) True
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -303,6 +290,19 @@ Console.WriteLine(myDog.Name); // Rex</div>
                                 }
                             </div>
                         </div>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Look at the line that creates the object. The keyword before the class name is the answer to question 1.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) new, 2) Dog, 3) Rex, 4) True
+                            </div>
+                        }
                     </div>
 
                     <div class="step-actions">
@@ -353,7 +353,7 @@ Console.WriteLine(myDog.Name); // Rex</div>
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
                         }
                         else
                         {
@@ -388,7 +388,7 @@ Console.WriteLine(myDog.Name); // Rex</div>
         const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-        if (explanationDone === 'True') {
+        if (explanationDone) {
             stepToShow = 2;
         } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
             stepToShow = 1;

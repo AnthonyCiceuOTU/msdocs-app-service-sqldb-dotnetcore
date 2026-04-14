@@ -420,19 +420,6 @@ PrintScore(80);</div>
                             </div>
                         </div>
 
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                To call a method, write its name followed by the argument in parentheses: MethodName(value)
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Solutions: 1) PrintScore(95), 2) (), 3) The method runs, 4) 3
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -518,6 +505,19 @@ PrintScore(80);</div>
                                 }
                             </div>
                         </div>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                To call a method, write its name followed by the argument in parentheses: MethodName(value)
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) PrintScore(95), 2) (), 3) The method runs, 4) 3
+                            </div>
+                        }
                     </div>
 
                     <div class="step-actions">
@@ -568,7 +568,7 @@ PrintScore(80);</div>
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
                         }
                         else
                         {
@@ -607,7 +607,7 @@ PrintScore(80);</div>
         const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-        if (explanationDone === 'True') {
+        if (explanationDone) {
             stepToShow = 2;
         } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
             stepToShow = 1;
