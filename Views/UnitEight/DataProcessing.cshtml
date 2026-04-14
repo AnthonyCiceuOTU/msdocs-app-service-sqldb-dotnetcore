@@ -448,7 +448,19 @@ average ← total / count
                 <div class="instruction-box">
                     Complete all questions about totals and averages.
                 </div>
+@if (Model.ShowHint)
+{
+    <div class="alert-box alert-info-custom">
+        Think about the steps: sum first, then divide.
+    </div>
+}
 
+@if (Model.ShowSolution)
+{
+    <div class="alert-box alert-info-custom">
+        Solution: Add all numbers → divide by count.
+    </div>
+}
                 <div class="quiz-grid">
 
                     <!-- Q1 -->
