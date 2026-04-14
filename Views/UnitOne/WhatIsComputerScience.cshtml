@@ -285,6 +285,14 @@
         color: #ffffff;
     }
 
+    .btn-main:disabled,
+    .btn-secondary:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
     .step-actions {
         display: flex;
         justify-content: space-between;
@@ -323,6 +331,39 @@
         background: rgba(59, 130, 246, 0.12);
         color: #bfdbfe;
         border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .loading-box {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        font-size: 0.92rem;
+    }
+
+    .loading-box.active {
+        display: inline-flex;
+    }
+
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 3px solid rgba(191, 219, 254, 0.25);
+        border-top-color: #bfdbfe;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        flex: 0 0 auto;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .nav-footer {
@@ -371,6 +412,8 @@
             @Html.AntiForgeryToken()
             <input asp-for="PbSandwichOrder" type="hidden" id="PbSandwichOrder" />
             <input asp-for="CardSortOrder" type="hidden" id="CardSortOrder" />
+            <input asp-for="ExplanationCorrect" type="hidden" id="ExplanationCorrectHidden" />
+            <input asp-for="ExplanationFeedback" type="hidden" id="ExplanationFeedbackHidden" />
 
             <div class="panel step-panel">
                 <div class="step-card active" id="step0">
@@ -407,7 +450,6 @@ END</div>
                     </div>
 
                     <div class="step-actions">
-                        <div class="step-progress">Instructions</div>
                         <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
                     </div>
                 </div>
@@ -509,39 +551,63 @@ END</div>
                         <h3>Question 3 · Identify algorithms</h3>
                         <div class="instruction-box">
                             Select the items that are algorithms and briefly explain why or why not.
+                            Then use AI to check your explanations before submitting the lesson.
                         </div>
 
                         <div class="mc-grid">
                             <div class="mc-card">
                                 <div class="mc-header">
-                                    <input asp-for="RecipeSelected" type="checkbox" />
+                                    <input asp-for="RecipeSelected" type="checkbox" id="RecipeSelected" />
                                     <label asp-for="RecipeSelected"><strong>A. A recipe for pancakes</strong></label>
                                 </div>
-                                <input asp-for="RecipeExplanation" class="text-input" placeholder="For now, any answer longer than 8 characters will work, later will be a LLM checking answer" />
+                                <input asp-for="RecipeExplanation"
+                                       id="RecipeExplanation"
+                                       class="text-input"
+                                       placeholder="Explain why this is or is not an algorithm." />
                             </div>
 
                             <div class="mc-card">
                                 <div class="mc-header">
-                                    <input asp-for="GroceryListSelected" type="checkbox" />
+                                    <input asp-for="GroceryListSelected" type="checkbox" id="GroceryListSelected" />
                                     <label asp-for="GroceryListSelected"><strong>B. A list of groceries</strong></label>
                                 </div>
-                                <input asp-for="GroceryListExplanation" class="text-input" placeholder="Why or why not?" />
+                                <input asp-for="GroceryListExplanation"
+                                       id="GroceryListExplanation"
+                                       class="text-input"
+                                       placeholder="Explain why this is or is not an algorithm." />
                             </div>
 
                             <div class="mc-card">
                                 <div class="mc-header">
-                                    <input asp-for="GpsSelected" type="checkbox" />
+                                    <input asp-for="GpsSelected" type="checkbox" id="GpsSelected" />
                                     <label asp-for="GpsSelected"><strong>C. GPS directions to a destination</strong></label>
                                 </div>
-                                <input asp-for="GpsExplanation" class="text-input" placeholder="Why or why not?" />
+                                <input asp-for="GpsExplanation"
+                                       id="GpsExplanation"
+                                       class="text-input"
+                                       placeholder="Explain why this is or is not an algorithm." />
                             </div>
 
                             <div class="mc-card">
                                 <div class="mc-header">
-                                    <input asp-for="PhotoSelected" type="checkbox" />
+                                    <input asp-for="PhotoSelected" type="checkbox" id="PhotoSelected" />
                                     <label asp-for="PhotoSelected"><strong>D. A photo</strong></label>
                                 </div>
-                                <input asp-for="PhotoExplanation" class="text-input" placeholder="Why or why not?" />
+                                <input asp-for="PhotoExplanation"
+                                       id="PhotoExplanation"
+                                       class="text-input"
+                                       placeholder="Explain why this is or is not an algorithm." />
+                            </div>
+
+                            <div class="mc-card">
+                                <div class="mc-header">
+                                    <label><strong>AI feedback</strong></label>
+                                </div>
+                                <textarea id="aiFeedbackDisplay"
+                                          class="text-input"
+                                          rows="5"
+                                          readonly
+                                          placeholder="AI feedback will appear here...">@Model.ExplanationFeedback</textarea>
                             </div>
                         </div>
 
@@ -550,12 +616,35 @@ END</div>
                             var identifyClass = Model.IdentifyCorrect == true ? "alert-success-custom" : "alert-danger-custom";
                             <div class="alert-box @identifyClass">@Model.IdentifyFeedback</div>
                         }
+
+                        <div id="aiLoadingBox" class="loading-box">
+                            <div class="spinner"></div>
+                            <span>Checking with AI...</span>
+                        </div>
+
+                        <div id="aiFeedbackAlert"
+                             class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")"
+                             style="@(string.IsNullOrWhiteSpace(Model.ExplanationFeedback) ? "display:none;" : "")">
+                            @Model.ExplanationFeedback
+                        </div>
                     </div>
 
                     <div class="step-actions">
-                        <button type="button" class="btn-secondary" onclick="showStep(2)">Back</button>
+                        <button type="button" class="btn-secondary" onclick="showStep(2)" id="backToStep2Button">Back</button>
                         <div class="step-progress">Step 3 of 3</div>
-                        <button type="submit" name="actionType" value="checkIdentify" class="btn-main">Submit Lesson</button>
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button type="button" class="btn-main" id="checkExplanationButton">Check with AI</button>
+
+                            <button type="submit"
+                                    name="actionType"
+                                    value="submit"
+                                    class="btn-main"
+                                    id="submitLessonButton"
+                                    style="@(Model.ExplanationCorrect == true ? "" : "display:none;")">
+                                Submit Lesson
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -582,7 +671,12 @@ END</div>
     function saveOrder(listId, hiddenInputId) {
         const items = document.querySelectorAll(`#${listId} .sortable-item`);
         const values = Array.from(items).map(x => x.getAttribute('data-value'));
-        document.getElementById(hiddenInputId).value = values.join('|');
+        const hiddenInput = document.getElementById(hiddenInputId);
+
+        if (hiddenInput) {
+            hiddenInput.value = values.join('|');
+        }
+
         updateStepNumbers(listId);
     }
 
@@ -602,6 +696,8 @@ END</div>
 
     function enableDragSort(listId, hiddenInputId) {
         const list = document.getElementById(listId);
+        if (!list) return;
+
         let draggedItem = null;
 
         function getDragAfterElement(container, y) {
@@ -620,33 +716,96 @@ END</div>
         }
 
         list.querySelectorAll('.sortable-item').forEach(item => {
-            item.addEventListener('dragstart', function () {
-                draggedItem = this;
-                this.classList.add('dragging');
+            item.addEventListener('dragstart', () => {
+                draggedItem = item;
+                item.classList.add('dragging');
             });
 
-            item.addEventListener('dragend', function () {
-                this.classList.remove('dragging');
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
                 draggedItem = null;
                 saveOrder(listId, hiddenInputId);
             });
         });
 
-        list.addEventListener('dragover', function (e) {
+        list.addEventListener('dragover', e => {
             e.preventDefault();
             const afterElement = getDragAfterElement(list, e.clientY);
-            const dragging = list.querySelector('.dragging');
+            const currentDragged = list.querySelector('.dragging');
 
-            if (!dragging) return;
+            if (!currentDragged) return;
 
             if (afterElement == null) {
-                list.appendChild(dragging);
+                list.appendChild(currentDragged);
             } else {
-                list.insertBefore(dragging, afterElement);
+                list.insertBefore(currentDragged, afterElement);
             }
         });
 
         saveOrder(listId, hiddenInputId);
+    }
+
+    function setStepThreeLoadingState(isLoading) {
+        const loadingBox = document.getElementById('aiLoadingBox');
+        const checkButton = document.getElementById('checkExplanationButton');
+        const backButton = document.getElementById('backToStep2Button');
+
+        const inputs = [
+            document.getElementById('RecipeExplanation'),
+            document.getElementById('GroceryListExplanation'),
+            document.getElementById('GpsExplanation'),
+            document.getElementById('PhotoExplanation')
+        ];
+
+        if (loadingBox) {
+            loadingBox.classList.toggle('active', isLoading);
+        }
+
+        if (checkButton) {
+            checkButton.disabled = isLoading;
+            checkButton.textContent = isLoading ? 'Checking...' : 'Check with AI';
+        }
+
+        if (backButton) {
+            backButton.disabled = isLoading;
+        }
+
+        inputs.forEach(input => {
+            if (input) {
+                input.readOnly = isLoading;
+            }
+        });
+    }
+
+    function setAiResult(isCorrect, feedback) {
+        const feedbackDisplay = document.getElementById('aiFeedbackDisplay');
+        const feedbackAlert = document.getElementById('aiFeedbackAlert');
+        const submitLessonButton = document.getElementById('submitLessonButton');
+        const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+        const explanationFeedbackHidden = document.getElementById('ExplanationFeedbackHidden');
+
+        if (feedbackDisplay) {
+            feedbackDisplay.value = feedback || '';
+        }
+
+        if (feedbackAlert) {
+            feedbackAlert.style.display = 'block';
+            feedbackAlert.textContent = feedback || '';
+            feedbackAlert.classList.remove('alert-success-custom', 'alert-danger-custom');
+            feedbackAlert.classList.add(isCorrect ? 'alert-success-custom' : 'alert-danger-custom');
+        }
+
+        if (explanationCorrectHidden) {
+            explanationCorrectHidden.value = isCorrect ? 'true' : 'false';
+        }
+
+        if (explanationFeedbackHidden) {
+            explanationFeedbackHidden.value = feedback || '';
+        }
+
+        if (submitLessonButton) {
+            submitLessonButton.style.display = isCorrect ? '' : 'none';
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -655,10 +814,56 @@ END</div>
 
         const currentStep = @Model.CurrentStep;
         showStep(currentStep);
-    });
 
-    document.getElementById('lessonForm').addEventListener('submit', function () {
-        saveOrder('pbList', 'PbSandwichOrder');
-        saveOrder('cardList', 'CardSortOrder');
+        const checkExplanationButton = document.getElementById('checkExplanationButton');
+
+        if (checkExplanationButton) {
+            checkExplanationButton.addEventListener('click', async function () {
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+
+                const recipeSelected = document.getElementById('RecipeSelected')?.checked ?? false;
+                const groceryListSelected = document.getElementById('GroceryListSelected')?.checked ?? false;
+                const gpsSelected = document.getElementById('GpsSelected')?.checked ?? false;
+                const photoSelected = document.getElementById('PhotoSelected')?.checked ?? false;
+
+                const recipeExplanation = document.getElementById('RecipeExplanation')?.value ?? '';
+                const groceryListExplanation = document.getElementById('GroceryListExplanation')?.value ?? '';
+                const gpsExplanation = document.getElementById('GpsExplanation')?.value ?? '';
+                const photoExplanation = document.getElementById('PhotoExplanation')?.value ?? '';
+
+                setStepThreeLoadingState(true);
+
+                try {
+                    const formData = new FormData();
+                    formData.append('__RequestVerificationToken', tokenInput ? tokenInput.value : '');
+                    formData.append('recipeSelected', recipeSelected);
+                    formData.append('groceryListSelected', groceryListSelected);
+                    formData.append('gpsSelected', gpsSelected);
+                    formData.append('photoSelected', photoSelected);
+                    formData.append('recipeExplanation', recipeExplanation);
+                    formData.append('groceryListExplanation', groceryListExplanation);
+                    formData.append('gpsExplanation', gpsExplanation);
+                    formData.append('photoExplanation', photoExplanation);
+
+                    const response = await fetch('@Url.Action("CheckWhatIsComputerScienceExplanation", "UnitOne")', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        setAiResult(false, data.feedback || 'We could not check your explanations right now.');
+                        return;
+                    }
+
+                    setAiResult(data.isCorrect, data.feedback);
+                } catch (error) {
+                    setAiResult(false, 'We could not check your explanations right now. Please try again.');
+                } finally {
+                    setStepThreeLoadingState(false);
+                }
+            });
+        }
     });
 </script>

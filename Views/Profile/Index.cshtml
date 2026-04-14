@@ -64,74 +64,75 @@
             </div>
         </div>
 
-        <div class="profile-card">
+        <div class="profile-card profile-calendar-card">
             <div class="calendar-header">
                 <h2>Sign-in History</h2>
             </div>
 
             <div class="contribution-wrapper">
-                <div class="month-row">
-                    @for (int i = 0; i < totalWeeks; i++)
-                    {
-                        var label = Model.MonthLabels.FirstOrDefault(x => x.WeekIndex == i);
-                        <div class="month-cell">@(label?.Label ?? "")</div>
-                    }
-                </div>
-
-                <div class="calendar-layout">
-                    <div class="day-labels">
-                        <div></div>
-                        <div>Mon</div>
-                        <div></div>
-                        <div>Wed</div>
-                        <div></div>
-                        <div>Fri</div>
-                        <div></div>
-                    </div>
-
-                    <div class="calendar-grid" style="grid-template-columns: repeat(@totalWeeks, 14px);">
-                        @for (int week = 0; week < totalWeeks; week++)
+                <div class="calendar-scale-box">
+                    <div class="month-row">
+                        @for (int i = 0; i < totalWeeks; i++)
                         {
-                            for (int day = 0; day < 7; day++)
-                            {
-                                var index = week * 7 + day;
-
-                                if (index < allDates.Count)
-                                {
-                                    var date = allDates[index].Date;
-                                    var count = Model.SignInsByDate.ContainsKey(date)
-                                        ? Model.SignInsByDate[date]
-                                        : 0;
-
-                                    string levelClass = count switch
-                                    {
-                                        0 => "level-0",
-                                        1 => "level-1",
-                                        2 => "level-2",
-                                        3 => "level-3",
-                                        _ => "level-4"
-                                    };
-
-                                    <div class="day-cell @levelClass" title="@date.ToString("MMMM d, yyyy"): @count sign-in(s)">
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="day-cell empty"></div>
-                                }
-                            }
+                            var label = Model.MonthLabels.FirstOrDefault(x => x.WeekIndex == i);
+                            <div class="month-cell">@(label?.Label ?? "")</div>
                         }
                     </div>
-                </div>
 
-                <div class="legend">
-                    <span>Less</span>
-                    <div class="legend-box level-0"></div>
-                    <div class="legend-box level-1"></div>
-                    <div class="legend-box level-2"></div>
-                    <div class="legend-box level-3"></div>
-                    <div class="legend-box level-4"></div>
-                    <span>More</span>
+                    <div class="calendar-layout">
+                        <div class="day-labels">
+                            <div></div>
+                            <div>Mon</div>
+                            <div></div>
+                            <div>Wed</div>
+                            <div></div>
+                            <div>Fri</div>
+                            <div></div>
+                        </div>
+
+                        <div class="calendar-grid" style="grid-template-columns: repeat(@totalWeeks, 14px);">
+                            @for (int week = 0; week < totalWeeks; week++)
+                            {
+                                for (int day = 0; day < 7; day++)
+                                {
+                                    var index = week * 7 + day;
+
+                                    if (index < allDates.Count)
+                                    {
+                                        var date = allDates[index].Date;
+                                        var count = Model.SignInsByDate.ContainsKey(date)
+                                            ? Model.SignInsByDate[date]
+                                            : 0;
+
+                                        string levelClass = count switch
+                                        {
+                                            0 => "level-0",
+                                            1 => "level-1",
+                                            2 => "level-2",
+                                            3 => "level-3",
+                                            _ => "level-4"
+                                        };
+
+                                        <div class="day-cell @levelClass" title="@date.ToString("MMMM d, yyyy"): @count sign-in(s)"></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="day-cell empty"></div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <span>Less</span>
+                        <div class="legend-box level-0"></div>
+                        <div class="legend-box level-1"></div>
+                        <div class="legend-box level-2"></div>
+                        <div class="legend-box level-3"></div>
+                        <div class="legend-box level-4"></div>
+                        <span>More</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -144,15 +145,15 @@
         margin: 0;
         padding: 0;
         width: 100%;
-        height: 100%;
-        overflow: hidden;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     .profile-page {
         min-height: 100vh;
         width: 100%;
         box-sizing: border-box;
-        overflow: hidden;
         background:
             radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
             radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
@@ -164,10 +165,10 @@
 
     .profile-container {
         max-width: 1100px;
-        height: 100%;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
+        gap: 16px;
     }
 
     .profile-header {
@@ -175,7 +176,6 @@
         justify-content: space-between;
         align-items: center;
         gap: 16px;
-        margin-bottom: 16px;
         flex-wrap: wrap;
     }
 
@@ -194,6 +194,7 @@
     .profile-actions {
         display: flex;
         gap: 12px;
+        flex-wrap: wrap;
     }
 
     .profile-btn {
@@ -221,7 +222,6 @@
         border-radius: 18px;
         padding: 18px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
-        margin-bottom: 16px;
         backdrop-filter: blur(12px);
     }
 
@@ -259,27 +259,30 @@
         font-size: 0.9rem;
     }
 
+    .profile-calendar-card {
+        display: flex;
+        flex-direction: column;
+    }
+
     .calendar-header h2 {
-        margin: 0;
+        margin: 0 0 10px 0;
         color: #ffffff;
     }
 
-    .calendar-header p {
-        margin: 8px 0 20px 0;
-        color: #94a3b8;
+    .contribution-wrapper {
+        width: 100%;
+        overflow: visible;
     }
 
-    .contribution-wrapper {
-        flex: 1;
-        min-height: 0;
-        overflow: hidden;
+    .calendar-scale-box {
+        width: fit-content;
+        max-width: 100%;
+        transform-origin: top left;
     }
 
     .month-row {
         display: grid;
-        grid-template-columns: 30px repeat(
-                @totalWeeks
-                , 14px);
+        grid-template-columns: 30px repeat(@totalWeeks, 14px);
         gap: 4px;
         margin-bottom: 8px;
         min-width: fit-content;
@@ -358,22 +361,144 @@
         margin-top: 16px;
         color: #94a3b8;
         font-size: 0.8rem;
+        flex-wrap: wrap;
     }
 
-    .profile-card:last-child {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-    }
+    @@media (max-height: 900px) {
+        .profile-page {
+            padding: 16px;
+        }
 
-    @@media (max-width: 768px) {
+        .profile-container {
+            gap: 12px;
+        }
+
         .profile-card {
-            padding: 18px;
+            padding: 14px;
         }
 
         .profile-title {
-            font-size: 1.8rem;
+            font-size: 1.9rem;
+        }
+
+        .profile-subtitle {
+            font-size: 0.95rem;
+        }
+
+        .profile-btn {
+            padding: 8px 14px;
+            font-size: 0.95rem;
+        }
+
+        .info-box {
+            padding: 12px;
+        }
+
+        .calendar-scale-box {
+            transform: scale(0.94);
+        }
+    }
+
+    @@media (max-height: 820px) {
+        .profile-page {
+            padding: 12px;
+        }
+
+        .profile-container {
+            gap: 10px;
+        }
+
+        .profile-header {
+            gap: 10px;
+        }
+
+        .profile-title {
+            font-size: 1.7rem;
+        }
+
+        .profile-subtitle {
+            font-size: 0.9rem;
+        }
+
+        .profile-card {
+            padding: 12px;
+            border-radius: 14px;
+        }
+
+        .profile-info-grid {
+            gap: 12px;
+        }
+
+        .info-box {
+            padding: 10px 12px;
+        }
+
+        .info-label {
+            font-size: 0.74rem;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+        }
+
+        .info-value.small {
+            font-size: 0.82rem;
+        }
+
+        .profile-btn {
+            padding: 7px 12px;
+            font-size: 0.9rem;
+        }
+
+        .calendar-header h2 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .calendar-scale-box {
+            transform: scale(0.88);
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .profile-title {
+            font-size: 1.9rem;
+        }
+
+        .profile-info-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .calendar-scale-box {
+            transform: scale(0.92);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .profile-page {
+            padding: 14px;
+        }
+
+        .profile-title {
+            font-size: 1.6rem;
+        }
+
+        .profile-card {
+            padding: 14px;
+        }
+
+        .profile-info-grid {
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .profile-actions {
+            width: 100%;
+        }
+
+        .calendar-scale-box {
+            transform: scale(0.84);
         }
     }
 </style>

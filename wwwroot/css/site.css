@@ -97,9 +97,9 @@ a {
     background: rgba(255, 255, 255, 0.08);
 }
 
-.cq-main-shell {
+/*.cq-main-shell {
     padding-bottom: 5rem;
-}
+}*/
 
 .cq-processing-time {
     margin-top: 1rem;
@@ -108,13 +108,8 @@ a {
 }
 
 .cq-footer {
-    border-top: 1px solid rgba(60, 84, 120, 0.35);
-    background: rgba(5, 17, 34, 0.92);
-    color: rgba(255, 255, 255, 0.78);
-    padding: 1rem 0;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    position: static;
+    display: none;
 }
 
 .cq-footer a {

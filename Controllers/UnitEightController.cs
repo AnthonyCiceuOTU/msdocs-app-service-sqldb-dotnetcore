@@ -19,45 +19,105 @@ namespace DotNetCoreSqlDb.Controllers
 [ValidateAntiForgeryToken]
 public IActionResult DataProcessing(DataProcessingViewModel vm, string actionType)
 {
-    if (actionType == "next")
+    // Normalize inputs
+    vm.Q1Answer = vm.Q1Answer?.Trim() ?? "";
+    vm.Q2Answer = vm.Q2Answer?.Trim() ?? "";
+    vm.Q3Answer = vm.Q3Answer?.Trim() ?? "";
+    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+
+    // -----------------------------
+    // HINT
+    // -----------------------------
+    if (actionType == "hint")
     {
-        vm.CurrentStep++;
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
         return View(vm);
     }
 
-    if (actionType == "prev")
+    // -----------------------------
+    // SOLUTION
+    // -----------------------------
+    if (actionType == "solution")
     {
-        vm.CurrentStep--;
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
         return View(vm);
     }
 
+    // -----------------------------
+    // CHECK QUIZ (Step 1)
+    // -----------------------------
     if (actionType == "check")
     {
-        int score = 0;
-
-        // Q1
-        if (!string.IsNullOrEmpty(vm.Q1Answer) &&
-            vm.Q1Answer.ToLower().Contains("divide"))
+        // Q1: average explanation
+        if (vm.Q1Answer.Contains("divide", StringComparison.OrdinalIgnoreCase) &&
+            (vm.Q1Answer.Contains("total", StringComparison.OrdinalIgnoreCase) ||
+             vm.Q1Answer.Contains("sum", StringComparison.OrdinalIgnoreCase)))
         {
-            score++;
+            vm.IsQ1Correct = true;
+            vm.Feedback1 = "Correct! Add values, then divide by count.";
+        }
+        else
+        {
+            vm.IsQ1Correct = false;
+            vm.Feedback1 = "Hint: you need both total AND division.";
         }
 
-        // Q2
+        // Q2: total
         if (vm.Q2Answer == "20")
         {
-            score++;
+            vm.IsQ2Correct = true;
+            vm.Feedback2 = "Correct!";
+        }
+        else
+        {
+            vm.IsQ2Correct = false;
+            vm.Feedback2 = "Not quite. Add all numbers together.";
         }
 
-        // Q3
+        // Q3: operation
         if (vm.Q3Answer == "divide")
         {
-            score++;
+            vm.IsQ3Correct = true;
+            vm.Feedback3 = "Correct!";
+        }
+        else
+        {
+            vm.IsQ3Correct = false;
+            vm.Feedback3 = "Average requires division.";
         }
 
-        vm.IsCorrect = score == 3;
-        vm.FeedbackMessage = $"You got {score}/3 correct.";
+        return View(vm);
+    }
 
-        vm.CurrentStep = 3;
+    // -----------------------------
+    // CHECK EXPLANATION (Step 2)
+    // -----------------------------
+    if (actionType == "checkExplanation")
+    {
+        bool isCorrect =
+            vm.ExplanationAnswer.Contains("data", StringComparison.OrdinalIgnoreCase) &&
+            (vm.ExplanationAnswer.Contains("useful", StringComparison.OrdinalIgnoreCase) ||
+             vm.ExplanationAnswer.Contains("information", StringComparison.OrdinalIgnoreCase) ||
+             vm.ExplanationAnswer.Contains("process", StringComparison.OrdinalIgnoreCase));
+
+        vm.ExplanationCorrect = isCorrect;
+
+        vm.ExplanationFeedback = isCorrect
+            ? "Correct! Data processing turns raw data into useful information."
+            : "Try mentioning turning raw data into useful information.";
+
+        return View(vm);
+    }
+
+    // -----------------------------
+    // FINAL SUBMIT
+    // -----------------------------
+    if (actionType == "submit")
+    {
+        // You could track completion here later
+        return RedirectToAction("Simulation");
     }
 
     return View(vm);
