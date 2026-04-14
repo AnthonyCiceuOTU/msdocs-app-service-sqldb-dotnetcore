@@ -44,18 +44,41 @@ namespace DotNetCoreSqlDb.Controllers
             vm.UserAnswer1 = vm.UserAnswer1?.Trim() ?? "";
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ExplanationFeedback = vm.ExplanationFeedback?.Trim() ?? "";
 
             bool codeCorrect =
                 (vm.UserAnswer1.Equals("price1", StringComparison.OrdinalIgnoreCase) &&
-                 vm.UserAnswer2.Equals("price2", StringComparison.OrdinalIgnoreCase))
+                vm.UserAnswer2.Equals("price2", StringComparison.OrdinalIgnoreCase))
                 ||
                 (vm.UserAnswer1.Equals("price2", StringComparison.OrdinalIgnoreCase) &&
-                 vm.UserAnswer2.Equals("price1", StringComparison.OrdinalIgnoreCase));
+                vm.UserAnswer2.Equals("price1", StringComparison.OrdinalIgnoreCase));
+
+            if (actionType == "hint")
+            {
+                vm.CurrentStep = 1;
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Hint: use the two variables that already store the item prices.";
+                return View(vm);
+            }
+
+            if (actionType == "solution")
+            {
+                vm.CurrentStep = 1;
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Solution: SET total = price1 + price2";
+                return View(vm);
+            }
 
             if (actionType == "check")
             {
                 vm.IsCorrect = codeCorrect;
                 vm.CurrentStep = 1;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
                 vm.FeedbackMessage = codeCorrect
                     ? "Correct! The algorithm adds the two item prices together."
                     : "Not quite. Try using the two variables already defined above.";
@@ -63,33 +86,19 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation")
-            {
-                vm.IsCorrect = true;
-                vm.CurrentStep = 2;
-
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("price1", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("price2", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("variable", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("price", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("total", StringComparison.OrdinalIgnoreCase);
-
-                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 12;
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Good explanation. You showed why the algorithm works."
-                    : "Add a little more detail about why using the stored price variables makes the algorithm correct.";
-
-                return View(vm);
-            }
-
             if (actionType == "submit")
             {
                 vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
                 vm.CurrentStep = 2;
+
+                if (vm.ExplanationCorrect != true)
+                {
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation with AI before submitting."
+                        : vm.ExplanationFeedback;
+
+                    return View(vm);
+                }
 
                 var saved = await SaveLessonProgressAsync("Algorithms");
                 vm.FeedbackMessage = saved
@@ -101,6 +110,72 @@ namespace DotNetCoreSqlDb.Controllers
 
             vm.CurrentStep = 0;
             return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckAlgorithmsExplanation([FromForm] string explanationAnswer)
+        {
+            explanationAnswer = explanationAnswer?.Trim() ?? "";
+
+            _logger.LogInformation("CheckAlgorithmsExplanation called. Explanation: {Explanation}", explanationAnswer);
+
+            if (string.IsNullOrWhiteSpace(explanationAnswer))
+            {
+                return BadRequest(new
+                {
+                    isCorrect = false,
+                    feedback = "Please enter an explanation first."
+                });
+            }
+
+            try
+            {
+                var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                {
+                    QuestionText = "Explain why using price1 and price2 makes the algorithm correct.",
+                    StudentAnswer = explanationAnswer,
+                    ExpectedAnswer = "Using price1 and price2 makes the algorithm correct because those variables already store the two item prices, so adding them gives the correct total.",
+                    GradingRubric = """
+                    To be correct, the answer should clearly show that:
+
+                    1. price1 and price2 are the variables that store the item prices.
+                    2. The algorithm uses those stored values.
+                    3. Adding those two values gives the correct total.
+
+                    Accept simple student wording such as:
+                    - they are the two prices
+                    - those variables hold the item costs
+                    - adding them gives the total
+                    - the algorithm works because it uses the right variables
+
+                    Do not require advanced vocabulary.
+                    Minor spelling or grammar mistakes are okay.
+                    Reject answers that are too vague or do not explain why those variables make the algorithm correct.
+                    """
+                });
+
+                _logger.LogInformation(
+                    "CheckAlgorithmsExplanation result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                    result.IsCorrect,
+                    result.Score,
+                    result.Feedback);
+
+                return Json(new
+                {
+                    isCorrect = result.IsCorrect,
+                    feedback = result.Feedback
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking Algorithms explanation.");
+                return StatusCode(500, new
+                {
+                    isCorrect = false,
+                    feedback = "We could not check your explanation right now. Please try again."
+                });
+            }
         }
 
         [HttpGet]
