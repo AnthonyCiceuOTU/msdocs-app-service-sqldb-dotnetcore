@@ -1,15 +1,17 @@
 namespace DotNetCoreSqlDb.ViewModels
 {
-    public class DataProcessingViewModel
-    {
-        public string UserAnswer { get; set; }
+public class DataProcessingViewModel
+{
+    public string Q1Answer { get; set; }
+    public string Q2Answer { get; set; }
+    public string Q3Answer { get; set; }
 
-        public bool ShowHint { get; set; }
-        public bool ShowSolution { get; set; }
+    public int CurrentStep { get; set; } = 1;
 
-        public bool? IsCorrect { get; set; }
-        public string FeedbackMessage { get; set; }
+    public bool ShowHint { get; set; }
+    public bool ShowSolution { get; set; }
 
-        public string ActionType { get; set; }
-    }
+    public bool? IsCorrect { get; set; }
+    public string FeedbackMessage { get; set; }
+}
 }
