@@ -58,16 +58,21 @@ namespace DotNetCoreSqlDb.Controllers
             if (actionType == "checkExplanation")
             {
                 vm.ExplanationCorrect =
-                    vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase) &&
                     (
-                        vm.ExplanationAnswer.Contains("same code", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase) ||
                         vm.ExplanationAnswer.Contains("again", StringComparison.OrdinalIgnoreCase) ||
                         vm.ExplanationAnswer.Contains("multiple times", StringComparison.OrdinalIgnoreCase)
+                    ) &&
+                    (
+                        vm.ExplanationAnswer.Contains("same code", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("less code", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("faster", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("efficient", StringComparison.OrdinalIgnoreCase)
                     );
 
                 vm.ExplanationFeedback = vm.ExplanationCorrect == true
                     ? "Correct! Loops are useful because they repeat code without rewriting it."
-                    : "Try mentioning repeating code or doing the same task multiple times.";
+                    : "Try mentioning that loops repeat tasks and reduce repeated code.";
 
                 ViewBag.ForceStep = 2;
                 return View(vm);
@@ -151,12 +156,22 @@ namespace DotNetCoreSqlDb.Controllers
             if (actionType == "checkExplanation")
             {
                 vm.ExplanationCorrect =
-                    vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) &&
-                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase);
+                    (
+                        vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("until", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)
+                    ) &&
+                    (
+                        vm.ExplanationAnswer.Contains("unknown", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("don't know", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("not known", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("depends", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("not fixed", StringComparison.OrdinalIgnoreCase)
+                    );
 
                 vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                    ? "Correct! A WHILE loop repeats while a condition is true."
-                    : "Try mentioning that it repeats while a condition stays true.";
+                    ? "Correct! WHILE loops are useful when repetition depends on a condition and the number of repeats is not known in advance."
+                    : "Try mentioning that a WHILE loop is useful when repetition depends on a condition and the number of repeats is not fixed.";
 
                 ViewBag.ForceStep = 2;
                 return View(vm);
@@ -243,9 +258,15 @@ namespace DotNetCoreSqlDb.Controllers
                     (
                         vm.ExplanationAnswer.Contains("known", StringComparison.OrdinalIgnoreCase) ||
                         vm.ExplanationAnswer.Contains("fixed", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("set number", StringComparison.OrdinalIgnoreCase)
+                        vm.ExplanationAnswer.Contains("set number", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("specific number", StringComparison.OrdinalIgnoreCase)
                     ) &&
-                    vm.ExplanationAnswer.Contains("times", StringComparison.OrdinalIgnoreCase);
+                    (
+                        vm.ExplanationAnswer.Contains("times", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("repetitions", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("repeats", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase)
+                    );
 
                 vm.ExplanationFeedback = vm.ExplanationCorrect == true
                     ? "Correct! FOR loops are useful when you know how many times to repeat."
@@ -275,14 +296,22 @@ namespace DotNetCoreSqlDb.Controllers
             vm.ShowSolution = false;
 
             vm.IsQ1Correct = vm.UserAnswer1.Contains("1 to 10", StringComparison.OrdinalIgnoreCase)
+                             || vm.UserAnswer1.Contains("1 through 10", StringComparison.OrdinalIgnoreCase)
+                             || vm.UserAnswer1.Contains("prints numbers from 1 to 10", StringComparison.OrdinalIgnoreCase)
+                             || vm.UserAnswer1.Contains("print numbers from 1 to 10", StringComparison.OrdinalIgnoreCase)
                              || (vm.UserAnswer1.Contains("1") && vm.UserAnswer1.Contains("10"));
             vm.Feedback1 = vm.IsQ1Correct == true
                 ? "Correct!"
                 : "Look at the range in the FOR loop.";
 
             vm.IsQ2Correct = vm.UserAnswer2.Equals("when the number of repetitions is known", StringComparison.OrdinalIgnoreCase)
-                             || (vm.UserAnswer2.Contains("known", StringComparison.OrdinalIgnoreCase)
-                                 && vm.UserAnswer2.Contains("times", StringComparison.OrdinalIgnoreCase));
+                             || vm.UserAnswer2.Contains("fixed number of repetitions", StringComparison.OrdinalIgnoreCase)
+                             || vm.UserAnswer2.Contains("known number of repetitions", StringComparison.OrdinalIgnoreCase)
+                             || ((vm.UserAnswer2.Contains("known", StringComparison.OrdinalIgnoreCase)
+                                 || vm.UserAnswer2.Contains("fixed", StringComparison.OrdinalIgnoreCase))
+                                 && (vm.UserAnswer2.Contains("times", StringComparison.OrdinalIgnoreCase)
+                                 || vm.UserAnswer2.Contains("repetitions", StringComparison.OrdinalIgnoreCase)
+                                 || vm.UserAnswer2.Contains("repeat", StringComparison.OrdinalIgnoreCase)));
             vm.Feedback2 = vm.IsQ2Correct == true
                 ? "Correct!"
                 : "FOR loops are used when you know how many times to repeat.";
@@ -361,10 +390,13 @@ namespace DotNetCoreSqlDb.Controllers
 
             vm.IsQ1Correct = vm.UserAnswer1.Equals("sum", StringComparison.OrdinalIgnoreCase);
             vm.Feedback1 = vm.IsQ1Correct == true ? "Correct!" : "Look for the variable storing the total.";
+
             vm.IsQ2Correct = vm.UserAnswer2.Equals("running total", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer2.Contains("total", StringComparison.OrdinalIgnoreCase);
             vm.Feedback2 = vm.IsQ2Correct == true ? "Correct!" : "An accumulator keeps a running total.";
+
             vm.IsQ3Correct = vm.UserAnswer3.Equals("sum = sum + i", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer3.Equals("sum ← sum + i", StringComparison.OrdinalIgnoreCase) || (vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase) && vm.UserAnswer3.Contains("+", StringComparison.OrdinalIgnoreCase));
             vm.Feedback3 = vm.IsQ3Correct == true ? "Correct!" : "Look at the line that updates the total each loop.";
+
             vm.IsQ4Correct = vm.UserAnswer4.Equals("accumulator", StringComparison.OrdinalIgnoreCase);
             vm.Feedback4 = vm.IsQ4Correct == true ? "Correct!" : "A variable that stores a running total is called an accumulator.";
 
@@ -451,18 +483,17 @@ namespace DotNetCoreSqlDb.Controllers
             {
                 vm.ExplanationCorrect =
                     (
-                        vm.ExplanationAnswer.Contains("infinite", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("never stops", StringComparison.OrdinalIgnoreCase)
-                    ) &&
-                    (
-                        vm.ExplanationAnswer.Contains("off-by-one", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("one too many", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("one too few", StringComparison.OrdinalIgnoreCase)
+                        vm.ExplanationAnswer.Contains("wrong", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("incorrect", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("never stops", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("runs forever", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("crash", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("freeze", StringComparison.OrdinalIgnoreCase)
                     );
 
                 vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                    ? "Correct! Infinite loops and off-by-one errors are common loop mistakes."
-                    : "Try mentioning both infinite loops and off-by-one errors.";
+                    ? "Correct! Loop errors are dangerous because they can cause wrong results or make a program run forever."
+                    : "Try explaining that loop errors can cause wrong results or make a program run forever.";
 
                 ViewBag.ForceStep = 2;
                 return View(vm);
@@ -489,10 +520,13 @@ namespace DotNetCoreSqlDb.Controllers
 
             vm.IsQ1Correct = vm.UserAnswer1.Contains("infinite", StringComparison.OrdinalIgnoreCase);
             vm.Feedback1 = vm.IsQ1Correct == true ? "Correct!" : "One common error is a loop that never stops.";
+
             vm.IsQ2Correct = vm.UserAnswer2.Contains("off-by-one", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer2.Contains("off by one", StringComparison.OrdinalIgnoreCase);
             vm.Feedback2 = vm.IsQ2Correct == true ? "Correct!" : "Another common error is off-by-one.";
+
             vm.IsQ3Correct = vm.UserAnswer3.Contains("never stops", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer3.Contains("runs forever", StringComparison.OrdinalIgnoreCase);
             vm.Feedback3 = vm.IsQ3Correct == true ? "Correct!" : "What happens in an infinite loop?";
+
             vm.IsQ4Correct = vm.UserAnswer4.Contains("one too many", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer4.Contains("one too few", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer4.Contains("incorrect number", StringComparison.OrdinalIgnoreCase);
             vm.Feedback4 = vm.IsQ4Correct == true ? "Correct!" : "Off-by-one means the loop counts one too many or one too few times.";
 
