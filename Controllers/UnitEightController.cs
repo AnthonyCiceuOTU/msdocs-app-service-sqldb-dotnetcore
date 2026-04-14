@@ -15,46 +15,53 @@ namespace DotNetCoreSqlDb.Controllers
             return View(new DataProcessingViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DataProcessing(DataProcessingViewModel vm, string actionType)
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult DataProcessing(DataProcessingViewModel vm, string actionType)
+{
+    if (actionType == "next")
+    {
+        vm.CurrentStep++;
+        return View(vm);
+    }
+
+    if (actionType == "prev")
+    {
+        vm.CurrentStep--;
+        return View(vm);
+    }
+
+    if (actionType == "check")
+    {
+        int score = 0;
+
+        // Q1
+        if (!string.IsNullOrEmpty(vm.Q1Answer) &&
+            vm.Q1Answer.ToLower().Contains("divide"))
         {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: think about adding all values then dividing by how many there are.";
-                return View(vm);
-            }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
-                return View(vm);
-            }
-
-            bool isCorrect =
-                vm.UserAnswer.Contains("average", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Contains("sum", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Contains("total / count", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Data processing often uses averages like total / count."
-                : "Not quite. Think about averages and summing values.";
-
-            return View(vm);
+            score++;
         }
 
+        // Q2
+        if (vm.Q2Answer == "20")
+        {
+            score++;
+        }
+
+        // Q3
+        if (vm.Q3Answer == "divide")
+        {
+            score++;
+        }
+
+        vm.IsCorrect = score == 3;
+        vm.FeedbackMessage = $"You got {score}/3 correct.";
+
+        vm.CurrentStep = 3;
+    }
+
+    return View(vm);
+}
         // -----------------------------
         // Lesson 34 — Simulation
         // -----------------------------
