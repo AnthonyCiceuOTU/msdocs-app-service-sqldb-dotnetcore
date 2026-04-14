@@ -383,57 +383,90 @@
         <form asp-action="DataProcessing" asp-controller="UnitEight" method="post">
             @Html.AntiForgeryToken()
 
-            <div class="panel step-panel">
-                <div class="step-card active">
+<div class="panel step-panel">
 
-                    <div class="step-top">
-                        <h2>Data Processing</h2>
+    <!-- STEP 1 -->
+    <div class="step-card @(Model.CurrentStep == 1 ? "active" : "")">
+        <div class="step-top">
+            <h2>Question 1</h2>
+            <p>Explain how you would calculate the average of a list of numbers.</p>
 
-                        <p>
-                            Data processing is about taking raw data and turning it into useful information,
-                            like calculating averages or totals.
-                        </p>
-
-                        <div class="code-block">
+            <div class="code-block">
 average ← total / count
-                        </div>
-
-                        <div class="instruction-box">
-                            Explain how you would calculate the average of a list of numbers.
-                        </div>
-
-                        <input asp-for="UserAnswer" class="text-input" placeholder="Type your answer..." />
-
-                        @if (Model.IsCorrect != null)
-                        {
-                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.FeedbackMessage
-                            </div>
-                        }
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Hint: add all numbers together then divide by how many numbers there are.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Solution: total ÷ count (or sum all values then divide).
-                            </div>
-                        }
-                    </div>
-
-                    <div class="step-actions">
-                        <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
-                        <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
-                        <button type="submit" class="btn-main">Check</button>
-                    </div>
-
-                </div>
             </div>
+
+            <input asp-for="Q1Answer" class="text-input" placeholder="Type your answer..." />
+        </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-card @(Model.CurrentStep == 2 ? "active" : "")">
+        <div class="step-top">
+            <h2>Question 2</h2>
+            <p>What is the total after processing this list?</p>
+
+            <div class="mini-code">
+[2, 4, 6, 8]
+            </div>
+
+            <input asp-for="Q2Answer" class="text-input" placeholder="Enter total..." />
+        </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-card @(Model.CurrentStep == 3 ? "active" : "")">
+        <div class="step-top">
+            <h2>Question 3</h2>
+            <p>Which operation is used to find the average?</p>
+
+            <div class="radio-row">
+                <label class="radio-option">
+                    <input type="radio" name="Q3Answer" value="add" /> Add only
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="Q3Answer" value="divide" /> Divide total by count
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="Q3Answer" value="multiply" /> Multiply values
+                </label>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="step-actions">
+
+    <div class="step-progress">
+        Step @Model.CurrentStep of 3
+    </div>
+
+    <div style="display:flex; gap:10px;">
+
+        @if (Model.CurrentStep > 1)
+        {
+            <button type="submit" name="actionType" value="prev" class="btn-secondary">
+                Back
+            </button>
+        }
+
+        @if (Model.CurrentStep < 3)
+        {
+            <button type="submit" name="actionType" value="next" class="btn-main">
+                Next
+            </button>
+        }
+        else
+        {
+            <button type="submit" name="actionType" value="check" class="btn-main">
+                Submit
+            </button>
+        }
+
+    </div>
+
+</div>
+
         </form>
 
         <div class="nav-footer">
