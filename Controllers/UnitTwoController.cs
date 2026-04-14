@@ -33,7 +33,7 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
+                vm.FeedbackMessage = "Solution: the missing value is 25, so the full line becomes SET points = 25.";
                 return View(vm);
             }
 
@@ -96,13 +96,14 @@ namespace DotNetCoreSqlDb.Controllers
         public IActionResult DataTypes(DataTypesViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
 
             if (actionType == "hint")
             {
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: text values should be inside quotation marks.";
+                vm.FeedbackMessage = "Hint: text values are written using quotation marks, while numbers are not.";
                 return View(vm);
             }
 
@@ -115,16 +116,49 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
+            if (actionType == "checkExplanation")
+            {
+                vm.IsCorrect = true;
+
+                bool explanationCorrect =
+                    vm.ExplanationAnswer.Contains("type", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("kind", StringComparison.OrdinalIgnoreCase);
+
+                explanationCorrect = explanationCorrect &&
+                    (
+                        vm.ExplanationAnswer.Contains("data", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("value", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("information", StringComparison.OrdinalIgnoreCase)
+                    );
+
+                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
+
+                vm.ExplanationCorrect = explanationCorrect;
+                vm.ExplanationFeedback = explanationCorrect
+                    ? "Good explanation. A data type tells the program what kind of value is being stored."
+                    : "Try mentioning that a data type describes what kind of value is stored, like text or a number.";
+
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                vm.IsCorrect = true;
+                vm.ExplanationCorrect = true;
+                vm.FeedbackMessage = "Lesson complete!";
+                return View(vm);
+            }
+
             bool isCorrect =
                 vm.UserAnswer.Equals("\"Alex\"", StringComparison.OrdinalIgnoreCase) ||
-                vm.UserAnswer.Equals("Alex", StringComparison.OrdinalIgnoreCase);
+                vm.UserAnswer.Equals("'Alex'", StringComparison.OrdinalIgnoreCase);
 
             vm.IsCorrect = isCorrect;
             vm.ShowHint = false;
             vm.ShowSolution = false;
             vm.FeedbackMessage = isCorrect
-                ? "Correct! Alex is stored as text."
-                : "Not quite. Remember that text values are usually written in quotation marks.";
+                ? "Correct! Alex is text, so it should be written in quotation marks."
+                : "Not quite. Text values should be written in quotation marks.";
 
             return View(vm);
         }

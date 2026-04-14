@@ -412,23 +412,24 @@ END
 
                                 <input asp-for="UserAnswer" class="text-input" placeholder="Type the missing value..." />
 
-                                @if (Model.ShowHint)
+                                @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
                                 {
-                                    <div class="alert-box alert-info-custom">
-                                        Think about what goes on the right side when you want the variable to store 25.
-                                    </div>
-                                }
+                                    var feedbackClass = "alert-info-custom";
 
-                                @if (Model.ShowSolution)
-                                {
-                                    <div class="alert-box alert-info-custom">
-                                        The variable should be assigned the value 25.
-                                    </div>
-                                }
+                                    if (Model.ShowHint || Model.ShowSolution)
+                                    {
+                                        feedbackClass = "alert-info-custom";
+                                    }
+                                    else if (Model.IsCorrect == true)
+                                    {
+                                        feedbackClass = "alert-success-custom";
+                                    }
+                                    else if (Model.IsCorrect == false)
+                                    {
+                                        feedbackClass = "alert-danger-custom";
+                                    }
 
-                                @if (Model.IsCorrect != null)
-                                {
-                                    <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                                    <div class="alert-box @feedbackClass">
                                         @Model.FeedbackMessage
                                     </div>
                                 }
@@ -522,10 +523,12 @@ END
 
         const answered = '@(Model.IsCorrect?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+        const showHint = '@Model.ShowHint'.toLowerCase() === 'true';
+        const showSolution = '@Model.ShowSolution'.toLowerCase() === 'true';
 
         if (explanationDone === 'True') {
             stepToShow = 2;
-        } else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
+        } else if (answered || showHint || showSolution) {
             stepToShow = 1;
         }
 
