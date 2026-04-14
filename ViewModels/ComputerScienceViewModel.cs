@@ -30,5 +30,9 @@ namespace DotNetCoreSqlDb.ViewModels
         public bool ShowSolution { get; set; }
 
         public int CurrentStep { get; set; } = 0;
+
+        // AI short-answer state for step 3
+        public bool? ExplanationCorrect { get; set; }
+        public string ExplanationFeedback { get; set; } = "";
     }
 }
