@@ -654,19 +654,6 @@
                             }
                         </div>
 
-                        <div class="overview-card">
-                            <h3>Lesson Overview</h3>
-
-                            @if (!string.IsNullOrWhiteSpace(Model.CurrentLessonContent))
-                            {
-                                <div class="overview-content">@Model.CurrentLessonContent</div>
-                            }
-                            else
-                            {
-                                <div class="overview-content">No lesson content available yet.</div>
-                            }
-                        </div>
-
                         <div class="lesson-actions">
                             <div class="nav-buttons">
                                 @if (Model.PreviousLessonId != null)
@@ -719,6 +706,21 @@
                                 }
                             </form>*@
                         </div>
+
+                        <div class="overview-card">
+                            <h3>Lesson Overview</h3>
+
+                            @if (!string.IsNullOrWhiteSpace(Model.CurrentLessonContent))
+                            {
+                                <div class="overview-content">@Model.CurrentLessonContent</div>
+                            }
+                            else
+                            {
+                                <div class="overview-content">No lesson content available yet.</div>
+                            }
+                        </div>
+
+                        
                     }
                 </main>
             </div>
