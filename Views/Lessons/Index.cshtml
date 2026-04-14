@@ -120,7 +120,7 @@
 
     .lessons-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
+        grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.55fr);
         grid-template-areas: "content units";
         gap: clamp(14px, 1.8vw, 18px);
         align-items: start;
@@ -222,6 +222,8 @@
 
     .lesson-link span:first-child {
         overflow-wrap: anywhere;
+        word-break: break-word;
+        min-width: 0;
     }
 
     .lesson-link:hover {
@@ -346,7 +348,7 @@
 
     .lesson-actions {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+        grid-template-columns: minmax(0, 1fr);
         gap: 10px;
         align-items: stretch;
     }
@@ -433,7 +435,7 @@
 
     @@media (max-width: 1200px) {
         .lessons-layout {
-            grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.95fr);
+            grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.3fr);
             grid-template-areas: "content units";
         }
 
@@ -472,10 +474,6 @@
 
         .lesson-content h1 {
             font-size: 1.65rem;
-        }
-
-        .lesson-actions {
-            grid-template-columns: 1fr;
         }
     }
 
