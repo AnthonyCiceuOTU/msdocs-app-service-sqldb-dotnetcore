@@ -245,10 +245,12 @@ END
 
         const answered = '@(Model.IsCorrect?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
-        const showHint = '@Model.ShowHint'.toLowerCase() === 'true';
-        const showSolution = '@Model.ShowSolution'.toLowerCase() === 'true';
-        const hasExplanationAnswer = '@(!string.IsNullOrWhiteSpace(Model.ExplanationAnswer)).ToString().ToLower()' === 'true';
-        const hasExplanationFeedback = '@(!string.IsNullOrWhiteSpace(Model.ExplanationFeedback)).ToString().ToLower()' === 'true';
+
+        const showHint = @Model.ShowHint.ToString().ToLower();
+        const showSolution = @Model.ShowSolution.ToString().ToLower();
+
+        const hasExplanationAnswer = @(!string.IsNullOrWhiteSpace(Model.ExplanationAnswer)).ToString().ToLower();
+        const hasExplanationFeedback = @(!string.IsNullOrWhiteSpace(Model.ExplanationFeedback)).ToString().ToLower();
 
         if (explanationDone === 'True' || hasExplanationAnswer || hasExplanationFeedback) {
             stepToShow = 2;
