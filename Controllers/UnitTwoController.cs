@@ -1,11 +1,23 @@
-using Microsoft.AspNetCore.Mvc;
-using DotNetCoreSqlDb.ViewModels;
 using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using DotNetCoreSqlDb.Data;
+using DotNetCoreSqlDb.Models;
+using DotNetCoreSqlDb.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreSqlDb.Controllers
 {
     public class UnitTwoController : Controller
     {
+        private readonly MyDatabaseContext _context;
+
+        public UnitTwoController(MyDatabaseContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IActionResult Variables()
         {
@@ -14,7 +26,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Variables(VariablesViewModel vm, string actionType)
+        public async Task<IActionResult> Variables(VariablesViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
@@ -86,6 +98,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
+                await SaveLessonProgressAsync("Variables");
                 return RedirectToAction(nameof(DataTypes));
             }
 
@@ -101,7 +114,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DataTypes(DataTypesViewModel vm, string actionType)
+        public async Task<IActionResult> DataTypes(DataTypesViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
@@ -172,6 +185,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
+                await SaveLessonProgressAsync("DataTypes");
                 return RedirectToAction(nameof(ArithmeticExpressions));
             }
 
@@ -187,7 +201,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ArithmeticExpressions(ArithmeticExpressionsViewModel vm, string actionType)
+        public async Task<IActionResult> ArithmeticExpressions(ArithmeticExpressionsViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
@@ -260,6 +274,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
+                await SaveLessonProgressAsync("ArithmeticExpressions");
                 return RedirectToAction(nameof(InputOutput));
             }
 
@@ -275,7 +290,7 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult InputOutput(InputOutputViewModel vm, string actionType)
+        public async Task<IActionResult> InputOutput(InputOutputViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
@@ -344,6 +359,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
+                await SaveLessonProgressAsync("InputOutput");
                 return RedirectToAction("Index", "Lessons");
             }
 
@@ -355,6 +371,51 @@ namespace DotNetCoreSqlDb.Controllers
         public IActionResult Index()
         {
             return RedirectToAction(nameof(Variables));
+        }
+
+        private async Task<bool> SaveLessonProgressAsync(string actionName)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return false;
+            }
+
+            var lesson = await _context.Lessons
+                .FirstOrDefaultAsync(l => l.ControllerName == "UnitTwo" && l.ActionName == actionName && l.IsPublished);
+
+            if (lesson == null)
+            {
+                return false;
+            }
+
+            var progress = await _context.UserLessonProgresses
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
+
+            var now = DateTime.UtcNow;
+
+            if (progress == null)
+            {
+                progress = new UserLessonProgress
+                {
+                    UserId = userId,
+                    LessonId = lesson.Id,
+                    IsCompleted = true,
+                    CompletedAtUtc = now,
+                    LastAccessedAtUtc = now
+                };
+
+                _context.UserLessonProgresses.Add(progress);
+            }
+            else
+            {
+                progress.IsCompleted = true;
+                progress.CompletedAtUtc = now;
+                progress.LastAccessedAtUtc = now;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
