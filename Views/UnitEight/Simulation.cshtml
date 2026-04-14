@@ -380,65 +380,248 @@
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="Simulation" asp-controller="UnitEight" method="post">
-            @Html.AntiForgeryToken()
+<form asp-action="Simulation" asp-controller="UnitEight" method="post" id="lessonForm">
+    @Html.AntiForgeryToken()
 
-            <div class="panel step-panel">
-                <div class="step-card active">
+    <div class="panel step-panel">
 
-                    <div class="step-top">
-                        <h2>Simulation</h2>
+        <!-- STEP 0: INTRO -->
+        <div class="step-card active" id="step0">
+            <div class="step-top">
+                <h2>Simulation</h2>
 
-                        <p>
-                            A simulation is a program that models real-world systems using rules and randomness.
-                        </p>
+                <p>
+                    A simulation is a program that models real-world systems using rules and randomness.
+                </p>
 
-                        <div class="code-block">
-Dice roll example:
+                <div class="code-block">
 random(1, 6)
-                        </div>
-
-                        <div class="instruction-box">
-                            Give an example of a simulation in programming.
-                        </div>
-
-                        <input asp-for="UserAnswer" class="text-input" placeholder="Type your answer..." />
-
-                        @if (Model.IsCorrect != null)
-                        {
-                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.FeedbackMessage
-                            </div>
-                        }
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Hint: think about dice, weather, or random events.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Solution: dice roll, weather simulation, or random number generator.
-                            </div>
-                        }
-                    </div>
-
-                    <div class="step-actions">
-                        <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
-                        <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
-                        <button type="submit" class="btn-main">Check</button>
-                    </div>
-
                 </div>
+
+                <div class="instruction-box">
+                    In this lesson, you will identify simulations and explain why they are useful.
+                </div>
+
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h4>Simulation</h4>
+                        <p>Represents real-world systems in code.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Randomness</h4>
+                        <p>Produces unpredictable outcomes.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h4>Modeling</h4>
+                        <p>Uses rules to mimic real behavior.</p>
+                    </div>
+                </div>
+
+                @if (Model.ShowHint)
+                {
+                    <div class="alert-box alert-info-custom">
+                        Think about real-life systems that involve randomness.
+                    </div>
+                }
+
+                @if (Model.ShowSolution)
+                {
+                    <div class="alert-box alert-info-custom">
+                        Example: dice rolling, weather simulation, traffic simulation.
+                    </div>
+                }
             </div>
-        </form>
+
+            <div class="step-actions">
+                <div class="step-progress">Instructions</div>
+                <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- STEP 1: QUESTION -->
+<!-- STEP 1: QUIZ -->
+<div class="step-card" id="step1">
+    <div class="step-top">
+
+        <h3>Assignment · Understanding Simulations</h3>
+
+        <div class="instruction-box">
+            Answer all questions about simulations.
+        </div>
+
+        <div class="quiz-grid">
+
+            <!-- Q1 -->
+            <div class="quiz-card">
+                <div class="quiz-title">1. What is a simulation?</div>
+
+                <input asp-for="Q1Answer" class="text-input" placeholder="Type your answer..." />
+
+                @if (Model.IsQ1Correct != null)
+                {
+                    <div class="alert-box @(Model.IsQ1Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                        @Model.Feedback1
+                    </div>
+                }
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-card">
+                <div class="quiz-title">2. What does random(1,6) simulate?</div>
+
+                <input asp-for="Q2Answer" class="text-input" placeholder="Type your answer..." />
+
+                @if (Model.IsQ2Correct != null)
+                {
+                    <div class="alert-box @(Model.IsQ2Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                        @Model.Feedback2
+                    </div>
+                }
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-card">
+                <div class="quiz-title">3. Which is an example of a simulation?</div>
+
+                <div class="radio-row">
+                    <label class="radio-option">
+                        <input type="radio" asp-for="Q3Answer" value="calculator" />
+                        <span>Calculator</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" asp-for="Q3Answer" value="dice" />
+                        <span>Dice Roll</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" asp-for="Q3Answer" value="text" />
+                        <span>Typing Text</span>
+                    </label>
+                </div>
+
+                @if (Model.IsQ3Correct != null)
+                {
+                    <div class="alert-box @(Model.IsQ3Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                        @Model.Feedback3
+                    </div>
+                }
+            </div>
+
+        </div>
+
+        <!-- Hint/Solution -->
+        @if (Model.ShowHint)
+        {
+            <div class="alert-box alert-info-custom">
+                Think about systems that imitate real life using randomness.
+            </div>
+        }
+
+        @if (Model.ShowSolution)
+        {
+            <div class="alert-box alert-info-custom">
+                Simulation = modeling real systems. Example: dice, weather, traffic.
+            </div>
+        }
+
+    </div>
+
+    <div class="step-actions">
+        <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+        <div class="step-progress">Step 1 of 2</div>
+
+        @if (Model.IsQ1Correct == true && Model.IsQ2Correct == true && Model.IsQ3Correct == true)
+        {
+            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+        }
+        else
+        {
+            <div style="display:flex; gap:10px;">
+                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
+                <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
+            </div>
+        }
+    </div>
+</div>
+        <!-- STEP 2: EXPLANATION -->
+        <div class="step-card" id="step2">
+            <div class="step-top">
+
+                <h3>Final Task · Explain</h3>
+
+                <div class="instruction-box">
+                    In one sentence, explain why simulations are useful.
+                </div>
+
+                <input asp-for="ExplanationAnswer" class="text-input" placeholder="Type your explanation..." />
+
+                @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+                {
+                    <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                        @Model.ExplanationFeedback
+                    </div>
+                }
+
+            </div>
+
+            <div class="step-actions">
+                <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                <div class="step-progress">Step 2 of 2</div>
+
+                @if (Model.ExplanationCorrect == true)
+                {
+                    <button type="submit" name="actionType" value="submit" class="btn-main">
+                        Submit Lesson
+                    </button>
+                }
+                else
+                {
+                    <button type="submit" name="actionType" value="checkExplanation" class="btn-main">
+                        Check
+                    </button>
+                }
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<script>
+    function showStep(stepNumber) {
+        document.querySelectorAll('.step-card').forEach(card => {
+            card.classList.remove('active');
+        });
+
+        const target = document.getElementById(`step${stepNumber}`);
+        if (target) {
+            target.classList.add('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let stepToShow = 0;
+
+        const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")';
+        const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
+        const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
+        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+        const hintOrSolution = @((Model.ShowHint || Model.ShowSolution).ToString().ToLower());
+
+        if (explanationDone === 'True') {
+            stepToShow = 2;
+        } 
+        else if (q1 || q2 || q3 || hintOrSolution) {
+            stepToShow = 1;
+        }
+
+        showStep(stepToShow);
+    });
+</script>
 
         <div class="nav-footer">
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back</a>
-            <a asp-controller="UnitEight" asp-action="DesigningProgram" class="btn-main">Next Lesson</a>
+                <a asp-controller="Lessons" asp-action="Index" class="btn-main">Next Lesson</a>
+
         </div>
 
     </div>

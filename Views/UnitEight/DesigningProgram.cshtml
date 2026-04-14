@@ -365,12 +365,13 @@
         }
     }
 </style>
+
 <div class="lesson-page">
     <div class="lesson-shell">
 
         <div class="topbar">
             <div class="brand">
-                <div class="brand-icon">🧩</div>
+                <div class="brand-icon">&lt;/&gt;</div>
                 <div class="brand-text">
                     <h1>Code Quest</h1>
                     <p>Unit 8 · Lesson 35</p>
@@ -380,68 +381,236 @@
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="DesigningProgram" asp-controller="UnitEight" method="post">
-            @Html.AntiForgeryToken()
+<form asp-action="DesigningProgram" asp-controller="UnitEight" method="post" id="lessonForm">
+@Html.AntiForgeryToken()
 
-            <div class="panel step-panel">
-                <div class="step-card active">
+<div class="panel step-panel">
 
-                    <div class="step-top">
-                        <h2>Designing a Program</h2>
+    <!-- STEP 0: INTRO -->
+    <div class="step-card active" id="step0">
+        <div class="step-top">
+            <h2>Designing a Program</h2>
 
-                        <p>
-                            Designing a program means planning it first and breaking it into smaller parts.
-                        </p>
+            <p>
+                Designing a program means planning before coding and breaking problems into smaller parts.
+                It involves gathering and analyzing requirements, then creating prototypes or models to explore possible solutions and structure. This helps to  ensure the final program meets user needs and is efficient, organized, and easier to develop and maintain.
+            </p>
 
-                        <div class="code-block">
-Example:
+            <div class="code-block">
 1. Input data
 2. Process data
 3. Output result
-                        </div>
+            </div>
 
-                        <div class="instruction-box">
-                            Why is it useful to break a program into smaller modules?
-                        </div>
-
-                        <input asp-for="UserAnswer" class="text-input" placeholder="Type your answer..." />
-
-                        @if (Model.IsCorrect != null)
-                        {
-                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.FeedbackMessage
-                            </div>
-                        }
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Hint: think about organisation, reuse, and easier debugging.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Solution: it makes programs easier to manage, reuse, and debug.
-                            </div>
-                        }
-                    </div>
-
-                    <div class="step-actions">
-                        <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
-                        <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
-                        <button type="submit" class="btn-main">Check</button>
-                    </div>
-
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4>Planning</h4>
+                    <p>Think before coding.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Modules</h4>
+                    <p>Break programs into parts.</p>
+                </div>
+                <div class="concept-card">
+                    <h4>Structure</h4>
+                    <p>Organize logic clearly.</p>
                 </div>
             </div>
-        </form>
 
-        <div class="nav-footer">
-            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back</a>
-            <a asp-controller="Lessons" asp-action="Index" class="btn-main">Finish Unit</a>
+            @if (Model.ShowHint)
+            {
+                <div class="alert-box alert-info-custom">
+                    Think about why breaking problems into parts helps programmers.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert-box alert-info-custom">
+                    Programs are easier to manage, reuse, and debug when broken into modules.
+                </div>
+            }
         </div>
+
+        <div class="step-actions">
+            <div class="step-progress">Instructions</div>
+            <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
+        </div>
+    </div>
+
+    <!-- STEP 1: QUIZ -->
+    <div class="step-card" id="step1">
+        <div class="step-top">
+
+            <h3>Assignment · Program Design</h3>
+
+            <div class="quiz-grid">
+
+                <!-- Q1 -->
+                <div class="quiz-card">
+                    <div class="quiz-title">1. What does designing a program mean?</div>
+
+                    <input asp-for="Q1Answer" class="text-input" />
+
+                    @if (Model.IsQ1Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ1Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback1
+                        </div>
+                    }
+                </div>
+
+                <!-- Q2 -->
+                <div class="quiz-card">
+                    <div class="quiz-title">2. Why break programs into modules?</div>
+
+                    <input asp-for="Q2Answer" class="text-input" />
+
+                    @if (Model.IsQ2Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ2Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback2
+                        </div>
+                    }
+                </div>
+
+                <!-- Q3 -->
+                <div class="quiz-card">
+                    <div class="quiz-title">3. Which is part of program structure?</div>
+
+                    <div class="radio-row">
+                        <label class="radio-option">
+                            <input type="radio" asp-for="Q3Answer" value="input" />
+                            <span>Input</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" asp-for="Q3Answer" value="random" />
+                            <span>Random guessing</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" asp-for="Q3Answer" value="none" />
+                            <span>No structure</span>
+                        </label>
+                    </div>
+
+                    @if (Model.IsQ3Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ3Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback3
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+            @if (Model.ShowHint)
+            {
+                <div class="alert-box alert-info-custom">
+                    Think about organization and breaking problems into parts.
+                </div>
+            }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert-box alert-info-custom">
+                    Designing = planning + modules + structure.
+                </div>
+            }
+
+        </div>
+
+        <div class="step-actions">
+            <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
+            <div class="step-progress">Step 1 of 2</div>
+
+            @if (Model.IsQ1Correct == true && Model.IsQ2Correct == true && Model.IsQ3Correct == true)
+            {
+                <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+            }
+            else
+            {
+                <div style="display:flex; gap:10px;">
+                    <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                    <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
+                    <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- STEP 2: EXPLANATION -->
+    <div class="step-card" id="step2">
+        <div class="step-top">
+
+            <h3>Final Task · Explain</h3>
+
+            <div class="instruction-box">
+                Why is designing a program important?
+            </div>
+
+            <input asp-for="ExplanationAnswer" class="text-input" />
+
+            @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+            {
+                <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                    @Model.ExplanationFeedback
+                </div>
+            }
+
+        </div>
+
+        <div class="step-actions">
+            <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+            <div class="step-progress">Step 2 of 2</div>
+
+            @if (Model.ExplanationCorrect == true)
+            {
+                <button type="submit" name="actionType" value="submit" class="btn-main">
+                    Finish Unit
+                </button>
+            }
+            else
+            {
+                <button type="submit" name="actionType" value="checkExplanation" class="btn-main">
+                    Check
+                </button>
+            }
+        </div>
+    </div>
+
+</div>
+</form>
+
+<script>
+function showStep(stepNumber) {
+    document.querySelectorAll('.step-card').forEach(card => {
+        card.classList.remove('active');
+    });
+
+    document.getElementById(`step${stepNumber}`).classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    let stepToShow = 0;
+
+    const qAnswered =
+        '@(Model.IsQ1Correct?.ToString() ?? "")' ||
+        '@(Model.IsQ2Correct?.ToString() ?? "")' ||
+        '@(Model.IsQ3Correct?.ToString() ?? "")';
+
+    const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+
+    if (explanationDone === 'True') stepToShow = 2;
+    else if (qAnswered) stepToShow = 1;
+
+    showStep(stepToShow);
+});
+</script>
+
+<div class="nav-footer">
+    <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back</a>
+            <a asp-controller="UnitEight" asp-action="DesigningProgram" class="btn-main">Next Lesson</a>
+</div>
 
     </div>
 </div>
