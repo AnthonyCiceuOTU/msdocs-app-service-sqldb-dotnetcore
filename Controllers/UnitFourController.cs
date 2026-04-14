@@ -57,34 +57,21 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "checkExplanation")
             {
-                vm.ExplanationCorrect =
-                    (
-                        vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("again", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("multiple times", StringComparison.OrdinalIgnoreCase)
-                    ) &&
-                    (
-                        vm.ExplanationAnswer.Contains("same code", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("less code", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("faster", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("efficient", StringComparison.OrdinalIgnoreCase)
-                    );
-
-                vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                    ? "Correct! Loops are useful because they repeat code without rewriting it."
-                    : "Try mentioning that loops repeat tasks and reduce repeated code.";
-
+                EvaluateWhyLoopsExplanation(vm);
                 ViewBag.ForceStep = 2;
                 return View(vm);
             }
 
             if (actionType == "submit")
             {
+                EvaluateWhyLoopsExplanation(vm);
+
                 if (vm.ExplanationCorrect != true)
                 {
-                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
-                        ? "Please check your explanation before submitting."
-                        : vm.ExplanationFeedback;
+                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
+                    {
+                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
+                    }
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
@@ -155,35 +142,21 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "checkExplanation")
             {
-                vm.ExplanationCorrect =
-                    (
-                        vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("until", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)
-                    ) &&
-                    (
-                        vm.ExplanationAnswer.Contains("unknown", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("don't know", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("not known", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("depends", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("not fixed", StringComparison.OrdinalIgnoreCase)
-                    );
-
-                vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                    ? "Correct! WHILE loops are useful when repetition depends on a condition and the number of repeats is not known in advance."
-                    : "Try mentioning that a WHILE loop is useful when repetition depends on a condition and the number of repeats is not fixed.";
-
+                EvaluateWhileLoopsExplanation(vm);
                 ViewBag.ForceStep = 2;
                 return View(vm);
             }
 
             if (actionType == "submit")
             {
+                EvaluateWhileLoopsExplanation(vm);
+
                 if (vm.ExplanationCorrect != true)
                 {
-                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
-                        ? "Please check your explanation before submitting."
-                        : vm.ExplanationFeedback;
+                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
+                    {
+                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
+                    }
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
@@ -254,35 +227,21 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "checkExplanation")
             {
-                vm.ExplanationCorrect =
-                    (
-                        vm.ExplanationAnswer.Contains("known", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("fixed", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("set number", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("specific number", StringComparison.OrdinalIgnoreCase)
-                    ) &&
-                    (
-                        vm.ExplanationAnswer.Contains("times", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("repetitions", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("repeats", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase)
-                    );
-
-                vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                    ? "Correct! FOR loops are useful when you know how many times to repeat."
-                    : "Try mentioning a known or fixed number of repetitions.";
-
+                EvaluateForLoopsExplanation(vm);
                 ViewBag.ForceStep = 2;
                 return View(vm);
             }
 
             if (actionType == "submit")
             {
+                EvaluateForLoopsExplanation(vm);
+
                 if (vm.ExplanationCorrect != true)
                 {
-                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
-                        ? "Please check your explanation before submitting."
-                        : vm.ExplanationFeedback;
+                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
+                    {
+                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
+                    }
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
@@ -481,31 +440,21 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "checkExplanation")
             {
-                vm.ExplanationCorrect =
-                    (
-                        vm.ExplanationAnswer.Contains("wrong", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("incorrect", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("never stops", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("runs forever", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("crash", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("freeze", StringComparison.OrdinalIgnoreCase)
-                    );
-
-                vm.ExplanationFeedback = vm.ExplanationCorrect == true
-                    ? "Correct! Loop errors are dangerous because they can cause wrong results or make a program run forever."
-                    : "Try explaining that loop errors can cause wrong results or make a program run forever.";
-
+                EvaluateLoopErrorsExplanation(vm);
                 ViewBag.ForceStep = 2;
                 return View(vm);
             }
 
             if (actionType == "submit")
             {
+                EvaluateLoopErrorsExplanation(vm);
+
                 if (vm.ExplanationCorrect != true)
                 {
-                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
-                        ? "Please check your explanation before submitting."
-                        : vm.ExplanationFeedback;
+                    if (string.IsNullOrWhiteSpace(vm.ExplanationFeedback))
+                    {
+                        vm.ExplanationFeedback = "Please check your explanation before submitting.";
+                    }
 
                     ViewBag.ForceStep = 2;
                     return View(vm);
@@ -532,6 +481,85 @@ namespace DotNetCoreSqlDb.Controllers
 
             ViewBag.ForceStep = AllCorrect(vm) ? 2 : 1;
             return View(vm);
+        }
+
+        private static void EvaluateWhyLoopsExplanation(WhyLoopsViewModel vm)
+        {
+            vm.ExplanationCorrect =
+                (
+                    vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("again", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("multiple times", StringComparison.OrdinalIgnoreCase)
+                ) &&
+                (
+                    vm.ExplanationAnswer.Contains("same code", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("less code", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("faster", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("efficient", StringComparison.OrdinalIgnoreCase)
+                );
+
+            vm.ExplanationFeedback = vm.ExplanationCorrect == true
+                ? "Correct! Loops are useful because they repeat code without rewriting it."
+                : "Try mentioning that loops repeat tasks and reduce repeated code.";
+        }
+
+        private static void EvaluateWhileLoopsExplanation(WhileLoopsViewModel vm)
+        {
+            vm.ExplanationCorrect =
+                (
+                    vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("until", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)
+                ) &&
+                (
+                    vm.ExplanationAnswer.Contains("unknown", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("don't know", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("not known", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("depends", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("not fixed", StringComparison.OrdinalIgnoreCase)
+                );
+
+            vm.ExplanationFeedback = vm.ExplanationCorrect == true
+                ? "Correct! WHILE loops are useful when repetition depends on a condition and the number of repeats is not known in advance."
+                : "Try mentioning that a WHILE loop is useful when repetition depends on a condition and the number of repeats is not fixed.";
+        }
+
+        private static void EvaluateForLoopsExplanation(ForLoopsViewModel vm)
+        {
+            vm.ExplanationCorrect =
+                (
+                    vm.ExplanationAnswer.Contains("known", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("fixed", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("set number", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("specific number", StringComparison.OrdinalIgnoreCase)
+                ) &&
+                (
+                    vm.ExplanationAnswer.Contains("times", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("repetitions", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("repeats", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase)
+                );
+
+            vm.ExplanationFeedback = vm.ExplanationCorrect == true
+                ? "Correct! FOR loops are useful when you know how many times to repeat."
+                : "Try mentioning a known or fixed number of repetitions.";
+        }
+
+        private static void EvaluateLoopErrorsExplanation(LoopErrorsViewModel vm)
+        {
+            vm.ExplanationCorrect =
+                (
+                    vm.ExplanationAnswer.Contains("wrong", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("incorrect", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("never stops", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("runs forever", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("crash", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("freeze", StringComparison.OrdinalIgnoreCase)
+                );
+
+            vm.ExplanationFeedback = vm.ExplanationCorrect == true
+                ? "Correct! Loop errors are dangerous because they can cause wrong results or make a program run forever."
+                : "Try explaining that loop errors can cause wrong results or make a program run forever.";
         }
 
         private static void TrimAll(UnitFourLessonViewModel vm)
