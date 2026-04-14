@@ -295,9 +295,9 @@ namespace DotNetCoreSqlDb.Controllers
                 var saved = await SaveLessonProgressAsync("WhatIsComputerScience");
 
                 vm.IsCorrect = saved;
-                vm.IdentifyFeedback = saved
+                /*vm.IdentifyFeedback = saved
                     ? "Excellent. You correctly identified which examples are algorithms and explained your reasoning."
-                    : "Your answers were correct, but the lesson progress could not be saved.";
+                    : "Your answers were correct, but the lesson progress could not be saved.";*/
                 vm.FeedbackMessage = saved
                     ? "Lesson complete! Your progress has been saved."
                     : "Could not save lesson progress.";

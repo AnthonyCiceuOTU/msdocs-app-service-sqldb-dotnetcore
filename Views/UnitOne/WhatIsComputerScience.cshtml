@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "What Is Computer Science?";
+    var explanationAlreadyCorrect = Model.ExplanationCorrect == true;
 }
 
 <style>
@@ -796,12 +797,6 @@ END</div>
                                          style="@(string.IsNullOrWhiteSpace(Model.ExplanationFeedback) ? "display:none;" : "")">
                                         @Model.ExplanationFeedback
                                     </div>
-
-                                    @if (!string.IsNullOrWhiteSpace(Model.IdentifyFeedback))
-                                    {
-                                        var identifyClass = Model.IdentifyCorrect == true ? "alert-success-custom" : "alert-danger-custom";
-                                        <div class="alert-box @identifyClass">@Model.IdentifyFeedback</div>
-                                    }
                                 </div>
                             </div>
                         </div>
@@ -812,7 +807,12 @@ END</div>
                         <div class="step-progress">Step 3 of 3</div>
 
                         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <button type="button" class="btn-main" id="checkExplanationButton">Check with AI</button>
+                            <button type="button"
+                                    class="btn-main"
+                                    id="checkExplanationButton"
+                                    @(explanationAlreadyCorrect ? "disabled" : "")>
+                                @(explanationAlreadyCorrect ? "Checked" : "Check with AI")
+                            </button>
 
                             <button type="submit"
                                     name="actionType"
@@ -923,10 +923,22 @@ END</div>
         saveOrder(listId, hiddenInputId);
     }
 
+    function markExplanationCheckedState(isChecked) {
+        const checkButton = document.getElementById('checkExplanationButton');
+
+        if (!checkButton) return;
+
+        checkButton.disabled = isChecked;
+        checkButton.textContent = isChecked ? 'Checked' : 'Check with AI';
+    }
+
     function setStepThreeLoadingState(isLoading) {
         const loadingBox = document.getElementById('aiLoadingBox');
         const checkButton = document.getElementById('checkExplanationButton');
         const backButton = document.getElementById('backToStep2Button');
+        const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+
+        const alreadyChecked = explanationCorrectHidden && explanationCorrectHidden.value === 'true';
 
         const inputs = [
             document.getElementById('RecipeExplanation'),
@@ -940,8 +952,12 @@ END</div>
         }
 
         if (checkButton) {
-            checkButton.disabled = isLoading;
-            checkButton.textContent = isLoading ? 'Checking...' : 'Check with AI';
+            if (isLoading) {
+                checkButton.disabled = true;
+                checkButton.textContent = 'Checking...';
+            } else {
+                markExplanationCheckedState(alreadyChecked);
+            }
         }
 
         if (backButton) {
@@ -984,6 +1000,8 @@ END</div>
         if (submitLessonButton) {
             submitLessonButton.style.display = isCorrect ? '' : 'none';
         }
+
+        markExplanationCheckedState(isCorrect);
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -993,10 +1011,18 @@ END</div>
         const currentStep = @Model.CurrentStep;
         showStep(currentStep);
 
+        markExplanationCheckedState(@(Model.ExplanationCorrect == true ? "true" : "false"));
+
         const checkExplanationButton = document.getElementById('checkExplanationButton');
 
         if (checkExplanationButton) {
             checkExplanationButton.addEventListener('click', async function () {
+                const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+                if (explanationCorrectHidden && explanationCorrectHidden.value === 'true') {
+                    markExplanationCheckedState(true);
+                    return;
+                }
+
                 const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
 
                 const recipeSelected = document.getElementById('RecipeSelected')?.checked ?? false;
