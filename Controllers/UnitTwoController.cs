@@ -103,7 +103,7 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: text values are written using quotation marks, while numbers are not.";
+                vm.FeedbackMessage = "Hint: text values use quotation marks, but numbers do not.";
                 return View(vm);
             }
 
@@ -112,7 +112,7 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
+                vm.FeedbackMessage = "Solution: the correct answer is \"Alex\" because Alex is a text value.";
                 return View(vm);
             }
 
@@ -174,13 +174,14 @@ namespace DotNetCoreSqlDb.Controllers
         public IActionResult ArithmeticExpressions(ArithmeticExpressionsViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
 
             if (actionType == "hint")
             {
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: use an arithmetic expression with 8 and 4.";
+                vm.FeedbackMessage = "Hint: use both variables in one arithmetic expression.";
                 return View(vm);
             }
 
@@ -189,18 +190,55 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
+                vm.FeedbackMessage = "Solution: total = apples + oranges";
                 return View(vm);
             }
 
-            bool isCorrect = vm.UserAnswer.Replace(" ", "") == "8+4";
+            if (actionType == "checkExplanation")
+            {
+                vm.IsCorrect = true;
+
+                bool explanationCorrect =
+                    vm.ExplanationAnswer.Contains("math", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("calculate", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("combine", StringComparison.OrdinalIgnoreCase);
+
+                explanationCorrect = explanationCorrect &&
+                    (
+                        vm.ExplanationAnswer.Contains("values", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("variables", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("numbers", StringComparison.OrdinalIgnoreCase)
+                    );
+
+                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
+
+                vm.ExplanationCorrect = explanationCorrect;
+                vm.ExplanationFeedback = explanationCorrect
+                    ? "Good explanation. Arithmetic expressions combine values using math operations."
+                    : "Try mentioning that arithmetic expressions use math operations on values or variables.";
+
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                vm.IsCorrect = true;
+                vm.ExplanationCorrect = true;
+                vm.FeedbackMessage = "Lesson complete!";
+                return View(vm);
+            }
+
+            var normalized = vm.UserAnswer.Replace(" ", "").ToLowerInvariant();
+            bool isCorrect =
+                normalized == "apples+oranges" ||
+                normalized == "oranges+apples";
 
             vm.IsCorrect = isCorrect;
             vm.ShowHint = false;
             vm.ShowSolution = false;
             vm.FeedbackMessage = isCorrect
-                ? "Correct! The expression 8 + 4 calculates the total."
-                : "Not quite. Try writing the expression using 8 plus 4.";
+                ? "Correct! The total is found by adding apples and oranges."
+                : "Not quite. Use both variables in one addition expression.";
 
             return View(vm);
         }
@@ -216,13 +254,14 @@ namespace DotNetCoreSqlDb.Controllers
         public IActionResult InputOutput(InputOutputViewModel vm, string actionType)
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
 
             if (actionType == "hint")
             {
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: the same variable should be input and then displayed.";
+                vm.FeedbackMessage = "Hint: the program should first get input, then display that same value.";
                 return View(vm);
             }
 
@@ -231,18 +270,51 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
+                vm.FeedbackMessage = "Solution: name";
                 return View(vm);
             }
 
-            bool isCorrect = vm.UserAnswer.Equals("age", StringComparison.OrdinalIgnoreCase);
+            if (actionType == "checkExplanation")
+            {
+                vm.IsCorrect = true;
+
+                bool explanationCorrect =
+                    vm.ExplanationAnswer.Contains("input", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("enter", StringComparison.OrdinalIgnoreCase);
+
+                explanationCorrect = explanationCorrect &&
+                    (
+                        vm.ExplanationAnswer.Contains("output", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("display", StringComparison.OrdinalIgnoreCase) ||
+                        vm.ExplanationAnswer.Contains("show", StringComparison.OrdinalIgnoreCase)
+                    );
+
+                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
+
+                vm.ExplanationCorrect = explanationCorrect;
+                vm.ExplanationFeedback = explanationCorrect
+                    ? "Good explanation. Input gets information from the user, and output shows information back."
+                    : "Try mentioning that input gets information and output displays it.";
+
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                vm.IsCorrect = true;
+                vm.ExplanationCorrect = true;
+                vm.FeedbackMessage = "Lesson complete!";
+                return View(vm);
+            }
+
+            bool isCorrect = vm.UserAnswer.Equals("name", StringComparison.OrdinalIgnoreCase);
 
             vm.IsCorrect = isCorrect;
             vm.ShowHint = false;
             vm.ShowSolution = false;
             vm.FeedbackMessage = isCorrect
-                ? "Correct! The program inputs age and then displays it."
-                : "Not quite. Try using the variable name age.";
+                ? "Correct! The program gets the name as input and then displays it."
+                : "Not quite. Use the same variable that stores the user's name.";
 
             return View(vm);
         }

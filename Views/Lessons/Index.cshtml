@@ -1,3 +1,4 @@
+@using System
 @model DotNetCoreSqlDb.ViewModels.LessonsIndexViewModel
 
 @{
@@ -589,7 +590,9 @@
                                     }
 
                                     <div class="lesson-links">
-                                        @foreach (var lesson in unit.Lessons.OrderBy(l => l.SortOrder))
+                                        @foreach (var lesson in unit.Lessons
+                                            .Where(l => !string.Equals(l.Title, "Unit Two Overview", StringComparison.OrdinalIgnoreCase))
+                                            .OrderBy(l => l.SortOrder))
                                         {
                                             var cssClass = "lesson-link";
                                             if (lesson.IsCurrent) cssClass += " current";
