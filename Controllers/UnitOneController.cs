@@ -42,10 +42,32 @@ namespace DotNetCoreSqlDb.Controllers
                 (vm.UserAnswer1.Equals("price2", StringComparison.OrdinalIgnoreCase) &&
                  vm.UserAnswer2.Equals("price1", StringComparison.OrdinalIgnoreCase));
 
+            if (actionType == "hint")
+            {
+                vm.CurrentStep = 1;
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Hint: use the two variables that already store the item prices.";
+                return View(vm);
+            }
+
+            if (actionType == "solution")
+            {
+                vm.CurrentStep = 1;
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Solution: use price1 and price2 so the line becomes SET total = price1 + price2.";
+                return View(vm);
+            }
+
             if (actionType == "check")
             {
                 vm.IsCorrect = codeCorrect;
                 vm.CurrentStep = 1;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
                 vm.FeedbackMessage = codeCorrect
                     ? "Correct! The algorithm adds the two item prices together."
                     : "Not quite. Try using the two variables already defined above.";
@@ -77,16 +99,8 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.CurrentStep = 2;
-
-                var saved = await SaveLessonProgressAsync("Algorithms");
-                vm.FeedbackMessage = saved
-                    ? "Lesson complete! Your progress has been saved."
-                    : "Your answers were submitted, but progress could not be saved.";
-
-                return View(vm);
+                await SaveLessonProgressAsync("Algorithms");
+                return RedirectToAction(nameof(Decomposition));
             }
 
             vm.CurrentStep = 0;
@@ -113,10 +127,32 @@ namespace DotNetCoreSqlDb.Controllers
 
             bool firstTaskCorrect = vm.TaskOrder == "Wake up|Get dressed|Eat breakfast";
 
+            if (actionType == "hint")
+            {
+                vm.CurrentStep = 1;
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Hint: think about the order of a normal morning routine before leaving for school.";
+                return View(vm);
+            }
+
+            if (actionType == "solution")
+            {
+                vm.CurrentStep = 1;
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.IsCorrect = null;
+                vm.FeedbackMessage = "Solution: Wake up → Get dressed → Eat breakfast.";
+                return View(vm);
+            }
+
             if (actionType == "check")
             {
                 vm.IsCorrect = firstTaskCorrect;
                 vm.CurrentStep = 1;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
                 vm.FeedbackMessage = firstTaskCorrect
                     ? "Correct! You broke the morning routine into smaller steps."
                     : "Not quite. Think about what usually happens before leaving for school.";
@@ -149,16 +185,8 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.CurrentStep = 2;
-
-                var saved = await SaveLessonProgressAsync("Decomposition");
-                vm.FeedbackMessage = saved
-                    ? "Lesson complete! Your progress has been saved."
-                    : "Your answers were submitted, but progress could not be saved.";
-
-                return View(vm);
+                await SaveLessonProgressAsync("Decomposition");
+                return RedirectToAction("Index", "Lessons");
             }
 
             vm.CurrentStep = 0;
@@ -208,6 +236,22 @@ namespace DotNetCoreSqlDb.Controllers
                 "Stop when no swaps are needed"
             });
 
+            if (actionType == "hintPb")
+            {
+                vm.CurrentStep = 1;
+                vm.PbFeedback = "Hint: first place the bread, then add the spreads, then close the sandwich.";
+                vm.PbCorrect = null;
+                return View(vm);
+            }
+
+            if (actionType == "solutionPb")
+            {
+                vm.CurrentStep = 1;
+                vm.PbFeedback = "Solution: Put bread slices on plate → Spread jam on one slice → Spread peanut butter on the other slice → Press the slices together.";
+                vm.PbCorrect = null;
+                return View(vm);
+            }
+
             if (actionType == "checkPb")
             {
                 bool pbCorrect = vm.PbSandwichOrder.Equals(correctPb, StringComparison.Ordinal);
@@ -226,6 +270,22 @@ namespace DotNetCoreSqlDb.Controllers
             {
                 vm.PbCorrect = true;
                 vm.CurrentStep = 2;
+                return View(vm);
+            }
+
+            if (actionType == "hintCards")
+            {
+                vm.CurrentStep = 2;
+                vm.CardFeedback = "Hint: after comparing two cards, you swap if needed, then repeat until no swaps are needed.";
+                vm.CardCorrect = null;
+                return View(vm);
+            }
+
+            if (actionType == "solutionCards")
+            {
+                vm.CurrentStep = 2;
+                vm.CardFeedback = "Solution: Shuffle the deck → Look at the first two cards → Compare their values → Swap them if needed → Repeat until the deck is in order → Stop when no swaps are needed.";
+                vm.CardCorrect = null;
                 return View(vm);
             }
 
@@ -248,6 +308,22 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.PbCorrect = true;
                 vm.CardCorrect = true;
                 vm.CurrentStep = 3;
+                return View(vm);
+            }
+
+            if (actionType == "hintIdentify")
+            {
+                vm.CurrentStep = 3;
+                vm.IdentifyCorrect = null;
+                vm.IdentifyFeedback = "Hint: an algorithm is a step-by-step process for solving a problem.";
+                return View(vm);
+            }
+
+            if (actionType == "solutionIdentify")
+            {
+                vm.CurrentStep = 3;
+                vm.IdentifyCorrect = null;
+                vm.IdentifyFeedback = "Solution: A recipe and GPS directions are algorithms. A grocery list and a photo are not algorithms.";
                 return View(vm);
             }
 
@@ -278,17 +354,8 @@ namespace DotNetCoreSqlDb.Controllers
                     return View(vm);
                 }
 
-                var saved = await SaveLessonProgressAsync("WhatIsComputerScience");
-
-                vm.IsCorrect = saved;
-                vm.IdentifyFeedback = saved
-                    ? "Excellent. You correctly identified which examples are algorithms and explained your reasoning."
-                    : "Your answers were correct, but the lesson progress could not be saved.";
-                vm.FeedbackMessage = saved
-                    ? "Lesson complete! Your progress has been saved."
-                    : "Could not save lesson progress.";
-
-                return View(vm);
+                await SaveLessonProgressAsync("WhatIsComputerScience");
+                return RedirectToAction(nameof(Algorithms));
             }
 
             vm.CurrentStep = 0;
@@ -297,14 +364,16 @@ namespace DotNetCoreSqlDb.Controllers
 
         private async Task<bool> SaveLessonProgressAsync(string actionName)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim, out var userId))
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                            ?? User.FindFirstValue("UserID");
+
+            if (!Guid.TryParse(userIdValue, out var userId))
             {
                 return false;
             }
 
             var lesson = await _context.Lessons
-                .FirstOrDefaultAsync(l => l.ControllerName == "UnitOne" && l.ActionName == actionName && l.IsPublished);
+                .FirstOrDefaultAsync(l => l.ActionName == actionName);
 
             if (lesson == null)
             {
@@ -332,7 +401,7 @@ namespace DotNetCoreSqlDb.Controllers
             else
             {
                 progress.IsCompleted = true;
-                progress.CompletedAtUtc = now;
+                progress.CompletedAtUtc ??= now;
                 progress.LastAccessedAtUtc = now;
             }
 

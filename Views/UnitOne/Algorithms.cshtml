@@ -316,11 +316,6 @@
             padding: 16px;
             overflow-y: auto;
         }
-
-        .inline-answer {
-            width: 95px;
-            max-width: 95px;
-        }
     }
 </style>
 
@@ -331,7 +326,7 @@
                 <div class="brand-icon">&lt;/&gt;</div>
                 <div class="brand-text">
                     <h1>Code Quest</h1>
-                    <p>Unit 1 · Lesson 2</p>
+                    <p>Unit 1, Lesson 2 · Algorithms</p>
                 </div>
             </div>
 
@@ -340,39 +335,29 @@
 
         <form asp-action="Algorithms" asp-controller="UnitOne" method="post">
             @Html.AntiForgeryToken()
+            <input asp-for="CurrentStep" type="hidden" id="CurrentStep" />
 
             <div class="panel step-panel">
-                <div class="step-card active" id="step0">
+                <div class="step-card" id="step0">
                     <div class="step-top">
                         <h2>Algorithms</h2>
                         <p>
-                            An algorithm is a step-by-step set of instructions for solving a problem.
-                            Good algorithms are precise, finite, and deterministic.
+                            An algorithm is a clear step-by-step process for solving a problem.
+                            Good algorithms use the correct variables and follow a logical order.
                         </p>
 
-                        <div class="code-block">BEGIN
-SET number = 5
-SET result = number * 2
-DISPLAY result
-END</div>
-
-                        <div class="instruction-box">
-                            In this lesson, you will first review the idea of an algorithm, then fix a short
-                            algorithm, and finally explain why a corrected version works.
+                        <div class="code-block">
+BEGIN
+SET price1 = 5
+SET price2 = 10
+SET total = price1 + price2
+DISPLAY total
+END
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
-                        {
-                            var overallClass = Model.IsCorrect == true
-                                ? "alert-success-custom"
-                                : Model.IsCorrect == false
-                                    ? "alert-danger-custom"
-                                    : "alert-info-custom";
-
-                            <div class="alert-box @overallClass">
-                                @Model.FeedbackMessage
-                            </div>
-                        }
+                        <div class="instruction-box">
+                            In this lesson, you will complete part of an algorithm and then explain why the fix works.
+                        </div>
                     </div>
 
                     <div class="step-actions">
@@ -402,13 +387,24 @@ END</div>
                             <div>END</div>
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.CurrentStep == 1)
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage))
                         {
-                            var alertClass = Model.IsCorrect == true ? "alert-success-custom"
-                                : Model.IsCorrect == false ? "alert-danger-custom"
-                                : "alert-info-custom";
+                            var feedbackClass = "alert-info-custom";
 
-                            <div class="alert-box @alertClass">
+                            if (Model.ShowHint || Model.ShowSolution)
+                            {
+                                feedbackClass = "alert-info-custom";
+                            }
+                            else if (Model.IsCorrect == true)
+                            {
+                                feedbackClass = "alert-success-custom";
+                            }
+                            else if (Model.IsCorrect == false)
+                            {
+                                feedbackClass = "alert-danger-custom";
+                            }
+
+                            <div class="alert-box @feedbackClass">
                                 @Model.FeedbackMessage
                             </div>
                         }
@@ -424,7 +420,11 @@ END</div>
                         }
                         else
                         {
-                            <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                                <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
+                                <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
+                            </div>
                         }
                     </div>
                 </div>
@@ -433,20 +433,14 @@ END</div>
                     <div class="step-top">
                         <h3>Question 2 · Explain the fix</h3>
                         <div class="instruction-box">
-                            Briefly explain why using <strong>price1</strong> and <strong>price2</strong> makes the algorithm correct.
+                            Explain why using those two variables makes the algorithm correct.
                         </div>
 
-                        <div class="mc-grid">
-                            <div class="mc-card">
-                                <div class="mc-header">Your explanation</div>
-                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: It uses the two variables that already store the prices, so the total adds both item costs correctly." />
-                            </div>
-                        </div>
+                        <textarea asp-for="ExplanationAnswer" class="text-input" rows="5" placeholder="Explain why the algorithm works..."></textarea>
 
                         @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
                         {
-                            var explanationClass = Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom";
-                            <div class="alert-box @explanationClass">
+                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
                                 @Model.ExplanationFeedback
                             </div>
                         }
@@ -471,7 +465,7 @@ END</div>
 
         <div class="nav-footer">
             <a asp-controller="UnitOne" asp-action="WhatIsComputerScience" class="btn-secondary">Back to Lesson 1</a>
-            <a asp-controller="UnitOne" asp-action="Decomposition" class="btn-main">Go to Unit 1, Lesson 3</a>
+            <a asp-controller="UnitOne" asp-action="Decomposition" class="btn-main">Next Lesson</a>
         </div>
     </div>
 </div>
@@ -486,10 +480,15 @@ END</div>
         if (target) {
             target.classList.add('active');
         }
+
+        const hiddenStep = document.getElementById('CurrentStep');
+        if (hiddenStep) {
+            hiddenStep.value = stepNumber;
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        const currentStep = @Model.CurrentStep;
+        const currentStep = parseInt(document.getElementById('CurrentStep')?.value || '0');
         showStep(currentStep);
     });
 </script>
