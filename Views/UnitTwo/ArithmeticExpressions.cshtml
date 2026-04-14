@@ -246,8 +246,10 @@ total ← ___
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
         const showHint = '@Model.ShowHint'.toLowerCase() === 'true';
         const showSolution = '@Model.ShowSolution'.toLowerCase() === 'true';
+        const hasExplanationAnswer = '@(!string.IsNullOrWhiteSpace(Model.ExplanationAnswer)).ToString().ToLower()' === 'true';
+        const hasExplanationFeedback = '@(!string.IsNullOrWhiteSpace(Model.ExplanationFeedback)).ToString().ToLower()' === 'true';
 
-        if (explanationDone === 'True') {
+        if (explanationDone === 'True' || hasExplanationAnswer || hasExplanationFeedback) {
             stepToShow = 2;
         } else if (answered || showHint || showSolution) {
             stepToShow = 1;

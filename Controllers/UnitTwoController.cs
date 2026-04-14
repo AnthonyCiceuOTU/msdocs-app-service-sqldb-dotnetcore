@@ -65,10 +65,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
+                return RedirectToAction(nameof(DataTypes));
             }
 
             bool isCorrect =
@@ -143,10 +140,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
+                return RedirectToAction(nameof(ArithmeticExpressions));
             }
 
             bool isCorrect =
@@ -222,10 +216,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
+                return RedirectToAction(nameof(InputOutput));
             }
 
             var normalized = vm.UserAnswer.Replace(" ", "").ToLowerInvariant();
@@ -301,10 +292,7 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
+                return RedirectToAction("Index", "Lessons");
             }
 
             bool isCorrect = vm.UserAnswer.Equals("name", StringComparison.OrdinalIgnoreCase);
