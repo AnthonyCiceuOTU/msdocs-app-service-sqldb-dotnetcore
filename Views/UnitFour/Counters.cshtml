@@ -428,24 +428,10 @@ END FOR</div>
                                 <p>The tracked value changes each time the loop repeats.</p>
                             </div>
                         </div>
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Think about which variable stores the total and how it changes each loop.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                An accumulator stores a running total, often with an update like <b>sum = sum + i</b>.
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
-                        <span class="step-progress">Step 1 of 2</span>
+                        <span class="step-progress">Instructions</span>
                         <button type="button" class="btn-main" onclick="showStep(1)">Next</button>
                     </div>
                 </div>
@@ -454,6 +440,20 @@ END FOR</div>
                     <div class="step-top">
                         <h3>Practice</h3>
                         <p>Answer these questions about counters and accumulators.</p>
+
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Hint: think about which variable stores the total and how it changes each time the loop repeats.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solution: the running total is stored in <b>sum</b>, an accumulator keeps a <b>running total</b>, the update line is <b>sum = sum + i</b>, and a variable that stores a running total is called an <b>accumulator</b>.
+                            </div>
+                        }
 
                         <div class="quiz-grid">
                             <div class="quiz-card">
@@ -679,8 +679,8 @@ END FOR</div>
 
             if (explanationDone === 'true') {
                 showStep(2);
-            } else if (stepOneComplete) {
-                showStep(2);
+            } else if (stepOneComplete || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
+                showStep(1);
             } else {
                 showStep(0);
             }

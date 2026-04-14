@@ -77,7 +77,7 @@ namespace DotNetCoreSqlDb.Controllers
                 }
 
                 await SaveLessonProgressAsync("WhyLoops");
-                return RedirectToAction(nameof(WhileLoops));
+                return await RedirectToNextIncompleteUnitFourLessonOrLessonsAsync();
             }
 
             vm.ShowHint = false;
@@ -117,96 +117,92 @@ namespace DotNetCoreSqlDb.Controllers
             return View(new WhileLoopsViewModel());
         }
 
-       [HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actionType)
-{
-    TrimAll(vm);
-
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        ViewBag.ForceStep = 1;
-        return View(vm);
-    }
-
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        ViewBag.ForceStep = 1;
-        return View(vm);
-    }
-
-    if (actionType == "checkExplanation")
-    {
-        EvaluateWhileLoopsExplanation(vm);
-        ViewBag.ForceStep = 2;
-        return View(vm);
-    }
-
-    if (actionType == "submit")
-    {
-        EvaluateWhileLoopsExplanation(vm);
-
-        if (vm.ExplanationCorrect != true)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actionType)
         {
-            vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
-                ? "Please check your explanation before submitting."
-                : vm.ExplanationFeedback;
+            TrimAll(vm);
 
-            ViewBag.ForceStep = 2;
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                ViewBag.ForceStep = 1;
+                return View(vm);
+            }
+
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                ViewBag.ForceStep = 1;
+                return View(vm);
+            }
+
+            if (actionType == "checkExplanation")
+            {
+                EvaluateWhileLoopsExplanation(vm);
+                ViewBag.ForceStep = 2;
+                return View(vm);
+            }
+
+            if (actionType == "submit")
+            {
+                EvaluateWhileLoopsExplanation(vm);
+
+                if (vm.ExplanationCorrect != true)
+                {
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation before submitting."
+                        : vm.ExplanationFeedback;
+
+                    ViewBag.ForceStep = 2;
+                    return View(vm);
+                }
+
+                await SaveLessonProgressAsync("WhileLoops");
+                return await RedirectToNextIncompleteUnitFourLessonOrLessonsAsync();
+            }
+
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+
+            vm.IsQ1Correct =
+                (
+                    vm.UserAnswer1.Contains("condition", StringComparison.OrdinalIgnoreCase) &&
+                    vm.UserAnswer1.Contains("true", StringComparison.OrdinalIgnoreCase)
+                )
+                || vm.UserAnswer1.Contains("repeats while its condition is true", StringComparison.OrdinalIgnoreCase)
+                || vm.UserAnswer1.Contains("while the condition is true", StringComparison.OrdinalIgnoreCase);
+
+            vm.Feedback1 = vm.IsQ1Correct == true
+                ? "Correct!"
+                : "Try mentioning that a WHILE loop repeats while its condition is true.";
+
+            vm.IsQ2Correct = vm.UserAnswer2.Equals("while the condition is true", StringComparison.OrdinalIgnoreCase)
+                             || (vm.UserAnswer2.Contains("condition", StringComparison.OrdinalIgnoreCase)
+                                 && vm.UserAnswer2.Contains("true", StringComparison.OrdinalIgnoreCase));
+            vm.Feedback2 = vm.IsQ2Correct == true
+                ? "Correct!"
+                : "A WHILE loop continues as long as its condition is true.";
+
+            vm.IsQ3Correct = vm.UserAnswer3.Equals("WHILE", StringComparison.OrdinalIgnoreCase);
+            vm.Feedback3 = vm.IsQ3Correct == true
+                ? "Correct!"
+                : "The missing keyword is WHILE.";
+
+            vm.IsQ4Correct =
+                vm.UserAnswer4.Equals("condition becomes false", StringComparison.OrdinalIgnoreCase)
+                || vm.UserAnswer4.Contains("false", StringComparison.OrdinalIgnoreCase)
+                || vm.UserAnswer4.Contains("stops when the condition is false", StringComparison.OrdinalIgnoreCase);
+
+            vm.Feedback4 = vm.IsQ4Correct == true
+                ? "Correct!"
+                : "A WHILE loop stops when the condition becomes false.";
+
+            ViewBag.ForceStep = AllCorrect(vm) ? 2 : 1;
             return View(vm);
         }
-
-        await SaveLessonProgressAsync("WhileLoops");
-        return RedirectToAction(nameof(ForLoops));
-    }
-
-    vm.ShowHint = false;
-    vm.ShowSolution = false;
-
-    vm.IsQ1Correct =
-        (
-            vm.UserAnswer1.Contains("condition", StringComparison.OrdinalIgnoreCase) &&
-            vm.UserAnswer1.Contains("true", StringComparison.OrdinalIgnoreCase)
-        )
-        ||
-        vm.UserAnswer1.Contains("repeats while its condition is true", StringComparison.OrdinalIgnoreCase)
-        ||
-        vm.UserAnswer1.Contains("while the condition is true", StringComparison.OrdinalIgnoreCase);
-
-    vm.Feedback1 = vm.IsQ1Correct == true
-        ? "Correct!"
-        : "Try mentioning that a WHILE loop repeats while its condition is true.";
-
-    vm.IsQ2Correct =
-        vm.UserAnswer2.Equals("while the condition is true", StringComparison.OrdinalIgnoreCase)
-        || (vm.UserAnswer2.Contains("condition", StringComparison.OrdinalIgnoreCase)
-            && vm.UserAnswer2.Contains("true", StringComparison.OrdinalIgnoreCase));
-
-    vm.Feedback2 = vm.IsQ2Correct == true
-        ? "Correct!"
-        : "A WHILE loop continues as long as its condition is true.";
-
-    vm.IsQ3Correct = vm.UserAnswer3.Equals("WHILE", StringComparison.OrdinalIgnoreCase);
-    vm.Feedback3 = vm.IsQ3Correct == true
-        ? "Correct!"
-        : "The missing keyword is WHILE.";
-
-    vm.IsQ4Correct =
-        vm.UserAnswer4.Equals("condition becomes false", StringComparison.OrdinalIgnoreCase)
-        || vm.UserAnswer4.Contains("false", StringComparison.OrdinalIgnoreCase)
-        || vm.UserAnswer4.Contains("stops when the condition is false", StringComparison.OrdinalIgnoreCase);
-
-    vm.Feedback4 = vm.IsQ4Correct == true
-        ? "Correct!"
-        : "A WHILE loop stops when the condition becomes false.";
-
-    ViewBag.ForceStep = AllCorrect(vm) ? 2 : 1;
-    return View(vm);
-}
 
         [HttpGet]
         public IActionResult ForLoops()
@@ -258,7 +254,7 @@ public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actio
                 }
 
                 await SaveLessonProgressAsync("ForLoops");
-                return RedirectToAction(nameof(Counters));
+                return await RedirectToNextIncompleteUnitFourLessonOrLessonsAsync();
             }
 
             vm.ShowHint = false;
@@ -345,13 +341,8 @@ public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actio
                     return View(vm);
                 }
 
-                var saved = await SaveLessonProgressAsync("Counters");
-                vm.ExplanationFeedback = saved
-                    ? "Lesson complete! Your progress has been saved."
-                    : "Your answers were submitted, but progress could not be saved.";
-
-                ViewBag.ForceStep = 2;
-                return View(vm);
+                await SaveLessonProgressAsync("Counters");
+                return await RedirectToNextIncompleteUnitFourLessonOrLessonsAsync();
             }
 
             vm.ShowHint = false;
@@ -363,7 +354,9 @@ public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actio
             vm.IsQ2Correct = vm.UserAnswer2.Equals("running total", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer2.Contains("total", StringComparison.OrdinalIgnoreCase);
             vm.Feedback2 = vm.IsQ2Correct == true ? "Correct!" : "An accumulator keeps a running total.";
 
-            vm.IsQ3Correct = vm.UserAnswer3.Equals("sum = sum + i", StringComparison.OrdinalIgnoreCase) || vm.UserAnswer3.Equals("sum ← sum + i", StringComparison.OrdinalIgnoreCase) || (vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase) && vm.UserAnswer3.Contains("+", StringComparison.OrdinalIgnoreCase));
+            vm.IsQ3Correct = vm.UserAnswer3.Equals("sum = sum + i", StringComparison.OrdinalIgnoreCase)
+                             || vm.UserAnswer3.Equals("sum ← sum + i", StringComparison.OrdinalIgnoreCase)
+                             || (vm.UserAnswer3.Contains("sum", StringComparison.OrdinalIgnoreCase) && vm.UserAnswer3.Contains("+", StringComparison.OrdinalIgnoreCase));
             vm.Feedback3 = vm.IsQ3Correct == true ? "Correct!" : "Look at the line that updates the total each loop.";
 
             vm.IsQ4Correct = vm.UserAnswer4.Equals("accumulator", StringComparison.OrdinalIgnoreCase);
@@ -470,7 +463,7 @@ public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actio
                 }
 
                 await SaveLessonProgressAsync("LoopErrors");
-                return RedirectToAction("Index", "Lessons");
+                return await RedirectToNextIncompleteUnitFourLessonOrLessonsAsync();
             }
 
             vm.ShowHint = false;
@@ -513,26 +506,26 @@ public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actio
         }
 
         private static void EvaluateWhileLoopsExplanation(WhileLoopsViewModel vm)
-{
-    vm.ExplanationCorrect =
-        (
-            vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("until", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)
-        ) &&
-        (
-            vm.ExplanationAnswer.Contains("unknown", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("don't know", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("not known", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("depends", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("not fixed", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase)
-        );
+        {
+            vm.ExplanationCorrect =
+                (
+                    vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("until", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase)
+                ) &&
+                (
+                    vm.ExplanationAnswer.Contains("unknown", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("don't know", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("not known", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("depends", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("not fixed", StringComparison.OrdinalIgnoreCase) ||
+                    vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase)
+                );
 
-    vm.ExplanationFeedback = vm.ExplanationCorrect == true
-        ? "Correct! WHILE loops are useful when repetition depends on a condition."
-        : "Try mentioning that a WHILE loop is useful when repetition depends on a condition.";
-}
+            vm.ExplanationFeedback = vm.ExplanationCorrect == true
+                ? "Correct! WHILE loops are useful when repetition depends on a condition."
+                : "Try mentioning that a WHILE loop is useful when repetition depends on a condition.";
+        }
 
         private static void EvaluateForLoopsExplanation(ForLoopsViewModel vm)
         {
@@ -617,6 +610,40 @@ public async Task<IActionResult> WhileLoops(WhileLoopsViewModel vm, string actio
 
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private async Task<IActionResult> RedirectToNextIncompleteUnitFourLessonOrLessonsAsync()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("UserID");
+            if (!Guid.TryParse(userIdValue, out var userId))
+            {
+                return RedirectToAction("Index", "Lessons");
+            }
+
+            var unitFourLessons = await _context.Lessons
+                .Where(l => l.IsPublished && l.UnitId == 4)
+                .OrderBy(l => l.SortOrder)
+                .ThenBy(l => l.Id)
+                .ToListAsync();
+
+            if (!unitFourLessons.Any())
+            {
+                return RedirectToAction("Index", "Lessons");
+            }
+
+            var completedLessonIds = await _context.UserLessonProgresses
+                .Where(p => p.UserId == userId && p.IsCompleted)
+                .Select(p => p.LessonId)
+                .ToListAsync();
+
+            var nextIncomplete = unitFourLessons.FirstOrDefault(l => !completedLessonIds.Contains(l.Id));
+
+            if (nextIncomplete == null)
+            {
+                return RedirectToAction("Index", "Lessons");
+            }
+
+            return RedirectToAction(nextIncomplete.ActionName, nextIncomplete.ControllerName);
         }
     }
 }
