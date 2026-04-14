@@ -421,19 +421,6 @@ Console.WriteLine(result); // prints 8</div>
                             </div>
                         </div>
 
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                The type before the method name tells you what it returns. Use the <code>return</code> keyword to send a value back.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Solutions: 1) int, 2) 8, 3) return, 4) Returns nothing
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -519,6 +506,19 @@ Console.WriteLine(result); // prints 8</div>
                                 }
                             </div>
                         </div>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                The type before the method name tells you what it returns. Use the <code>return</code> keyword to send a value back.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) int, 2) 8, 3) return, 4) Returns nothing
+                            </div>
+                        }
                     </div>
 
                     <div class="step-actions">
@@ -569,7 +569,7 @@ Console.WriteLine(result); // prints 8</div>
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
                         }
                         else
                         {
@@ -608,7 +608,7 @@ Console.WriteLine(result); // prints 8</div>
         const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-        if (explanationDone === 'True') {
+        if (explanationDone) {
             stepToShow = 2;
         } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
             stepToShow = 1;

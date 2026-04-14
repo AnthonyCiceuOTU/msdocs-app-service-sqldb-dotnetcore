@@ -254,19 +254,6 @@
                             </div>
                         </div>
 
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Look at each field declaration: the first word is the access modifier, the second is the type, and the third is the name.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Solutions: 1) int, 2) public, 3) 3, 4) True
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -352,6 +339,19 @@
                                 }
                             </div>
                         </div>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Look at each field declaration: the first word is the access modifier, the second is the type, and the third is the name.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) int, 2) public, 3) 3, 4) True
+                            </div>
+                        }
                     </div>
 
                     <div class="step-actions">
@@ -402,7 +402,7 @@
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
                         }
                         else
                         {
@@ -437,7 +437,7 @@
         const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-        if (explanationDone === 'True') {
+        if (explanationDone) {
             stepToShow = 2;
         } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
             stepToShow = 1;
