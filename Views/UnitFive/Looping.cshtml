@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Looping Through Lists";
 }
+
 <style>
     html,
     body {
@@ -168,69 +169,7 @@
     .quiz-title {
         color: #ffffff;
         font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-    }
-
-    .mini-code {
-        background: rgba(2, 6, 23, 0.7);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 10px;
-        padding: 10px 12px;
-        color: #e2e8f0;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-    }
-
-    .text-input {
-        width: 100%;
-        box-sizing: border-box;
-        background: rgba(2, 6, 23, 0.7);
-        color: #f8fafc;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        border-radius: 10px;
-        padding: 10px 12px;
-        outline: none;
-        font-size: 0.92rem;
-    }
-
-    .text-input:focus {
-        border-color: rgba(34, 197, 94, 0.5);
-        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
-    }
-
-    .radio-row {
-        display: flex;
-        gap: 18px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-    }
-
-    .radio-option {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: #e5e7eb;
-        font-size: 0.92rem;
-    }
-
-    .mc-grid {
-        display: grid;
-        gap: 10px;
-    }
-
-    .mc-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 12px;
-        padding: 10px 12px;
-    }
-
-    .mc-header {
-        color: #e5e7eb;
-        margin-bottom: 6px;
-        font-weight: 600;
+        margin-bottom: 12px;
         font-size: 0.95rem;
     }
 
@@ -259,6 +198,36 @@
         color: #94a3b8;
         font-size: 0.88rem;
         line-height: 1.45;
+    }
+
+    .mc-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mc-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: rgba(2, 6, 23, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #e5e7eb;
+        line-height: 1.45;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .mc-option:hover {
+        background: rgba(15, 23, 42, 0.9);
+        border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    .mc-option input[type="radio"] {
+        margin-top: 3px;
+        flex-shrink: 0;
     }
 
     .btn-main,
@@ -364,14 +333,15 @@
         }
     }
 </style>
+
 <div class="lesson-page">
     <div class="lesson-shell">
         <div class="topbar">
             <div class="brand">
-                <div class="brand-icon">⟳</div>
+                <div class="brand-icon">[]</div>
                 <div class="brand-text">
                     <h1>Code Quest</h1>
-                    <p>Unit 3 · Looping Lists</p>
+                    <p>Unit 5 · Looping Through Lists</p>
                 </div>
             </div>
 
@@ -388,31 +358,33 @@
                         <h2>Looping Through Lists</h2>
 
                         <p>
-                            A loop lets you go through each item in a list one at a time.
+                            Loops make it easy to go through each item in a list one at a time.
                         </p>
 
                         <div class="code-block">
-FOR each item IN scores
-    PRINT item
+numbers ← [2, 4, 6, 8]
+
+FOR each number IN numbers
+    DISPLAY number
 END FOR
                         </div>
 
                         <div class="instruction-box">
-                            Loops are useful because they save time and stop you from writing the same code over and over.
+                            A loop is helpful when you want to repeat the same action for every item in a list.
                         </div>
 
                         <div class="concept-grid">
                             <div class="concept-card">
                                 <h4>Repeat</h4>
-                                <p>A loop repeats a block of code.</p>
+                                <p>Loops repeat a block of code.</p>
                             </div>
                             <div class="concept-card">
-                                <h4>Each Item</h4>
-                                <p>You can visit every value in the list.</p>
+                                <h4>One by One</h4>
+                                <p>Loops can process each item in a list one at a time.</p>
                             </div>
                             <div class="concept-card">
-                                <h4>Efficiency</h4>
-                                <p>Loops reduce repeated code.</p>
+                                <h4>Less Repetition</h4>
+                                <p>You do not need to write the same code again and again.</p>
                             </div>
                         </div>
                     </div>
@@ -446,20 +418,44 @@ END FOR
                             <div class="quiz-card">
                                 <div class="quiz-title">1. Which structure is best for going through every item in a list?</div>
                                 <div class="mc-grid">
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="A" /> A loop</label>
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="B" /> A comment</label>
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="C" /> A string</label>
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="D" /> A variable name only</label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="A" />
+                                        <span>A) A loop</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="B" />
+                                        <span>B) A comment</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="C" />
+                                        <span>C) A string</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="D" />
+                                        <span>D) A variable name only</span>
+                                    </label>
                                 </div>
                             </div>
 
                             <div class="quiz-card">
                                 <div class="quiz-title">2. Why are loops useful with lists?</div>
                                 <div class="mc-grid">
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="A" /> They delete the whole list automatically</label>
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="B" /> They let you process each item without repeating the same code</label>
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="C" /> They turn every list into one number</label>
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="D" /> They make indexes start at 1</label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="A" />
+                                        <span>A) They delete the whole list automatically</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="B" />
+                                        <span>B) They let you process each item without repeating the same code</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="C" />
+                                        <span>C) They turn every list into one number</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="D" />
+                                        <span>D) They make indexes start at 1</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>

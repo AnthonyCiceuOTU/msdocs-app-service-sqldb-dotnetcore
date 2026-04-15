@@ -49,12 +49,12 @@ namespace DotNetCoreSqlDb.Controllers
             if (HandleCommonActions(
                 vm,
                 actionType,
-                "Hint: the first item in a list is at index 0.",
-                "Solution: use square brackets with index 0 to access the first item, like scores[0].",
+                "Hint: the first item in a list uses index 0.",
+                "Solution: Question 1 = C) scores[0]. Question 2 = B) Because list indexes start at 0.",
                 IsAccessingQ1Correct,
                 IsAccessingQ2Correct,
-                "Correct! Indexing starts at 0, so the first item is accessed with [0].",
-                "Not quite yet. Remember that list indexing starts at 0.",
+                "Correct! The first item in a list is usually accessed with index 0.",
+                "Not quite yet. Remember that most lists start indexing at 0.",
                 "Lesson complete!"))
             {
                 return View(vm);
@@ -78,12 +78,12 @@ namespace DotNetCoreSqlDb.Controllers
             if (HandleCommonActions(
                 vm,
                 actionType,
-                "Hint: use a loop when you want to go through every item in a list.",
-                "Solution: a FOR loop is commonly used to go through each item in a list one by one.",
+                "Hint: think about what helps you repeat the same action for every item in a list.",
+                "Solution: Question 1 = A) A loop. Question 2 = B) They let you process each item without repeating the same code.",
                 IsLoopingQ1Correct,
                 IsLoopingQ2Correct,
-                "Correct! A loop helps you go through each item in a list without repeating code.",
-                "Not quite yet. Think about which structure repeats for every item in a list.",
+                "Correct! Loops are useful because they let you go through list items one by one.",
+                "Not quite yet. Think about what repeats code for each item in a list.",
                 "Lesson complete!"))
             {
                 return View(vm);
@@ -107,12 +107,12 @@ namespace DotNetCoreSqlDb.Controllers
             if (HandleCommonActions(
                 vm,
                 actionType,
-                "Hint: searching usually means checking items one by one until you find a match.",
-                "Solution: use a loop to check each item and an IF statement to see whether it matches the target value.",
+                "Hint: searching means checking items until you find the one you want.",
+                "Solution: Question 1 = C) Checking items to find a target value. Question 2 = A) Use a loop and compare each item with the target.",
                 IsSearchingQ1Correct,
                 IsSearchingQ2Correct,
-                "Correct! Searching usually uses a loop and an IF check to find a target value.",
-                "Not quite yet. Think about checking each item until one matches.",
+                "Correct! Searching a list means checking items to find a target value.",
+                "Not quite yet. Think about checking each item one by one until there is a match.",
                 "Lesson complete!"))
             {
                 return View(vm);

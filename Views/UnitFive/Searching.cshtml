@@ -169,69 +169,7 @@
     .quiz-title {
         color: #ffffff;
         font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-    }
-
-    .mini-code {
-        background: rgba(2, 6, 23, 0.7);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 10px;
-        padding: 10px 12px;
-        color: #e2e8f0;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-    }
-
-    .text-input {
-        width: 100%;
-        box-sizing: border-box;
-        background: rgba(2, 6, 23, 0.7);
-        color: #f8fafc;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        border-radius: 10px;
-        padding: 10px 12px;
-        outline: none;
-        font-size: 0.92rem;
-    }
-
-    .text-input:focus {
-        border-color: rgba(34, 197, 94, 0.5);
-        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
-    }
-
-    .radio-row {
-        display: flex;
-        gap: 18px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-    }
-
-    .radio-option {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: #e5e7eb;
-        font-size: 0.92rem;
-    }
-
-    .mc-grid {
-        display: grid;
-        gap: 10px;
-    }
-
-    .mc-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 12px;
-        padding: 10px 12px;
-    }
-
-    .mc-header {
-        color: #e5e7eb;
-        margin-bottom: 6px;
-        font-weight: 600;
+        margin-bottom: 12px;
         font-size: 0.95rem;
     }
 
@@ -260,6 +198,36 @@
         color: #94a3b8;
         font-size: 0.88rem;
         line-height: 1.45;
+    }
+
+    .mc-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mc-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: rgba(2, 6, 23, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #e5e7eb;
+        line-height: 1.45;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .mc-option:hover {
+        background: rgba(15, 23, 42, 0.9);
+        border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    .mc-option input[type="radio"] {
+        margin-top: 3px;
+        flex-shrink: 0;
     }
 
     .btn-main,
@@ -370,10 +338,10 @@
     <div class="lesson-shell">
         <div class="topbar">
             <div class="brand">
-                <div class="brand-icon">🔍</div>
+                <div class="brand-icon">[]</div>
                 <div class="brand-text">
                     <h1>Code Quest</h1>
-                    <p>Unit 3 · Searching Lists</p>
+                    <p>Unit 5 · Searching Lists</p>
                 </div>
             </div>
 
@@ -387,35 +355,39 @@
 
                 <div class="step-card active" id="step0">
                     <div class="step-top">
-                        <h2>Finding Values in Lists</h2>
+                        <h2>Searching Lists</h2>
 
                         <p>
-                            Searching means checking a list to see if a value exists.
+                            Searching means checking items in a list to find a target value.
                         </p>
 
                         <div class="code-block">
-FOR each item IN list
-    IF item = target THEN
-        PRINT "Found"
+names ← ["Ali", "Mia", "Noah"]
+target ← "Mia"
+
+FOR each name IN names
+    IF name = target THEN
+        DISPLAY "Found it!"
+    END IF
 END FOR
                         </div>
 
                         <div class="instruction-box">
-                            To search a list, you go through each item and compare it with the value you are looking for.
+                            A common way to search a list is to use a loop and compare each item with the value you want.
                         </div>
 
                         <div class="concept-grid">
                             <div class="concept-card">
-                                <h4>Traversal</h4>
-                                <p>Go through every item in the list.</p>
+                                <h4>Target Value</h4>
+                                <p>The target is the item you are trying to find.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>Loop</h4>
+                                <p>A loop checks each item one by one.</p>
                             </div>
                             <div class="concept-card">
                                 <h4>Comparison</h4>
-                                <p>Check if an item equals the target value.</p>
-                            </div>
-                            <div class="concept-card">
-                                <h4>Condition</h4>
-                                <p>Use IF to detect a match.</p>
+                                <p>You compare each item with the target value.</p>
                             </div>
                         </div>
                     </div>
@@ -449,20 +421,44 @@ END FOR
                             <div class="quiz-card">
                                 <div class="quiz-title">1. What is the main idea of searching a list?</div>
                                 <div class="mc-grid">
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="A" /> Changing every item in the list</label>
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="B" /> Printing only the first item</label>
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="C" /> Checking items to find a target value</label>
-                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="D" /> Sorting the list from smallest to biggest</label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="A" />
+                                        <span>A) Changing every item in the list</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="B" />
+                                        <span>B) Printing only the first item</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="C" />
+                                        <span>C) Checking items to find a target value</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="UserAnswer" value="D" />
+                                        <span>D) Sorting the list from smallest to biggest</span>
+                                    </label>
                                 </div>
                             </div>
 
                             <div class="quiz-card">
                                 <div class="quiz-title">2. Which approach is usually used to search for a value in a list?</div>
                                 <div class="mc-grid">
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="A" /> Use a loop and compare each item with the target</label>
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="B" /> Only check the last item</label>
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="C" /> Remove all items first</label>
-                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="D" /> Use comments instead of code</label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="A" />
+                                        <span>A) Use a loop and compare each item with the target</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="B" />
+                                        <span>B) Only check the last item</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="C" />
+                                        <span>C) Remove all items first</span>
+                                    </label>
+                                    <label class="mc-option">
+                                        <input type="radio" asp-for="ExplanationAnswer" value="D" />
+                                        <span>D) Use comments instead of code</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
