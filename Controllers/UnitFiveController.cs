@@ -21,7 +21,7 @@ namespace DotNetCoreSqlDb.Controllers
                 vm,
                 actionType,
                 "Hint: think about what a list stores.",
-                "Solution: a list stores multiple related values in one variable.",
+                "Solution: Question 1 = B) Storing multiple related values in one variable. Question 2 = A) A list can hold many items together.",
                 IsListsQ1Correct,
                 IsListsQ2Correct,
                 "Correct! A list stores multiple related values in one variable.",
