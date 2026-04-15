@@ -19,108 +19,136 @@ namespace DotNetCoreSqlDb.Controllers
         [HttpGet]
         public IActionResult Lists()
         {
+            ViewBag.ActiveStep = 0;
             return View(new ListsViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Lists(ListsViewModel vm, string actionType)
+        public async Task<IActionResult> Lists(ListsViewModel vm, string actionType, int activeStep = 1)
         {
             Normalize(vm);
 
-            await HandleCommonActionsAsync(
+            await HandleTwoStepLessonAsync(
                 vm,
                 actionType,
+                activeStep,
                 "Lists",
-                "Hint: think about what a list stores.",
-                "Solution: Question 1 = B) Storing multiple related values in one variable. Question 2 = A) A list can hold many items together.",
-                IsListsQ1Correct,
-                IsListsQ2Correct,
-                "Correct! A list stores multiple related values in one variable.",
-                "Not quite yet. A list is used to keep several related values together.",
+                "list",
+                "Hint: a list stores several values together in one variable.",
+                "Solution: Fill in the blank = list",
+                "B",
+                "Hint: choose the option that says a list can store many related values together.",
+                "Solution: Question 2 = B) Storing multiple related values in one variable.",
+                "Correct! A list stores multiple values together.",
+                "Not quite yet. Think about what a list is used for.",
+                "Correct! A list is used for storing multiple related values in one variable.",
+                "Not quite yet. Pick the answer that describes storing many values together.",
                 "Lesson complete!");
 
+            ViewBag.ActiveStep = activeStep;
             return View(vm);
         }
 
         [HttpGet]
         public IActionResult Accessing()
         {
+            ViewBag.ActiveStep = 0;
             return View(new AccessingViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Accessing(AccessingViewModel vm, string actionType)
+        public async Task<IActionResult> Accessing(AccessingViewModel vm, string actionType, int activeStep = 1)
         {
             Normalize(vm);
 
-            await HandleCommonActionsAsync(
+            await HandleTwoStepLessonAsync(
                 vm,
                 actionType,
+                activeStep,
                 "Accessing",
-                "Hint: the first item in a list uses index 0.",
-                "Solution: Question 1 = C) scores[0]. Question 2 = B) Because list indexes start at 0.",
-                IsAccessingQ1Correct,
-                IsAccessingQ2Correct,
-                "Correct! The first item in a list is usually accessed with index 0.",
-                "Not quite yet. Remember that most lists start indexing at 0.",
+                "index",
+                "Hint: the position number of an item in a list is called an index.",
+                "Solution: Fill in the blank = index",
+                "C",
+                "Hint: most programming languages start counting positions at 0.",
+                "Solution: Question 2 = C) scores[0]",
+                "Correct! The position of an item in a list is called an index.",
+                "Not quite yet. Think about the word used for a list position.",
+                "Correct! The first item is usually accessed with index 0.",
+                "Not quite yet. Remember that the first position is usually 0.",
                 "Lesson complete!");
 
+            ViewBag.ActiveStep = activeStep;
             return View(vm);
         }
 
         [HttpGet]
         public IActionResult Looping()
         {
+            ViewBag.ActiveStep = 0;
             return View(new LoopingViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Looping(LoopingViewModel vm, string actionType)
+        public async Task<IActionResult> Looping(LoopingViewModel vm, string actionType, int activeStep = 1)
         {
             Normalize(vm);
 
-            await HandleCommonActionsAsync(
+            await HandleTwoStepLessonAsync(
                 vm,
                 actionType,
+                activeStep,
                 "Looping",
-                "Hint: think about what helps you repeat the same action for every item in a list.",
-                "Solution: Question 1 = A) A loop. Question 2 = B) They let you process each item without repeating the same code.",
-                IsLoopingQ1Correct,
-                IsLoopingQ2Correct,
-                "Correct! Loops are useful because they let you go through list items one by one.",
-                "Not quite yet. Think about what repeats code for each item in a list.",
+                "loop",
+                "Hint: the structure used to repeat code for every item is called a loop.",
+                "Solution: Fill in the blank = loop",
+                "A",
+                "Hint: choose the answer about repeating code for each item in the list.",
+                "Solution: Question 2 = A) They repeat an action for each item in the list.",
+                "Correct! A loop repeats code for each item.",
+                "Not quite yet. Think about the word for repeated code.",
+                "Correct! Loops help you repeat an action for each item in a list.",
+                "Not quite yet. Choose the answer about repeating actions for each item.",
                 "Lesson complete!");
 
+            ViewBag.ActiveStep = activeStep;
             return View(vm);
         }
 
         [HttpGet]
         public IActionResult Searching()
         {
+            ViewBag.ActiveStep = 0;
             return View(new SearchingViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Searching(SearchingViewModel vm, string actionType)
+        public async Task<IActionResult> Searching(SearchingViewModel vm, string actionType, int activeStep = 1)
         {
             Normalize(vm);
 
-            await HandleCommonActionsAsync(
+            await HandleTwoStepLessonAsync(
                 vm,
                 actionType,
+                activeStep,
                 "Searching",
-                "Hint: searching means checking items until you find the one you want.",
-                "Solution: Question 1 = C) Checking items to find a target value. Question 2 = A) Use a loop and compare each item with the target.",
-                IsSearchingQ1Correct,
-                IsSearchingQ2Correct,
-                "Correct! Searching a list means checking items to find a target value.",
-                "Not quite yet. Think about checking each item one by one until there is a match.",
+                "target",
+                "Hint: when searching, you are trying to find a target value.",
+                "Solution: Fill in the blank = target",
+                "A",
+                "Hint: searching usually means checking each item until you find a match.",
+                "Solution: Question 2 = A) Check each item until the target is found.",
+                "Correct! The value you are trying to find is called the target.",
+                "Not quite yet. Think about the word for the value you want to find.",
+                "Correct! Searching means checking items until the target is found.",
+                "Not quite yet. Choose the answer about checking each item one by one.",
                 "Lesson complete!");
 
+            ViewBag.ActiveStep = activeStep;
             return View(vm);
         }
 
@@ -135,23 +163,40 @@ namespace DotNetCoreSqlDb.Controllers
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? string.Empty;
         }
 
-        private async Task HandleCommonActionsAsync(
+        private async Task HandleTwoStepLessonAsync(
             dynamic vm,
             string actionType,
+            int activeStep,
             string actionName,
-            string hintMessage,
-            string solutionMessage,
-            Func<string, bool> firstQuestionChecker,
-            Func<string, bool> secondQuestionChecker,
-            string successMessage,
-            string retryMessage,
+            string fillBlankAnswer,
+            string step1Hint,
+            string step1Solution,
+            string step2CorrectOption,
+            string step2Hint,
+            string step2Solution,
+            string step1Success,
+            string step1Retry,
+            string step2Success,
+            string step2Retry,
             string completionMessage)
         {
+            bool step1CorrectNow = string.Equals(vm.UserAnswer, fillBlankAnswer, StringComparison.OrdinalIgnoreCase);
+            bool step2CorrectNow = string.Equals(vm.ExplanationAnswer, step2CorrectOption, StringComparison.OrdinalIgnoreCase);
+
             if (actionType == "hint")
             {
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
-                vm.FeedbackMessage = hintMessage;
+
+                if (activeStep == 2)
+                {
+                    vm.ExplanationFeedback = step2Hint;
+                }
+                else
+                {
+                    vm.FeedbackMessage = step1Hint;
+                }
+
                 return;
             }
 
@@ -159,36 +204,55 @@ namespace DotNetCoreSqlDb.Controllers
             {
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
-                vm.FeedbackMessage = solutionMessage;
-                return;
-            }
 
-            bool firstCorrect = firstQuestionChecker(vm.UserAnswer);
-            bool secondCorrect = secondQuestionChecker(vm.ExplanationAnswer);
-            bool allCorrect = firstCorrect && secondCorrect;
-
-            vm.IsCorrect = allCorrect;
-            vm.ExplanationCorrect = secondCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.ExplanationFeedback = secondCorrect ? "Correct!" : "Try the second question again.";
-
-            if (actionType == "submit")
-            {
-                if (allCorrect)
+                if (activeStep == 2)
                 {
-                    await SaveLessonProgressAsync(actionName);
-                    vm.FeedbackMessage = completionMessage;
+                    vm.ExplanationFeedback = step2Solution;
                 }
                 else
                 {
-                    vm.FeedbackMessage = "Please answer both multiple-choice questions correctly before marking the lesson complete.";
+                    vm.FeedbackMessage = step1Solution;
                 }
 
                 return;
             }
 
-            vm.FeedbackMessage = allCorrect ? successMessage : retryMessage;
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+
+            if (actionType == "checkStep1")
+            {
+                vm.IsCorrect = step1CorrectNow;
+                vm.FeedbackMessage = step1CorrectNow ? step1Success : step1Retry;
+                return;
+            }
+
+            if (actionType == "checkStep2")
+            {
+                vm.IsCorrect = step1CorrectNow || vm.IsCorrect == true;
+                vm.ExplanationCorrect = step2CorrectNow;
+                vm.ExplanationFeedback = step2CorrectNow ? step2Success : step2Retry;
+                return;
+            }
+
+            if (actionType == "submit")
+            {
+                bool finalStep1 = step1CorrectNow || vm.IsCorrect == true;
+                bool finalStep2 = step2CorrectNow || vm.ExplanationCorrect == true;
+
+                vm.IsCorrect = finalStep1;
+                vm.ExplanationCorrect = finalStep2;
+
+                if (finalStep1 && finalStep2)
+                {
+                    await SaveLessonProgressAsync(actionName);
+                    vm.ExplanationFeedback = completionMessage;
+                }
+                else
+                {
+                    vm.ExplanationFeedback = "Please complete both steps correctly before marking the lesson complete.";
+                }
+            }
         }
 
         private async Task<bool> SaveLessonProgressAsync(string actionName)
@@ -236,17 +300,5 @@ namespace DotNetCoreSqlDb.Controllers
             await _context.SaveChangesAsync();
             return true;
         }
-
-        private static bool IsListsQ1Correct(string answer) => answer == "B";
-        private static bool IsListsQ2Correct(string answer) => answer == "A";
-
-        private static bool IsAccessingQ1Correct(string answer) => answer == "C";
-        private static bool IsAccessingQ2Correct(string answer) => answer == "B";
-
-        private static bool IsLoopingQ1Correct(string answer) => answer == "A";
-        private static bool IsLoopingQ2Correct(string answer) => answer == "B";
-
-        private static bool IsSearchingQ1Correct(string answer) => answer == "C";
-        private static bool IsSearchingQ2Correct(string answer) => answer == "A";
     }
 }
