@@ -13,69 +13,90 @@ namespace DotNetCoreSqlDb.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Lists(ListsViewModel vm, string actionType)
+[ValidateAntiForgeryToken]
+public IActionResult Lists(ListsViewModel vm, string actionType)
+{
+    vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
+    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+
+    if (actionType == "hint")
+    {
+        vm.ShowHint = true;
+        vm.ShowSolution = false;
+        vm.IsCorrect = null;
+        vm.FeedbackMessage = "Hint: a list is used to store several related values together in one variable.";
+        return View(vm);
+    }
+
+    if (actionType == "solution")
+    {
+        vm.ShowHint = false;
+        vm.ShowSolution = true;
+        vm.IsCorrect = null;
+        vm.FeedbackMessage = "Solution: a list is used to store multiple values in one variable.";
+        return View(vm);
+    }
+
+    if (actionType == "checkExplanation")
+    {
+        vm.IsCorrect = true;
+
+        bool explanationCorrect =
+            vm.ExplanationAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("items", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("values", StringComparison.OrdinalIgnoreCase);
+
+        explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
+
+        vm.ExplanationCorrect = explanationCorrect;
+        vm.ExplanationFeedback = explanationCorrect
+            ? "Good explanation. Lists are useful because they store multiple values together."
+            : "Add a bit more detail about how lists help store multiple values in one place.";
+
+        return View(vm);
+    }
+
+    if (actionType == "submit")
+    {
+        vm.IsCorrect = true;
+
+        bool explanationCorrect =
+            vm.ExplanationAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("items", StringComparison.OrdinalIgnoreCase) ||
+            vm.ExplanationAnswer.Contains("values", StringComparison.OrdinalIgnoreCase);
+
+        explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
+
+        vm.ExplanationCorrect = explanationCorrect;
+        vm.ExplanationFeedback = explanationCorrect
+            ? "Good explanation. Lists are useful because they store multiple values together."
+            : "Add a bit more detail about how lists help store multiple values in one place.";
+
+        if (vm.ExplanationCorrect != true)
         {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
-
-            if (actionType == "hint")
-            {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: lists store multiple values in one variable.";
-                return View(vm);
-            }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
-                return View(vm);
-            }
-
-            if (actionType == "checkExplanation")
-            {
-                vm.IsCorrect = true;
-
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("items", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("values", StringComparison.OrdinalIgnoreCase);
-
-                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Good explanation. Lists are useful because they store multiple values together."
-                    : "Add a bit more detail about how lists help store multiple values in one place.";
-
-                return View(vm);
-            }
-
-            if (actionType == "submit")
-            {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
-            }
-
-            bool isCorrect = vm.UserAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Lists store multiple values."
-                : "Not quite. Think about what lists allow you to store.";
-
             return View(vm);
         }
+
+        vm.FeedbackMessage = "Lesson complete!";
+        return View(vm);
+    }
+
+    bool isCorrect =
+        vm.UserAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
+        vm.UserAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
+        vm.UserAnswer.Contains("several", StringComparison.OrdinalIgnoreCase);
+
+    vm.IsCorrect = isCorrect;
+    vm.ShowHint = false;
+    vm.ShowSolution = false;
+    vm.FeedbackMessage = isCorrect
+        ? "Correct! Lists store multiple values."
+        : "Not quite. Think about what lists allow you to store.";
+
+    return View(vm);
+}
 
         [HttpGet]
         public IActionResult Accessing()
