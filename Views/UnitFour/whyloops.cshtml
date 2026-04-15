@@ -417,7 +417,7 @@ Print numbers 1 to 100
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
                         }
                         else
                         {
@@ -429,8 +429,8 @@ Print numbers 1 to 100
         </form>
 
         <div class="nav-footer">
-            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back to Lessons</a>
-            <a asp-controller="UnitFour" asp-action="WhileLoops" class="btn-main">Next Lesson</a>
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Previous Lesson</a>
+            <a asp-controller="UnitFour" asp-action="Counters" class="btn-main">Next Lesson</a>
         </div>
     </div>
 </div>

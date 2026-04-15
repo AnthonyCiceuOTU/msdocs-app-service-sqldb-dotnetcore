@@ -122,29 +122,84 @@ END WHILE</div>
 
     <div class="step-card" id="step2">
         <div class="step-top">
-            <h3>Reflection</h3>
-            <div class="instruction-box">When would you use a WHILE loop instead of a FOR loop?</div>
-            <input asp-for="ExplanationAnswer" class="text-input" />
+            <h3>Practice More</h3>
+            <div class="instruction-box">Complete these questions about when WHILE loops are useful.</div>
 
-            @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+            @if (Model.ShowHint)
             {
-                <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                    @Model.ExplanationFeedback
+                <div class="alert-box alert-info-custom">
+                    Hint: a WHILE loop keeps going based on a condition, starts with the keyword <strong>WHILE</strong>, and stops when the condition becomes <strong>false</strong>.
                 </div>
             }
+
+            @if (Model.ShowSolution)
+            {
+                <div class="alert-box alert-info-custom">
+                    Solution: `condition`, `WHILE`, and `false`.
+                </div>
+            }
+
+            <div class="quiz-grid">
+                <div class="quiz-card">
+                    <div class="quiz-title">2. A WHILE loop is best when repetition depends on a...</div>
+                    <label><input type="radio" asp-for="UserAnswer2" value="condition" /> condition</label><br />
+                    <label><input type="radio" asp-for="UserAnswer2" value="color" /> color</label><br />
+                    <label><input type="radio" asp-for="UserAnswer2" value="filename" /> file name</label>
+
+                    @if (Model.IsQ2Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ2Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback2
+                        </div>
+                    }
+                </div>
+
+                <div class="quiz-card">
+                    <div class="quiz-title">3. Fill in the blank</div>
+                    <div class="code-block">___ score &lt; 100
+    score = score + 10
+END WHILE</div>
+                    <input asp-for="UserAnswer3" class="text-input" placeholder="Type the missing keyword" />
+
+                    @if (Model.IsQ3Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ3Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback3
+                        </div>
+                    }
+                </div>
+
+                <div class="quiz-card">
+                    <div class="quiz-title">4. A WHILE loop stops when its condition becomes...</div>
+                    <label><input type="radio" asp-for="UserAnswer4" value="true" /> true</label><br />
+                    <label><input type="radio" asp-for="UserAnswer4" value="false" /> false</label><br />
+                    <label><input type="radio" asp-for="UserAnswer4" value="bigger" /> bigger</label>
+
+                    @if (Model.IsQ4Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ4Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback4
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
 
         <div class="step-actions">
             <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
             <div class="step-progress">Step 2 of 2</div>
 
-            @if (Model.ExplanationCorrect == true)
+            @if (Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true)
             {
-                <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
             }
             else
             {
-                <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="submit" name="actionType" value="checkStep2" class="btn-main">Check</button>
+                    <button type="submit" name="actionType" value="hintStep2" class="btn-secondary">Hint</button>
+                    <button type="submit" name="actionType" value="solutionStep2" class="btn-secondary">Solution</button>
+                </div>
             }
         </div>
     </div>
@@ -152,8 +207,8 @@ END WHILE</div>
 </form>
 
 <div class="nav-footer">
-    <a asp-controller="UnitFour" asp-action="WhyLoops" class="btn-secondary">Previous Lesson</a>
-    <a asp-controller="UnitFour" asp-action="ForLoops" class="btn-main">Next Lesson</a>
+    <a asp-controller="UnitFour" asp-action="LoopErrors" class="btn-secondary">Previous Lesson</a>
+    <a asp-controller="Lessons" asp-action="Index" class="btn-main">Next Lesson</a>
 </div>
 </div>
 </div>
@@ -170,8 +225,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         let step = 0;
         const answered = '@(Model.IsQ1Correct?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
-        if (explanationDone === 'True') step = 2;
+        const stepTwoDone = '@((Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true).ToString())';
+        if (stepTwoDone === 'True') step = 2;
+        else if ('@(Model.IsQ2Correct?.ToString() ?? "")' || '@(Model.IsQ3Correct?.ToString() ?? "")' || '@(Model.IsQ4Correct?.ToString() ?? "")') step = 2;
         else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) step = 1;
         showStep(step);
     }

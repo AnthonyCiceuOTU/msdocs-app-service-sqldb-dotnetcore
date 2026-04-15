@@ -119,29 +119,65 @@
 
     <div class="step-card" id="step2">
         <div class="step-top">
-            <h3>Reflection</h3>
-            <div class="instruction-box">Why are loop errors dangerous in programs?</div>
-            <input asp-for="ExplanationAnswer" class="text-input" />
+            <h3>Practice More</h3>
+            <div class="instruction-box">Use these questions to check that you can spot common loop mistakes.</div>
 
-            @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-            {
-                <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                    @Model.ExplanationFeedback
+            <div class="quiz-grid">
+                <div class="quiz-card">
+                    <div class="quiz-title">2. What is the name of the error when a loop runs one extra or one fewer time?</div>
+                    <label><input type="radio" asp-for="UserAnswer2" value="infinite" /> infinite loop</label><br />
+                    <label><input type="radio" asp-for="UserAnswer2" value="off-by-one" /> off-by-one</label><br />
+                    <label><input type="radio" asp-for="UserAnswer2" value="comment" /> comment error</label>
+
+                    @if (Model.IsQ2Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ2Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback2
+                        </div>
+                    }
                 </div>
-            }
+
+                <div class="quiz-card">
+                    <div class="quiz-title">3. What happens in an infinite loop?</div>
+                    <label><input type="radio" asp-for="UserAnswer3" value="runs once" /> It runs once</label><br />
+                    <label><input type="radio" asp-for="UserAnswer3" value="runs forever" /> It runs forever</label><br />
+                    <label><input type="radio" asp-for="UserAnswer3" value="deletes code" /> It deletes code</label>
+
+                    @if (Model.IsQ3Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ3Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback3
+                        </div>
+                    }
+                </div>
+
+                <div class="quiz-card">
+                    <div class="quiz-title">4. What does an off-by-one error mean?</div>
+                    <label><input type="radio" asp-for="UserAnswer4" value="one too many or one too few" /> The loop runs one too many or one too few times</label><br />
+                    <label><input type="radio" asp-for="UserAnswer4" value="condition is colorful" /> The condition changes color</label><br />
+                    <label><input type="radio" asp-for="UserAnswer4" value="loop disappears" /> The loop disappears</label>
+
+                    @if (Model.IsQ4Correct != null)
+                    {
+                        <div class="alert-box @(Model.IsQ4Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                            @Model.Feedback4
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
 
         <div class="step-actions">
             <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
             <div class="step-progress">Step 2 of 2</div>
 
-            @if (Model.ExplanationCorrect == true)
+            @if (Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true)
             {
-                <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
             }
             else
             {
-                <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                <button type="submit" name="actionType" value="checkStep2" class="btn-main">Check</button>
             }
         </div>
     </div>
@@ -149,8 +185,8 @@
 </form>
 
 <div class="nav-footer">
-    <a asp-controller="UnitFour" asp-action="Counters" class="btn-secondary">Previous Lesson</a>
-    <a asp-controller="Lessons" asp-action="Index" class="btn-main">Back to Lessons</a>
+    <a asp-controller="UnitFour" asp-action="ForLoops" class="btn-secondary">Previous Lesson</a>
+    <a asp-controller="UnitFour" asp-action="WhileLoops" class="btn-main">Next Lesson</a>
 </div>
 </div>
 </div>
@@ -167,8 +203,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         let step = 0;
         const answered = '@(Model.IsQ1Correct?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
-        if (explanationDone === 'True') step = 2;
+        const stepTwoDone = '@((Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true).ToString())';
+        if (stepTwoDone === 'True') step = 2;
+        else if ('@(Model.IsQ2Correct?.ToString() ?? "")' || '@(Model.IsQ3Correct?.ToString() ?? "")' || '@(Model.IsQ4Correct?.ToString() ?? "")') step = 2;
         else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) step = 1;
         showStep(step);
     }

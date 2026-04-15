@@ -577,7 +577,7 @@ END FOR</div>
                                     class="btn-main"
                                     id="submitLessonButton"
                                     style="@(Model.ExplanationCorrect == true ? "" : "display:none;")">
-                                Submit Lesson
+                                Mark as Complete
                             </button>
                         </div>
                     </div>
@@ -586,8 +586,8 @@ END FOR</div>
         </form>
 
         <div class="nav-footer">
-            <a asp-controller="UnitFour" asp-action="ForLoops" class="btn-secondary">Back to Previous Lesson</a>
-            <a asp-controller="Lessons" asp-action="Index" class="btn-main">Back to Lessons</a>
+            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Previous Lesson</a>
+            <a asp-controller="UnitFour" asp-action="ForLoops" class="btn-main">Next Lesson</a>
         </div>
     </div>
 </div>

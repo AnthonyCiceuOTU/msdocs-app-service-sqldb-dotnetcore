@@ -12,6 +12,14 @@ namespace DotNetCoreSqlDb.Controllers
     public class LessonsController : Controller
     {
         private readonly MyDatabaseContext _context;
+        private static readonly Dictionary<string, int> UnitFourLessonOrder = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Counters"] = 1,
+            ["ForLoops"] = 2,
+            ["LoopErrors"] = 3,
+            ["WhileLoops"] = 4,
+            ["WhyLoops"] = 5
+        };
 
         public LessonsController(MyDatabaseContext context)
         {
@@ -48,7 +56,7 @@ namespace DotNetCoreSqlDb.Controllers
             var allLessonsOrdered = units
                 .OrderBy(u => u.SortOrder)
                 .ThenBy(u => u.Id)
-                .SelectMany(u => u.Lessons.OrderBy(l => l.SortOrder).ThenBy(l => l.Id))
+                .SelectMany(u => u.Lessons.OrderBy(GetEffectiveLessonSortOrder).ThenBy(l => l.Id))
                 .ToList();
 
             Lesson? currentLesson = null;
@@ -92,13 +100,13 @@ namespace DotNetCoreSqlDb.Controllers
                     Description = u.Description,
                     SortOrder = u.SortOrder,
                     Lessons = u.Lessons
-                        .OrderBy(l => l.SortOrder)
+                        .OrderBy(GetEffectiveLessonSortOrder)
                         .ThenBy(l => l.Id)
                         .Select(l => new LessonLinkViewModel
                         {
                             LessonId = l.Id,
                             Title = l.Title,
-                            SortOrder = l.SortOrder,
+                            SortOrder = GetEffectiveLessonSortOrder(l),
                             IsCompleted = !isGuest && progressList.Any(p => p.LessonId == l.Id && p.IsCompleted),
                             IsCurrent = currentLesson != null && l.Id == currentLesson.Id
                         })
@@ -137,10 +145,14 @@ namespace DotNetCoreSqlDb.Controllers
             }
 
             var lessons = await lessonsQuery
-                .OrderBy(l => l.Unit.SortOrder)
-                .ThenBy(l => l.SortOrder)
-                .ThenBy(l => l.Id)
+                .Include(l => l.Unit)
                 .ToListAsync();
+
+            lessons = lessons
+                .OrderBy(l => l.Unit.SortOrder)
+                .ThenBy(GetEffectiveLessonSortOrder)
+                .ThenBy(l => l.Id)
+                .ToList();
 
             if (!lessons.Any())
                 return RedirectToAction(nameof(Index));
@@ -293,10 +305,13 @@ namespace DotNetCoreSqlDb.Controllers
             }
 
             var lessons = await lessonsQuery
-                .OrderBy(l => l.Unit.SortOrder)
-                .ThenBy(l => l.SortOrder)
-                .ThenBy(l => l.Id)
                 .ToListAsync();
+
+            lessons = lessons
+                .OrderBy(l => l.Unit.SortOrder)
+                .ThenBy(GetEffectiveLessonSortOrder)
+                .ThenBy(l => l.Id)
+                .ToList();
 
             if (!lessons.Any())
                 return null;
@@ -346,10 +361,13 @@ namespace DotNetCoreSqlDb.Controllers
             }
 
             var lessons = await lessonsQuery
-                .OrderBy(l => l.Unit.SortOrder)
-                .ThenBy(l => l.SortOrder)
-                .ThenBy(l => l.Id)
                 .ToListAsync();
+
+            lessons = lessons
+                .OrderBy(l => l.Unit.SortOrder)
+                .ThenBy(GetEffectiveLessonSortOrder)
+                .ThenBy(l => l.Id)
+                .ToList();
 
             var currentIndex = lessons.FindIndex(l => l.Id == currentLessonId);
             if (currentIndex >= 0 && currentIndex < lessons.Count - 1)
@@ -373,10 +391,13 @@ namespace DotNetCoreSqlDb.Controllers
             }
 
             var lessons = await lessonsQuery
-                .OrderBy(l => l.Unit.SortOrder)
-                .ThenBy(l => l.SortOrder)
-                .ThenBy(l => l.Id)
                 .ToListAsync();
+
+            lessons = lessons
+                .OrderBy(l => l.Unit.SortOrder)
+                .ThenBy(GetEffectiveLessonSortOrder)
+                .ThenBy(l => l.Id)
+                .ToList();
 
             var currentIndex = lessons.FindIndex(l => l.Id == currentLessonId);
             if (currentIndex > 0)
@@ -393,6 +414,16 @@ namespace DotNetCoreSqlDb.Controllers
         private bool CanGuestAccessLesson(Lesson lesson)
         {
             return lesson.UnitId == 1;
+        }
+
+        private static int GetEffectiveLessonSortOrder(Lesson lesson)
+        {
+            if (lesson.UnitId == 4 && UnitFourLessonOrder.TryGetValue(lesson.ActionName, out var order))
+            {
+                return order;
+            }
+
+            return lesson.SortOrder;
         }
     }
 }

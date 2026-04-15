@@ -373,33 +373,72 @@ END FOR
 
                 <div class="step-card" id="step2">
                     <div class="step-top">
-                        <h3>Reflection</h3>
+                        <h3>Practice More</h3>
 
                         <div class="instruction-box">
-                            When would you use a FOR loop?
+                            Answer these auto-graded questions about when and how FOR loops work.
                         </div>
 
-                        <input asp-for="ExplanationAnswer" class="text-input" />
+                        <div class="quiz-grid">
+                            <div class="quiz-card">
+                                <div class="quiz-title">2. When should you use a FOR loop?</div>
+                                <label><input type="radio" asp-for="UserAnswer2" value="known" /> When the number of repetitions is known</label><br />
+                                <label><input type="radio" asp-for="UserAnswer2" value="unknown" /> When the loop should run forever</label><br />
+                                <label><input type="radio" asp-for="UserAnswer2" value="random" /> When the count changes randomly</label>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-                        {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
+                                @if (Model.IsQ2Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ2Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback2
+                                    </div>
+                                }
                             </div>
-                        }
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">3. Fill in the blank</div>
+                                <div class="code-block">___ i = 1 TO 5
+    PRINT i
+END FOR</div>
+                                <input asp-for="UserAnswer3" class="text-input" placeholder="Type the missing keyword" />
+
+                                @if (Model.IsQ3Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ3Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback3
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">4. How many times will this loop run?</div>
+                                <div class="code-block">FOR i = 1 TO 5
+    PRINT i
+END FOR</div>
+                                <label><input type="radio" asp-for="UserAnswer4" value="4" /> 4</label><br />
+                                <label><input type="radio" asp-for="UserAnswer4" value="5" /> 5</label><br />
+                                <label><input type="radio" asp-for="UserAnswer4" value="6" /> 6</label>
+
+                                @if (Model.IsQ4Correct != null)
+                                {
+                                    <div class="alert-box @(Model.IsQ4Correct == true ? "alert-success-custom" : "alert-danger-custom")">
+                                        @Model.Feedback4
+                                    </div>
+                                }
+                            </div>
+                        </div>
                     </div>
 
                     <div class="step-actions">
                         <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
                         <div class="step-progress">Step 2 of 2</div>
 
-                        @if (Model.ExplanationCorrect == true)
+                        @if (Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark as Complete</button>
                         }
                         else
                         {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                            <button type="submit" name="actionType" value="checkStep2" class="btn-main">Check</button>
                         }
                     </div>
                 </div>
@@ -407,8 +446,8 @@ END FOR
         </form>
 
         <div class="nav-footer">
-            <a asp-controller="UnitFour" asp-action="WhileLoops" class="btn-secondary">Previous Lesson</a>
-            <a asp-controller="UnitFour" asp-action="Counters" class="btn-main">Next Lesson</a>
+            <a asp-controller="UnitFour" asp-action="Counters" class="btn-secondary">Previous Lesson</a>
+            <a asp-controller="UnitFour" asp-action="LoopErrors" class="btn-main">Next Lesson</a>
         </div>
     </div>
 </div>
@@ -427,9 +466,10 @@ END FOR
         } else {
             let step = 0;
             const answered = '@(Model.IsQ1Correct?.ToString() ?? "")';
-            const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+            const stepTwoDone = '@((Model.IsQ2Correct == true && Model.IsQ3Correct == true && Model.IsQ4Correct == true).ToString())';
 
-            if (explanationDone === 'True') step = 2;
+            if (stepTwoDone === 'True') step = 2;
+            else if ('@(Model.IsQ2Correct?.ToString() ?? "")' || '@(Model.IsQ3Correct?.ToString() ?? "")' || '@(Model.IsQ4Correct?.ToString() ?? "")') step = 2;
             else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) step = 1;
 
             showStep(step);
