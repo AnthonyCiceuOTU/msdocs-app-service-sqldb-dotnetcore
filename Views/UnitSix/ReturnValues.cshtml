@@ -393,13 +393,13 @@
                             sends the value back.
                         </p>
 
-                        <div class="code-block">static int Add(int a, int b)
-{
-    return a + b;
-}
+                        <div class="code-block">
+                            FUNCTION Add(a, b)
+    RETURN a + b
+END FUNCTION
 
-int result = Add(3, 5);
-Console.WriteLine(result); // prints 8</div>
+SET result TO Add(3, 5)
+OUTPUT result</div>
 
                         <div class="instruction-box">
                             In this lesson, you will identify return types, trace return values, and learn the

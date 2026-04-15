@@ -392,13 +392,12 @@
                             They make methods flexible so the same method can work with different data each time it is called.
                         </p>
 
-                        <div class="code-block">static void Greet(string name)
-{
-    Console.WriteLine("Hello, " + name + "!");
-}
+                        <div class="code-block">FUNCTION Greet(name)
+    OUTPUT "Hello, " + name + "!"
+END FUNCTION
 
-Greet("Alice");
-Greet("Bob");</div>
+CALL Greet("Alice")
+CALL Greet("Bob")</div>
 
                         <div class="instruction-box">
                             In this lesson, you will identify parameters and trace how arguments replace them when a method is called.
