@@ -5,7 +5,8 @@
 }
 
 <style>
-    html, body {
+    html,
+    body {
         margin: 0;
         padding: 0;
         width: 100%;
@@ -105,14 +106,20 @@
         justify-content: space-between;
     }
 
-    .step-top h2, .step-top h3 {
+    .step-top h2,
+    .step-top h3 {
         margin: 0 0 8px 0;
         color: #ffffff;
         line-height: 1.15;
     }
 
-    .step-top h2 { font-size: 1.65rem; }
-    .step-top h3 { font-size: 1.3rem; }
+    .step-top h2 {
+        font-size: 1.65rem;
+    }
+
+    .step-top h3 {
+        font-size: 1.3rem;
+    }
 
     .step-top p {
         margin: 0 0 10px 0;
@@ -121,7 +128,7 @@
         font-size: 0.95rem;
     }
 
-    .instruction-box, .code-block {
+    .instruction-box {
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(148, 163, 184, 0.12);
         border-radius: 14px;
@@ -130,7 +137,19 @@
         line-height: 1.5;
         font-size: 0.94rem;
         margin-bottom: 10px;
+    }
+
+    .code-block {
+        background: rgba(2, 6, 23, 0.88);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        color: #e2e8f0;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-family: Consolas, Monaco, monospace;
         white-space: pre-wrap;
+        line-height: 1.45;
+        font-size: 0.92rem;
+        margin-bottom: 10px;
     }
 
     .quiz-grid {
@@ -154,6 +173,33 @@
         font-size: 0.95rem;
     }
 
+    .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .concept-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+    .concept-card h4 {
+        margin: 0 0 6px 0;
+        color: #ffffff;
+        font-size: 0.95rem;
+    }
+
+    .concept-card p {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.88rem;
+        line-height: 1.45;
+    }
+
     .text-input {
         width: 100%;
         box-sizing: border-box;
@@ -166,7 +212,13 @@
         font-size: 0.92rem;
     }
 
-    .btn-main, .btn-secondary {
+    .text-input:focus {
+        border-color: rgba(34, 197, 94, 0.5);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    .btn-main,
+    .btn-secondary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -189,7 +241,8 @@
         color: #e5e7eb;
     }
 
-    .btn-main:hover, .btn-secondary:hover {
+    .btn-main:hover,
+    .btn-secondary:hover {
         transform: translateY(-1px);
         box-shadow: 0 8px 20px rgba(0,0,0,0.25);
         color: #ffffff;
@@ -244,8 +297,27 @@
     }
 
     @@media (max-width: 900px) {
-        .step-card { padding: 16px; overflow-y: auto; }
-        .quiz-grid { grid-template-columns: 1fr; }
+        .brand-text h1 {
+            font-size: 1.7rem;
+        }
+
+        .step-top h2 {
+            font-size: 1.4rem;
+        }
+
+        .step-top h3 {
+            font-size: 1.15rem;
+        }
+
+        .step-card {
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .quiz-grid,
+        .concept-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
@@ -253,9 +325,9 @@
     <div class="lesson-shell">
         <div class="topbar">
             <div class="brand">
-                <div class="brand-icon">#</div>
+                <div class="brand-icon">[]</div>
                 <div class="brand-text">
-                    <h1>CodeQuest</h1>
+                    <h1>Code Quest</h1>
                     <p>Unit 5 · Lists</p>
                 </div>
             </div>
@@ -263,19 +335,41 @@
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="Lists" asp-controller="UnitFive" method="post">
+        <form asp-action="Lists" asp-controller="UnitFive" method="post" id="lessonForm">
             @Html.AntiForgeryToken()
 
             <div class="panel step-panel">
+
                 <div class="step-card active" id="step0">
                     <div class="step-top">
-                        <h2>Lists</h2>
-                        <p>Lists let programs store multiple values together in one place.</p>
+                        <h2>Lists / Arrays</h2>
 
-                        <div class="code-block">scores = [85, 90, 78, 92]</div>
+                        <p>
+                            Lists store multiple values in a single variable.
+                        </p>
+
+                        <div class="code-block">
+scores ← [80, 75, 90]
+fruits ← ["apple", "mango", "banana"]
+                        </div>
 
                         <div class="instruction-box">
-                            In this lesson, you will explain what a list is and why lists are useful in programming.
+                            Lists help keep related data together so it is easier to organize and use in a program.
+                        </div>
+
+                        <div class="concept-grid">
+                            <div class="concept-card">
+                                <h4>Multiple Values</h4>
+                                <p>A list stores many values in one variable.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>Indexing</h4>
+                                <p>Each item has a position called an index.</p>
+                            </div>
+                            <div class="concept-card">
+                                <h4>Organization</h4>
+                                <p>Lists help organize and manage related data.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -287,7 +381,7 @@
 
                 <div class="step-card" id="step1">
                     <div class="step-top">
-                        <h3>Assignment · What is a list?</h3>
+                        <h3>Practice</h3>
 
                         <div class="instruction-box">
                             What is a list used for in programming?
@@ -301,14 +395,14 @@
                                 @if (Model.ShowHint)
                                 {
                                     <div class="alert-box alert-info-custom">
-                                        Hint: a list stores several values together.
+                                        @Model.FeedbackMessage
                                     </div>
                                 }
 
                                 @if (Model.ShowSolution)
                                 {
                                     <div class="alert-box alert-info-custom">
-                                        Solution: a list stores multiple values in one variable.
+                                        @Model.FeedbackMessage
                                     </div>
                                 }
 
@@ -322,7 +416,7 @@
 
                             <div class="quiz-card">
                                 <div class="quiz-title">What to remember</div>
-                                <p>Lists are useful when you want one variable to hold many related items.</p>
+                                <p>Lists let you store several related values together in one variable.</p>
                             </div>
                         </div>
                     </div>
@@ -349,11 +443,12 @@
                 <div class="step-card" id="step2">
                     <div class="step-top">
                         <h3>Reflection</h3>
+
                         <div class="instruction-box">
                             Explain why lists are useful in programming.
                         </div>
 
-                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: Lists are useful because they store multiple values together." />
+                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Type your explanation..." />
 
                         @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
                         {
@@ -369,7 +464,7 @@
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark As Complete</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark As Completed</button>
                         }
                         else
                         {
@@ -377,6 +472,7 @@
                         }
                     </div>
                 </div>
+
             </div>
         </form>
 
