@@ -397,8 +397,8 @@
 END IF</div>
 
                         <div class="instruction-box">
-                            In this lesson, you will first practice how IF statements work, then explain
-                            why they are useful in programs.
+                            In this lesson, you will first practice how IF statements work, then complete
+                            a concept check about why they are useful.
                         </div>
 
                         <div class="concept-grid">
@@ -538,23 +538,46 @@ END IF</div>
 
                 <div class="step-card" id="step2">
                     <div class="step-top">
-                        <h3>Second assignment · Explain IF statements</h3>
+                        <h3>Second assignment · Concept Check</h3>
 
                         <div class="instruction-box">
-                            In one short sentence, explain why IF statements are useful in programming.
+                            Why are IF statements useful in programming?
                         </div>
 
                         <div class="mc-grid">
                             <div class="mc-card">
-                                <div class="mc-header">Your explanation</div>
-                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="For now, type: conditiontrueruncodefalseskip" />
+                                <label class="radio-option">
+                                    <input type="radio" asp-for="ConceptAnswer" value="A" />
+                                    <span>They repeat code many times</span>
+                                </label>
+                            </div>
+
+                            <div class="mc-card">
+                                <label class="radio-option">
+                                    <input type="radio" asp-for="ConceptAnswer" value="B" />
+                                    <span>They store data in variables</span>
+                                </label>
+                            </div>
+
+                            <div class="mc-card">
+                                <label class="radio-option">
+                                    <input type="radio" asp-for="ConceptAnswer" value="C" />
+                                    <span>They allow programs to make decisions based on conditions</span>
+                                </label>
+                            </div>
+
+                            <div class="mc-card">
+                                <label class="radio-option">
+                                    <input type="radio" asp-for="ConceptAnswer" value="D" />
+                                    <span>They only display text</span>
+                                </label>
                             </div>
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
+                        @if (!string.IsNullOrWhiteSpace(Model.ConceptFeedback))
                         {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
+                            <div class="alert-box @(Model.IsConceptCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
+                                @Model.ConceptFeedback
                             </div>
                         }
                     </div>
@@ -563,13 +586,13 @@ END IF</div>
                         <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
                         <div class="step-progress">Step 2 of 2</div>
 
-                        @if (Model.ExplanationCorrect == true)
+                        @if (Model.IsConceptCorrect == true)
                         {
                             <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
                         }
                         else
                         {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                            <button type="submit" name="actionType" value="checkConcept" class="btn-main">Check</button>
                         }
                     </div>
                 </div>
@@ -602,9 +625,9 @@ END IF</div>
         const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
         const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
         const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+        const conceptDone = '@(Model.IsConceptCorrect?.ToString() ?? "")';
 
-        if (explanationDone === 'True') {
+        if (conceptDone === 'True') {
             stepToShow = 2;
         } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
             stepToShow = 1;

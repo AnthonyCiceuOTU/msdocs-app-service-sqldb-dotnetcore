@@ -293,6 +293,14 @@
         color: #ffffff;
     }
 
+    .btn-main:disabled,
+    .btn-secondary:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
     .step-actions {
         display: flex;
         justify-content: space-between;
@@ -331,6 +339,39 @@
         background: rgba(59, 130, 246, 0.12);
         color: #bfdbfe;
         border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .loading-box {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        font-size: 0.92rem;
+    }
+
+    .loading-box.active {
+        display: inline-flex;
+    }
+
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 3px solid rgba(191, 219, 254, 0.25);
+        border-top-color: #bfdbfe;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        flex: 0 0 auto;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .nav-footer {
@@ -382,6 +423,8 @@
 
         <form asp-action="BooleanLogic" asp-controller="UnitThree" method="post" id="lessonForm">
             @Html.AntiForgeryToken()
+            <input asp-for="ExplanationCorrect" type="hidden" id="ExplanationCorrectHidden" />
+            <input asp-for="ExplanationFeedback" type="hidden" id="ExplanationFeedbackHidden" />
 
             <div class="panel step-panel">
                 <div class="step-card active" id="step0">
@@ -549,30 +592,55 @@ x != 5</div>
                         <div class="mc-grid">
                             <div class="mc-card">
                                 <div class="mc-header">Your explanation</div>
-                                <input asp-for="ExplanationAnswer" class="text-input" placeholder="For now, type: truefalsecomparedecision" />
+                                <input asp-for="ExplanationAnswer"
+                                       id="ExplanationAnswer"
+                                       class="text-input"
+                                       placeholder="Explain why Boolean logic is useful." />
+                            </div>
+
+                            <div class="mc-card">
+                                <div class="mc-header">AI feedback</div>
+                                <textarea id="aiFeedbackDisplay"
+                                          class="text-input"
+                                          rows="4"
+                                          readonly
+                                          placeholder="AI feedback will appear here...">@Model.ExplanationFeedback</textarea>
                             </div>
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-                        {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
-                            </div>
-                        }
+                        <div id="aiLoadingBox" class="loading-box">
+                            <div class="spinner"></div>
+                            <span>Checking with AI...</span>
+                        </div>
+
+                        <div id="aiFeedbackAlert"
+                             class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")"
+                             style="@(string.IsNullOrWhiteSpace(Model.ExplanationFeedback) ? "display:none;" : "")">
+                            @Model.ExplanationFeedback
+                        </div>
                     </div>
 
                     <div class="step-actions">
-                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <button type="button" class="btn-secondary" onclick="showStep(1)" id="backToStep1Button">Back</button>
                         <div class="step-progress">Step 2 of 2</div>
 
-                        @if (Model.ExplanationCorrect == true)
-                        {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
-                        }
-                        else
-                        {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
-                        }
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button type="button"
+                                    class="btn-main"
+                                    id="checkExplanationButton"
+                                    @(Model.ExplanationCorrect == true ? "disabled" : "")>
+                                @(Model.ExplanationCorrect == true ? "Checked" : "Check with AI")
+                            </button>
+
+                            <button type="submit"
+                                    name="actionType"
+                                    value="submit"
+                                    class="btn-main"
+                                    id="submitLessonButton"
+                                    style="@(Model.ExplanationCorrect == true ? "" : "display:none;")">
+                                Submit Lesson
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -597,6 +665,74 @@ x != 5</div>
         }
     }
 
+    function setStepTwoLoadingState(isLoading) {
+        const loadingBox = document.getElementById('aiLoadingBox');
+        const checkButton = document.getElementById('checkExplanationButton');
+        const backButton = document.getElementById('backToStep1Button');
+        const explanationInput = document.getElementById('ExplanationAnswer');
+
+        if (loadingBox) {
+            loadingBox.classList.toggle('active', isLoading);
+        }
+
+        if (checkButton) {
+            checkButton.disabled = isLoading;
+            checkButton.textContent = isLoading ? 'Checking...' : (checkButton.dataset.checked === 'true' ? 'Checked' : 'Check with AI');
+        }
+
+        if (backButton) {
+            backButton.disabled = isLoading;
+        }
+
+        if (explanationInput) {
+            explanationInput.readOnly = isLoading;
+        }
+    }
+
+    function setAiResult(isCorrect, feedback) {
+        const feedbackDisplay = document.getElementById('aiFeedbackDisplay');
+        const feedbackAlert = document.getElementById('aiFeedbackAlert');
+        const submitLessonButton = document.getElementById('submitLessonButton');
+        const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+        const explanationFeedbackHidden = document.getElementById('ExplanationFeedbackHidden');
+        const checkButton = document.getElementById('checkExplanationButton');
+
+        if (feedbackDisplay) {
+            feedbackDisplay.value = feedback || '';
+        }
+
+        if (feedbackAlert) {
+            feedbackAlert.style.display = 'block';
+            feedbackAlert.textContent = feedback || '';
+            feedbackAlert.classList.remove('alert-success-custom', 'alert-danger-custom');
+            feedbackAlert.classList.add(isCorrect ? 'alert-success-custom' : 'alert-danger-custom');
+        }
+
+        if (explanationCorrectHidden) {
+            explanationCorrectHidden.value = isCorrect ? 'true' : 'false';
+        }
+
+        if (explanationFeedbackHidden) {
+            explanationFeedbackHidden.value = feedback || '';
+        }
+
+        if (submitLessonButton) {
+            submitLessonButton.style.display = isCorrect ? '' : 'none';
+        }
+
+        if (checkButton) {
+            if (isCorrect) {
+                checkButton.disabled = true;
+                checkButton.textContent = 'Checked';
+                checkButton.dataset.checked = 'true';
+            } else {
+                checkButton.disabled = false;
+                checkButton.textContent = 'Check with AI';
+                checkButton.dataset.checked = 'false';
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         let stepToShow = 0;
 
@@ -604,14 +740,60 @@ x != 5</div>
         const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
         const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
         const q4 = '@(Model.IsQ4Correct?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+        const explanationDone = '@(Model.ExplanationCorrect == true ? "true" : "false")';
 
-        if (explanationDone === 'True') {
+        if (explanationDone === 'true') {
             stepToShow = 2;
         } else if (q1 || q2 || q3 || q4 || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
             stepToShow = 1;
         }
 
         showStep(stepToShow);
+
+        const checkButton = document.getElementById('checkExplanationButton');
+        if (checkButton && explanationDone === 'true') {
+            checkButton.dataset.checked = 'true';
+            checkButton.disabled = true;
+            checkButton.textContent = 'Checked';
+        }
+
+        const checkExplanationButton = document.getElementById('checkExplanationButton');
+
+        if (checkExplanationButton) {
+            checkExplanationButton.addEventListener('click', async function () {
+                if (checkExplanationButton.dataset.checked === 'true') {
+                    return;
+                }
+
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                const explanationAnswer = document.getElementById('ExplanationAnswer')?.value ?? '';
+
+                setStepTwoLoadingState(true);
+
+                try {
+                    const formData = new FormData();
+                    formData.append('__RequestVerificationToken', tokenInput ? tokenInput.value : '');
+                    formData.append('explanationAnswer', explanationAnswer);
+
+                    const response = await fetch('@Url.Action("CheckBooleanLogicExplanation", "UnitThree")', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        setAiResult(false, data.feedback || 'We could not check your explanation right now.');
+                        return;
+                    }
+
+                    setAiResult(data.isCorrect, data.feedback);
+                } catch (error) {
+                    setAiResult(false, 'We could not check your explanation right now. Please try again.');
+                } finally {
+                    setStepTwoLoadingState(false);
+                }
+            });
+        }
     });
 </script>

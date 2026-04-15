@@ -43,6 +43,7 @@ namespace DotNetCoreSqlDb.Controllers
             vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
             vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ExplanationFeedback = vm.ExplanationFeedback?.Trim() ?? "";
 
             if (actionType == "hint")
             {
@@ -58,28 +59,17 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation")
-            {
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase) &&
-                    vm.ExplanationAnswer.Contains("false", StringComparison.OrdinalIgnoreCase) &&
-                    (vm.ExplanationAnswer.Contains("compare", StringComparison.OrdinalIgnoreCase)
-                     || vm.ExplanationAnswer.Contains("comparison", StringComparison.OrdinalIgnoreCase)) &&
-                    (vm.ExplanationAnswer.Contains("decision", StringComparison.OrdinalIgnoreCase)
-                     || vm.ExplanationAnswer.Contains("decide", StringComparison.OrdinalIgnoreCase));
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Correct! Boolean logic helps programs compare values and make decisions."
-                    : "Try mentioning true/false, comparing values, and decision making.";
-
-                return View(vm);
-            }
-
             if (actionType == "submit")
             {
+                if (vm.ExplanationCorrect != true)
+                {
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation with AI before submitting."
+                        : vm.ExplanationFeedback;
+                    return View(vm);
+                }
+
                 var saved = await SaveLessonProgressAsync("BooleanLogic");
-                vm.ExplanationCorrect = true;
                 vm.ExplanationFeedback = saved
                     ? "Lesson complete! Your progress has been saved."
                     : "Your answers were submitted, but progress could not be saved.";
@@ -112,6 +102,72 @@ namespace DotNetCoreSqlDb.Controllers
             return View(vm);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckBooleanLogicExplanation([FromForm] string explanationAnswer)
+        {
+            explanationAnswer = explanationAnswer?.Trim() ?? "";
+
+            _logger.LogInformation("CheckBooleanLogicExplanation called. Explanation: {Explanation}", explanationAnswer);
+
+            if (string.IsNullOrWhiteSpace(explanationAnswer))
+            {
+                return BadRequest(new
+                {
+                    isCorrect = false,
+                    feedback = "Please enter an explanation first."
+                });
+            }
+
+            try
+            {
+                var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                {
+                    QuestionText = "Explain why Boolean logic is useful in programming.",
+                    StudentAnswer = explanationAnswer,
+                    ExpectedAnswer = "Boolean logic is useful because it lets programs compare values and make decisions based on true or false results.",
+                    GradingRubric = """
+                    To be correct, the answer should clearly show that:
+
+                    1. Boolean logic works with true and false results.
+                    2. It helps compare values or conditions.
+                    3. It helps a program make decisions.
+
+                    Accept simple student wording such as:
+                    - it tells if something is true or false
+                    - it compares things
+                    - it helps the program decide what to do
+                    - it lets code make decisions based on conditions
+
+                    Do not require advanced vocabulary.
+                    Minor spelling or grammar mistakes are okay.
+                    Reject answers that are too vague or do not mention true/false ideas and decision making.
+                    """
+                });
+
+                _logger.LogInformation(
+                    "CheckBooleanLogicExplanation result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                    result.IsCorrect,
+                    result.Score,
+                    result.Feedback);
+
+                return Json(new
+                {
+                    isCorrect = result.IsCorrect,
+                    feedback = result.Feedback
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking BooleanLogic explanation.");
+                return StatusCode(500, new
+                {
+                    isCorrect = false,
+                    feedback = "We could not check your explanation right now. Please try again."
+                });
+            }
+        }
+
         [HttpGet]
         public IActionResult IfStatements()
         {
@@ -126,7 +182,7 @@ namespace DotNetCoreSqlDb.Controllers
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
             vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
             vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
-            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ConceptAnswer = vm.ConceptAnswer?.Trim() ?? "";
 
             if (actionType == "hint")
             {
@@ -142,33 +198,29 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation")
+            if (actionType == "checkConcept")
             {
-                bool explanationCorrect =
-                    (vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
-                     vm.ExplanationAnswer.Contains("check", StringComparison.OrdinalIgnoreCase)) &&
-                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase) &&
-                    (vm.ExplanationAnswer.Contains("run", StringComparison.OrdinalIgnoreCase) ||
-                     vm.ExplanationAnswer.Contains("runs", StringComparison.OrdinalIgnoreCase)) &&
-                    vm.ExplanationAnswer.Contains("false", StringComparison.OrdinalIgnoreCase) &&
-                    (vm.ExplanationAnswer.Contains("skip", StringComparison.OrdinalIgnoreCase) ||
-                     vm.ExplanationAnswer.Contains("skipped", StringComparison.OrdinalIgnoreCase));
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Correct! IF statements run code only when a condition is true."
-                    : "Try mentioning a condition, true running code, and false skipping code.";
+                vm.IsConceptCorrect = vm.ConceptAnswer == "C";
+                vm.ConceptFeedback = vm.IsConceptCorrect == true
+                    ? "Correct! IF statements let programs make decisions based on conditions."
+                    : "Not quite. IF statements are used for decision-making.";
 
                 return View(vm);
             }
 
             if (actionType == "submit")
             {
+                if (vm.IsConceptCorrect != true)
+                {
+                    vm.ConceptFeedback = "Please answer the question correctly before submitting.";
+                    return View(vm);
+                }
+
                 var saved = await SaveLessonProgressAsync("IfStatements");
-                vm.ExplanationCorrect = true;
-                vm.ExplanationFeedback = saved
+                vm.ConceptFeedback = saved
                     ? "Lesson complete! Your progress has been saved."
                     : "Your answers were submitted, but progress could not be saved.";
+
                 return View(vm);
             }
 

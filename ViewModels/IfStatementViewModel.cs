@@ -20,8 +20,8 @@ namespace DotNetCoreSqlDb.ViewModels
         public bool ShowHint { get; set; }
         public bool ShowSolution { get; set; }
 
-        public string ExplanationAnswer { get; set; } = "";
-        public bool? ExplanationCorrect { get; set; }
-        public string ExplanationFeedback { get; set; } = "";
+        public string ConceptAnswer { get; set; } = "";
+        public bool? IsConceptCorrect { get; set; }
+        public string ConceptFeedback { get; set; } = "";
     }
 }
