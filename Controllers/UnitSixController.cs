@@ -91,10 +91,10 @@ namespace DotNetCoreSqlDb.Controllers
                 ? "Correct! void means the method does not return any value."
                 : "void means the method does not return a value.";
 
-            vm.IsQ3Correct = vm.UserAnswer3.Equals("static", StringComparison.OrdinalIgnoreCase);
+            vm.IsQ3Correct = vm.UserAnswer3.Equals("function", StringComparison.OrdinalIgnoreCase);
             vm.Feedback3 = vm.IsQ3Correct == true
                 ? "Correct!"
-                : "The keyword is `static`. It lets you call the method without creating an object.";
+                : "The keyword is `function`. It lets you call the method without creating an object.";
 
             vm.IsQ4Correct = vm.UserAnswer4 == "True";
             vm.Feedback4 = vm.IsQ4Correct == true
