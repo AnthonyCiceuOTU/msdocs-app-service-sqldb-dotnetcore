@@ -1,371 +1,242 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using DotNetCoreSqlDb.Data;
+using DotNetCoreSqlDb.Models;
 using DotNetCoreSqlDb.ViewModels;
-using System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreSqlDb.Controllers
 {
     public class UnitEightController : Controller
     {
-        // -----------------------------
-        // Lesson 33 — Data Processing
-        // -----------------------------
+        private readonly MyDatabaseContext _context;
+
+        public UnitEightController(MyDatabaseContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IActionResult DataProcessing()
         {
             return View(new DataProcessingViewModel());
         }
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult DataProcessing(DataProcessingViewModel vm, string actionType)
-{
-    // Normalize inputs
-    vm.Q1Answer = vm.Q1Answer?.Trim() ?? "";
-    vm.Q2Answer = vm.Q2Answer?.Trim() ?? "";
-    vm.Q3Answer = vm.Q3Answer?.Trim() ?? "";
-    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
-
-    // -----------------------------
-    // HINT
-    // -----------------------------
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        return View(vm);
-    }
-
-    // -----------------------------
-    // SOLUTION
-    // -----------------------------
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        return View(vm);
-    }
-
-    // -----------------------------
-    // CHECK QUIZ (Step 1)
-    // -----------------------------
-    if (actionType == "check")
-    {
-        // Q1: average explanation
-        if (vm.Q1Answer.Contains("divid", StringComparison.OrdinalIgnoreCase) &&
-            (vm.Q1Answer.Contains("total", StringComparison.OrdinalIgnoreCase) ||
-             vm.Q1Answer.Contains("sum", StringComparison.OrdinalIgnoreCase)||
-             vm.Q1Answer.Contains("add", StringComparison.OrdinalIgnoreCase)
-             ))
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DataProcessing(DataProcessingViewModel vm, string actionType)
         {
-            vm.IsQ1Correct = true;
-            vm.Feedback1 = "Correct! Add values, then divide by count.";
-        }
-        else
-        {
-            vm.IsQ1Correct = false;
-            vm.Feedback1 = "Hint: you need both total AND division.";
+            Normalize(vm);
+
+            await HandleLessonAsync(
+                vm,
+                actionType,
+                "DataProcessing",
+                "Hint: data processing usually means taking raw data, working on it, and turning it into useful information.",
+                "Solution: 1) process  2) divide  3) B) useful information",
+                q1 => q1.Equals("process", StringComparison.OrdinalIgnoreCase) ||
+                      q1.Equals("processing", StringComparison.OrdinalIgnoreCase),
+                q2 => q2.Equals("divide", StringComparison.OrdinalIgnoreCase) ||
+                      q2.Equals("division", StringComparison.OrdinalIgnoreCase),
+                q3 => q3 == "B",
+                "Correct! Data processing turns raw data into useful information.",
+                "Not quite yet. Review what happens to raw data and how averages are calculated.",
+                "Lesson complete!");
+
+            return View(vm);
         }
 
-        // Q2: total
-        if (vm.Q2Answer == "20")
-        {
-            vm.IsQ2Correct = true;
-            vm.Feedback2 = "Correct!";
-        }
-        else
-        {
-            vm.IsQ2Correct = false;
-            vm.Feedback2 = "Not quite. Add all numbers together.";
-        }
-
-        // Q3: operation
-        if (vm.Q3Answer == "divide")
-        {
-            vm.IsQ3Correct = true;
-            vm.Feedback3 = "Correct!";
-        }
-        else
-        {
-            vm.IsQ3Correct = false;
-            vm.Feedback3 = "Average requires division.";
-        }
-
-        return View(vm);
-    }
-
-    // -----------------------------
-    // CHECK EXPLANATION (Step 2)
-    // -----------------------------
-    if (actionType == "checkExplanation")
-    {
-        bool isCorrect =
-            vm.ExplanationAnswer.Contains("data", StringComparison.OrdinalIgnoreCase) &&
-            (vm.ExplanationAnswer.Contains("useful", StringComparison.OrdinalIgnoreCase) ||
-             vm.ExplanationAnswer.Contains("information", StringComparison.OrdinalIgnoreCase) ||
-             vm.ExplanationAnswer.Contains("process", StringComparison.OrdinalIgnoreCase));
-
-        vm.ExplanationCorrect = isCorrect;
-
-        vm.ExplanationFeedback = isCorrect
-            ? "Correct! Data processing turns raw data into useful information."
-            : "Try mentioning turning raw data into useful information.";
-
-        return View(vm);
-    }
-
-    // -----------------------------
-    // FINAL SUBMIT
-    // -----------------------------
-    if (actionType == "submit")
-    {
-        // You could track completion here later
-        return RedirectToAction("Simulation");
-    }
-
-    return View(vm);
-}
-        // -----------------------------
-        // Lesson 34 — Simulation
-        // -----------------------------
         [HttpGet]
         public IActionResult Simulation()
         {
             return View(new SimulationViewModel());
         }
 
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-public IActionResult Simulation(SimulationViewModel vm, string actionType)
-{
-    // Normalize inputs
-    vm.Q1Answer = vm.Q1Answer?.Trim() ?? "";
-    vm.Q2Answer = vm.Q2Answer?.Trim() ?? "";
-    vm.Q3Answer = vm.Q3Answer?.Trim() ?? "";
-    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
-
-    // -----------------------------
-    // HINT
-    // -----------------------------
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        return View(vm);
-    }
-
-    // -----------------------------
-    // SOLUTION
-    // -----------------------------
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        return View(vm);
-    }
-
-    // -----------------------------
-    // CHECK QUIZ (Step 1)
-    // -----------------------------
-    if (actionType == "check")
-    {
-        // Q1: definition of simulation
-        if (vm.Q1Answer.Contains("model", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q1Answer.Contains("simulate", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q1Answer.Contains("real", StringComparison.OrdinalIgnoreCase))
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Simulation(SimulationViewModel vm, string actionType)
         {
-            vm.IsQ1Correct = true;
-            vm.Feedback1 = "Correct! A simulation models real-world systems.";
-        }
-        else
-        {
-            vm.IsQ1Correct = false;
-            vm.Feedback1 = "Hint: it represents or models real-world behavior.";
+            Normalize(vm);
+
+            await HandleLessonAsync(
+                vm,
+                actionType,
+                "Simulation",
+                "Hint: a simulation models something from real life, and random(1,6) acts like a dice roll.",
+                "Solution: 1) model  2) dice  3) A) To test or predict real-world behaviour",
+                q1 => q1.Equals("model", StringComparison.OrdinalIgnoreCase) ||
+                      q1.Equals("models", StringComparison.OrdinalIgnoreCase),
+                q2 => q2.Equals("dice", StringComparison.OrdinalIgnoreCase) ||
+                      q2.Equals("die", StringComparison.OrdinalIgnoreCase),
+                q3 => q3 == "A",
+                "Correct! Simulations model real-world systems and can help with testing or prediction.",
+                "Not quite yet. Think about modeling real-life situations and using random outcomes.",
+                "Lesson complete!");
+
+            return View(vm);
         }
 
-        // Q2: random(1,6)
-        if (vm.Q2Answer.Contains("dice", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q2Answer.Contains("roll", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q2Answer.Contains("die", StringComparison.OrdinalIgnoreCase)||
-            vm.Q2Answer.Contains("random", StringComparison.OrdinalIgnoreCase))
-        {
-            vm.IsQ2Correct = true;
-            vm.Feedback2 = "Correct! It simulates a dice roll.";
-        }
-        else
-        {
-            vm.IsQ2Correct = false;
-            vm.Feedback2 = "Think about what has 6 possible random outcomes.";
-        }
-
-        // Q3: multiple choice
-        if (vm.Q3Answer == "dice")
-        {
-            vm.IsQ3Correct = true;
-            vm.Feedback3 = "Correct!";
-        }
-        else
-        {
-            vm.IsQ3Correct = false;
-            vm.Feedback3 = "A dice roll is a simulation.";
-        }
-
-        return View(vm);
-    }
-
-    // -----------------------------
-    // CHECK EXPLANATION (Step 2)
-    // -----------------------------
-    if (actionType == "checkExplanation")
-    {
-        bool isCorrect =
-            vm.ExplanationAnswer.Contains("real", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("model", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("predict", StringComparison.OrdinalIgnoreCase);
-
-        vm.ExplanationCorrect = isCorrect;
-
-        vm.ExplanationFeedback = isCorrect
-            ? "Correct! Simulations help model or predict real-world systems."
-            : "Try mentioning modeling or predicting real-world behavior.";
-
-        return View(vm);
-    }
-
-    // -----------------------------
-    // FINAL SUBMIT
-    // -----------------------------
-    if (actionType == "submit")
-    {
-        return RedirectToAction("DesigningProgram");
-    }
-
-    return View(vm);
-}
-        // -----------------------------
-        // Lesson 35 — Designing a Program
-        // -----------------------------
         [HttpGet]
         public IActionResult DesigningProgram()
         {
             return View(new DesigningProgramViewModel());
         }
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult DesigningProgram(DesigningProgramViewModel vm, string actionType)
-{
-    // Normalize inputs
-    vm.Q1Answer = vm.Q1Answer?.Trim() ?? "";
-    vm.Q2Answer = vm.Q2Answer?.Trim() ?? "";
-    vm.Q3Answer = vm.Q3Answer?.Trim() ?? "";
-    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
-
-    // -----------------------------
-    // HINT
-    // -----------------------------
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        return View(vm);
-    }
-
-    // -----------------------------
-    // SOLUTION
-    // -----------------------------
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        return View(vm);
-    }
-
-    // -----------------------------
-    // CHECK QUIZ (Step 1)
-    // -----------------------------
-    if (actionType == "check")
-    {
-        // Q1: designing program
-        if (vm.Q1Answer.Contains("plan", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q1Answer.Contains("structure", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q1Answer.Contains("break", StringComparison.OrdinalIgnoreCase))
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DesigningProgram(DesigningProgramViewModel vm, string actionType)
         {
-            vm.IsQ1Correct = true;
-            vm.Feedback1 = "Correct! Designing involves planning and structuring a program.";
-        }
-        else
-        {
-            vm.IsQ1Correct = false;
-            vm.Feedback1 = "Hint: think about planning before coding.";
+            Normalize(vm);
+
+            await HandleLessonAsync(
+                vm,
+                actionType,
+                "DesigningProgram",
+                "Hint: good program design starts with planning, and many programs follow input-process-output.",
+                "Solution: 1) plan  2) input  3) C) They make programs easier to manage and reuse",
+                q1 => q1.Equals("plan", StringComparison.OrdinalIgnoreCase) ||
+                      q1.Equals("planning", StringComparison.OrdinalIgnoreCase),
+                q2 => q2.Equals("input", StringComparison.OrdinalIgnoreCase),
+                q3 => q3 == "C",
+                "Correct! Designing a program means planning it before coding and organizing its parts well.",
+                "Not quite yet. Think about planning first and using clear program structure.",
+                "Lesson complete!");
+
+            return View(vm);
         }
 
-        // Q2: modules benefit
-        if (vm.Q2Answer.Contains("easy", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q2Answer.Contains("manage", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q2Answer.Contains("debug", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q2Answer.Contains("reuse", StringComparison.OrdinalIgnoreCase))
-        {
-            vm.IsQ2Correct = true;
-            vm.Feedback2 = "Correct! Modules make programs easier to manage and reuse.";
-        }
-        else
-        {
-            vm.IsQ2Correct = false;
-            vm.Feedback2 = "Think about organization, reuse, or debugging.";
-        }
-
-        // Q3: correct option
-        if (vm.Q3Answer == "input")
-        {
-            vm.IsQ3Correct = true;
-            vm.Feedback3 = "Correct! Input is part of program structure.";
-        }
-        else
-        {
-            vm.IsQ3Correct = false;
-            vm.Feedback3 = "Incorrect. Programs typically include input, process, and output.";
-        }
-
-        return View(vm);
-    }
-
-    // -----------------------------
-    // CHECK EXPLANATION (Step 2)
-    // -----------------------------
-    if (actionType == "checkExplanation")
-    {
-        bool isCorrect =
-            vm.ExplanationAnswer.Contains("plan", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("organize", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("structure", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("manage", StringComparison.OrdinalIgnoreCase);
-
-        vm.ExplanationCorrect = isCorrect;
-
-        vm.ExplanationFeedback = isCorrect
-            ? "Correct! Designing helps organize and manage programs effectively."
-            : "Try mentioning planning, organizing, or structuring programs.";
-
-        return View(vm);
-    }
-
-    // -----------------------------
-    // FINAL SUBMIT
-    // -----------------------------
-    if (actionType == "submit")
-    {
-        return RedirectToAction("Index", "Lessons");
-    }
-
-    return View(vm);
-}
-        // -----------------------------
-        // Index
-        // -----------------------------
         public IActionResult Index()
         {
             return View();
+        }
+
+        private static void Normalize(dynamic vm)
+        {
+            vm.Q1Answer = vm.Q1Answer?.Trim() ?? string.Empty;
+            vm.Q2Answer = vm.Q2Answer?.Trim() ?? string.Empty;
+            vm.Q3Answer = vm.Q3Answer?.Trim() ?? string.Empty;
+            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? string.Empty;
+        }
+
+        private async Task HandleLessonAsync(
+            dynamic vm,
+            string actionType,
+            string actionName,
+            string hintMessage,
+            string solutionMessage,
+            Func<string, bool> q1Checker,
+            Func<string, bool> q2Checker,
+            Func<string, bool> q3Checker,
+            string successMessage,
+            string retryMessage,
+            string completionMessage)
+        {
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.Feedback1 = hintMessage;
+                vm.Feedback2 = null;
+                vm.Feedback3 = null;
+                return;
+            }
+
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.Feedback1 = solutionMessage;
+                vm.Feedback2 = null;
+                vm.Feedback3 = null;
+                return;
+            }
+
+            bool q1Correct = q1Checker(vm.Q1Answer);
+            bool q2Correct = q2Checker(vm.Q2Answer);
+            bool q3Correct = q3Checker(vm.Q3Answer);
+            bool allCorrect = q1Correct && q2Correct && q3Correct;
+
+            vm.IsQ1Correct = q1Correct;
+            vm.IsQ2Correct = q2Correct;
+            vm.IsQ3Correct = q3Correct;
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+
+            vm.Feedback1 = q1Correct ? "Correct!" : "Try again.";
+            vm.Feedback2 = q2Correct ? "Correct!" : "Try again.";
+            vm.Feedback3 = q3Correct ? "Correct!" : "Try again.";
+
+            if (actionType == "submit")
+            {
+                if (allCorrect)
+                {
+                    await SaveLessonProgressAsync(actionName);
+                    vm.Feedback1 = completionMessage;
+                    vm.Feedback2 = null;
+                    vm.Feedback3 = null;
+                }
+                else
+                {
+                    vm.Feedback1 = "Please answer all questions correctly before marking the lesson complete.";
+                    vm.Feedback2 = null;
+                    vm.Feedback3 = null;
+                }
+
+                return;
+            }
+
+            if (actionType == "check")
+            {
+                vm.Feedback1 = allCorrect ? successMessage : retryMessage;
+                vm.Feedback2 = null;
+                vm.Feedback3 = null;
+            }
+        }
+
+        private async Task<bool> SaveLessonProgressAsync(string actionName)
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("UserID");
+
+            if (!Guid.TryParse(userIdValue, out var userId))
+            {
+                return false;
+            }
+
+            var lesson = await _context.Lessons
+                .FirstOrDefaultAsync(l => l.ControllerName == "UnitEight" && l.ActionName == actionName && l.IsPublished);
+
+            if (lesson == null)
+            {
+                return false;
+            }
+
+            var progress = await _context.UserLessonProgresses
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
+
+            var now = DateTime.UtcNow;
+
+            if (progress == null)
+            {
+                progress = new UserLessonProgress
+                {
+                    UserId = userId,
+                    LessonId = lesson.Id,
+                    IsCompleted = true,
+                    CompletedAtUtc = now,
+                    LastAccessedAtUtc = now
+                };
+
+                _context.UserLessonProgresses.Add(progress);
+            }
+            else
+            {
+                progress.IsCompleted = true;
+                progress.CompletedAtUtc ??= now;
+                progress.LastAccessedAtUtc = now;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
