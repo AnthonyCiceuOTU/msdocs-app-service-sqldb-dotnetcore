@@ -44,12 +44,36 @@
     .btn-main { background: linear-gradient(135deg, #0ea5e9, #22c55e); color: white; }
     .btn-secondary { background: rgba(255,255,255,0.05); color: #e5e7eb; }
     .btn-main:hover, .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); color: #ffffff; }
+    .btn-main:disabled, .btn-secondary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
     .step-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     .step-progress { color: #94a3b8; font-size: 0.9rem; }
     .alert-box { border-radius: 12px; padding: 10px 12px; margin-top: 10px; border: 1px solid transparent; font-size: 0.92rem; }
     .alert-success-custom { background: rgba(34, 197, 94, 0.12); color: #bbf7d0; border-color: rgba(34, 197, 94, 0.2); }
     .alert-danger-custom { background: rgba(239, 68, 68, 0.12); color: #fecaca; border-color: rgba(239, 68, 68, 0.2); }
     .alert-info-custom { background: rgba(59, 130, 246, 0.12); color: #bfdbfe; border-color: rgba(59, 130, 246, 0.2); }
+    .loading-box {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        font-size: 0.92rem;
+    }
+    .loading-box.active { display: inline-flex; }
+    .spinner {
+        width: 18px;
+        height: 18px;
+        border: 3px solid rgba(191, 219, 254, 0.25);
+        border-top-color: #bfdbfe;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        flex: 0 0 auto;
+    }
+    @@keyframes spin { to { transform: rotate(360deg); } }
     .nav-footer { margin-top: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
     @@media (max-width: 900px) {
         .brand-text h1 { font-size: 1.7rem; }
@@ -74,9 +98,11 @@
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="Variables" asp-controller="UnitTwo" method="post">
+        <form asp-action="Variables" asp-controller="UnitTwo" method="post" id="lessonForm">
             @Html.AntiForgeryToken()
             <input asp-for="CurrentStep" type="hidden" id="CurrentStep" />
+            <input asp-for="ExplanationCorrect" type="hidden" id="ExplanationCorrectHidden" />
+            <input asp-for="ExplanationFeedback" type="hidden" id="ExplanationFeedbackHidden" />
 
             <div class="panel step-panel">
                 <div class="step-card" id="step0">
@@ -194,28 +220,58 @@ END
                             In one short sentence, explain what a variable is used for in a program.
                         </div>
 
-                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: A variable stores a value so the program can use it later." />
-
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-                        {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
+                        <div class="quiz-grid">
+                            <div class="quiz-card">
+                                <div class="quiz-title">Your explanation</div>
+                                <input asp-for="ExplanationAnswer"
+                                       id="ExplanationAnswer"
+                                       class="text-input"
+                                       placeholder="Example: A variable stores a value so the program can use it later." />
                             </div>
-                        }
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">AI feedback</div>
+                                <textarea id="aiFeedbackDisplay"
+                                          class="text-input"
+                                          rows="4"
+                                          readonly
+                                          placeholder="AI feedback will appear here...">@Model.ExplanationFeedback</textarea>
+                            </div>
+                        </div>
+
+                        <div id="aiLoadingBox" class="loading-box">
+                            <div class="spinner"></div>
+                            <span>Checking with AI...</span>
+                        </div>
+
+                        <div id="aiFeedbackAlert"
+                             class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")"
+                             style="@(string.IsNullOrWhiteSpace(Model.ExplanationFeedback) ? "display:none;" : "")">
+                            @Model.ExplanationFeedback
+                        </div>
                     </div>
 
                     <div class="step-actions">
-                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
+                        <button type="button" class="btn-secondary" onclick="showStep(1)" id="backToStep1Button">Back</button>
                         <div class="step-progress">Step 2 of 2</div>
 
-                        @if (Model.ExplanationCorrect == true)
-                        {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
-                        }
-                        else
-                        {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
-                        }
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button type="button"
+                                    class="btn-main"
+                                    id="checkExplanationButton"
+                                    @(Model.ExplanationCorrect == true ? "disabled" : "")>
+                                @(Model.ExplanationCorrect == true ? "Checked" : "Check with AI")
+                            </button>
+
+                            <button type="submit"
+                                    name="actionType"
+                                    value="submit"
+                                    class="btn-main"
+                                    id="submitLessonButton"
+                                    style="@(Model.ExplanationCorrect == true ? "" : "display:none;")">
+                                Mark Lesson as Completed
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -245,8 +301,122 @@ END
         }
     }
 
+    function setStepTwoLoadingState(isLoading) {
+        const loadingBox = document.getElementById('aiLoadingBox');
+        const checkButton = document.getElementById('checkExplanationButton');
+        const backButton = document.getElementById('backToStep1Button');
+        const explanationInput = document.getElementById('ExplanationAnswer');
+
+        if (loadingBox) {
+            loadingBox.classList.toggle('active', isLoading);
+        }
+
+        if (checkButton) {
+            checkButton.disabled = isLoading;
+            checkButton.textContent = isLoading ? 'Checking...' : (checkButton.dataset.checked === 'true' ? 'Checked' : 'Check with AI');
+        }
+
+        if (backButton) {
+            backButton.disabled = isLoading;
+        }
+
+        if (explanationInput) {
+            explanationInput.readOnly = isLoading;
+        }
+    }
+
+    function setAiResult(isCorrect, feedback) {
+        const feedbackDisplay = document.getElementById('aiFeedbackDisplay');
+        const feedbackAlert = document.getElementById('aiFeedbackAlert');
+        const submitLessonButton = document.getElementById('submitLessonButton');
+        const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+        const explanationFeedbackHidden = document.getElementById('ExplanationFeedbackHidden');
+        const checkButton = document.getElementById('checkExplanationButton');
+
+        if (feedbackDisplay) {
+            feedbackDisplay.value = feedback || '';
+        }
+
+        if (feedbackAlert) {
+            feedbackAlert.style.display = 'block';
+            feedbackAlert.textContent = feedback || '';
+            feedbackAlert.classList.remove('alert-success-custom', 'alert-danger-custom');
+            feedbackAlert.classList.add(isCorrect ? 'alert-success-custom' : 'alert-danger-custom');
+        }
+
+        if (explanationCorrectHidden) {
+            explanationCorrectHidden.value = isCorrect ? 'true' : 'false';
+        }
+
+        if (explanationFeedbackHidden) {
+            explanationFeedbackHidden.value = feedback || '';
+        }
+
+        if (submitLessonButton) {
+            submitLessonButton.style.display = isCorrect ? '' : 'none';
+        }
+
+        if (checkButton) {
+            if (isCorrect) {
+                checkButton.disabled = true;
+                checkButton.textContent = 'Checked';
+                checkButton.dataset.checked = 'true';
+            } else {
+                checkButton.disabled = false;
+                checkButton.textContent = 'Check with AI';
+                checkButton.dataset.checked = 'false';
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const currentStep = parseInt(document.getElementById('CurrentStep')?.value || '0');
         showStep(currentStep);
+
+        const checkButton = document.getElementById('checkExplanationButton');
+        if (checkButton && '@(Model.ExplanationCorrect == true ? "true" : "false")' === 'true') {
+            checkButton.dataset.checked = 'true';
+            checkButton.disabled = true;
+            checkButton.textContent = 'Checked';
+        }
+
+        const checkExplanationButton = document.getElementById('checkExplanationButton');
+
+        if (checkExplanationButton) {
+            checkExplanationButton.addEventListener('click', async function () {
+                if (checkExplanationButton.dataset.checked === 'true') {
+                    return;
+                }
+
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                const explanationAnswer = document.getElementById('ExplanationAnswer')?.value ?? '';
+
+                setStepTwoLoadingState(true);
+
+                try {
+                    const formData = new FormData();
+                    formData.append('__RequestVerificationToken', tokenInput ? tokenInput.value : '');
+                    formData.append('explanationAnswer', explanationAnswer);
+
+                    const response = await fetch('@Url.Action("CheckVariablesExplanation", "UnitTwo")', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        setAiResult(false, data.feedback || 'We could not check your explanation right now.');
+                        return;
+                    }
+
+                    setAiResult(data.isCorrect, data.feedback);
+                } catch (error) {
+                    setAiResult(false, 'We could not check your explanation right now. Please try again.');
+                } finally {
+                    setStepTwoLoadingState(false);
+                }
+            });
+        }
     });
 </script>

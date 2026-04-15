@@ -1,21 +1,27 @@
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using DotNetCoreSqlDb.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using DotNetCoreSqlDb.Data;
 using DotNetCoreSqlDb.Models;
-using DotNetCoreSqlDb.ViewModels;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using DotNetCoreSqlDb.Models.AI;
+using DotNetCoreSqlDb.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DotNetCoreSqlDb.Controllers
 {
     public class UnitTwoController : Controller
     {
         private readonly MyDatabaseContext _context;
+        private readonly IAiShortAnswerGrader _aiShortAnswerGrader;
+        private readonly ILogger<UnitTwoController> _logger;
 
-        public UnitTwoController(MyDatabaseContext context)
+        public UnitTwoController(MyDatabaseContext context, IAiShortAnswerGrader aiShortAnswerGrader, ILogger<UnitTwoController> logger)
         {
             _context = context;
+            _aiShortAnswerGrader = aiShortAnswerGrader;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -30,6 +36,7 @@ namespace DotNetCoreSqlDb.Controllers
         {
             vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ExplanationFeedback = vm.ExplanationFeedback?.Trim() ?? "";
 
             if (actionType == "hint")
             {
@@ -69,41 +76,84 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation")
+            if (actionType == "submit")
             {
                 vm.CurrentStep = 2;
                 vm.IsCorrect = true;
 
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("store", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("save", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("hold", StringComparison.OrdinalIgnoreCase);
+                if (vm.ExplanationCorrect != true)
+                {
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation with AI before submitting."
+                        : vm.ExplanationFeedback;
 
-                explanationCorrect = explanationCorrect &&
-                    (
-                        vm.ExplanationAnswer.Contains("value", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("data", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("information", StringComparison.OrdinalIgnoreCase)
-                    );
+                    return View(vm);
+                }
 
-                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Good explanation. Variables store values so a program can use them later."
-                    : "Try mentioning that a variable stores or saves a value so the program can use it later.";
-
-                return View(vm);
-            }
-
-            if (actionType == "submit")
-            {
                 await SaveLessonProgressAsync("Variables");
                 return RedirectToAction(nameof(DataTypes));
             }
 
             vm.CurrentStep = 0;
             return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckVariablesExplanation([FromForm] string explanationAnswer)
+        {
+            explanationAnswer = explanationAnswer?.Trim() ?? "";
+
+            if (string.IsNullOrWhiteSpace(explanationAnswer))
+            {
+                return BadRequest(new
+                {
+                    isCorrect = false,
+                    feedback = "Please enter an explanation first."
+                });
+            }
+
+            try
+            {
+                var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                {
+                    QuestionText = "Explain what a variable is used for in a program.",
+                    StudentAnswer = explanationAnswer,
+                    ExpectedAnswer = "A variable is used to store a value or piece of information so the program can use it later.",
+                    GradingRubric = """
+                    To be correct, the answer should clearly show that:
+
+                    1. A variable stores, saves, or holds something.
+                    2. What it stores is a value, data, or information.
+                    3. The program can use that stored value later.
+
+                    Accept simple student wording such as:
+                    - a variable stores a value
+                    - it saves information
+                    - it holds data for later
+                    - the program remembers something in a variable
+
+                    Do not require advanced vocabulary.
+                    Minor spelling or grammar mistakes are okay.
+                    Reject answers that are too vague or do not mention storing/saving a value or information.
+                    """
+                });
+
+                return Json(new
+                {
+                    isCorrect = result.IsCorrect,
+                    feedback = result.Feedback
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking Variables explanation.");
+                return StatusCode(500, new
+                {
+                    isCorrect = false,
+                    feedback = "We could not check your explanation right now. Please try again."
+                });
+            }
         }
 
         [HttpGet]
