@@ -374,27 +374,6 @@ END IF</div>
                                 <p>This structure is useful when there are several possible outcomes.</p>
                             </div>
                         </div>
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Think about the main grade cutoffs used in the example, like top, middle, and passing ranges.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                A good answer includes multiple thresholds such as 90, 75, and 50.
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.IsCorrect != null)
-                        {
-                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.FeedbackMessage
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -418,6 +397,20 @@ END IF</div>
                                 <input asp-for="UserAnswer" class="text-input" placeholder="Example: 90, 75, 50" />
                             </div>
                         </div>
+
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                @Model.FeedbackMessage
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                @Model.FeedbackMessage
+                            </div>
+                        }
 
                         @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.IsCorrect != null)
                         {
@@ -510,10 +503,11 @@ END IF</div>
 
         const firstDone = '@(Model.IsCorrect?.ToString() ?? "")';
         const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
+        const showingHintOrSolution = @((Model.ShowHint || Model.ShowSolution).ToString().ToLower());
 
         if (explanationDone === 'True') {
             stepToShow = 2;
-        } else if (firstDone || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
+        } else if (firstDone === 'True' || showingHintOrSolution) {
             stepToShow = 1;
         }
 
