@@ -210,20 +210,24 @@ namespace DotNetCoreSqlDb.Controllers
 
             if (actionType == "submit")
             {
+               
                 if (vm.IsConceptCorrect != true)
                 {
                     vm.ConceptFeedback = "Please answer the question correctly before submitting.";
                     return View(vm);
                 }
 
+                
                 var saved = await SaveLessonProgressAsync("IfStatements");
+
+                vm.IsConceptCorrect = true;
+
                 vm.ConceptFeedback = saved
                     ? "Lesson complete! Your progress has been saved."
                     : "Your answers were submitted, but progress could not be saved.";
 
                 return View(vm);
             }
-
             vm.ShowHint = false;
             vm.ShowSolution = false;
 
