@@ -4,6 +4,8 @@ Code Quest is an ASP.NET Core 8 MVC learning platform for beginner programming l
 
 This repository appears to have started from an Azure App Service + SQL Database sample, but the current app is focused on interactive programming lessons rather than the original CRUD tutorial.
 
+Demo video: https://youtu.be/Xe5Vm_W301o
+
 ## Features
 
 - Multi-unit lesson flow with individual lesson pages and controller-based grading
