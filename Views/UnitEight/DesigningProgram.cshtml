@@ -587,21 +587,37 @@ function showStep(stepNumber) {
         card.classList.remove('active');
     });
 
-    document.getElementById(`step${stepNumber}`).classList.add('active');
+    const target = document.getElementById(`step${stepNumber}`);
+    if (target) target.classList.add('active');
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    let stepToShow = 0;
 
-    const qAnswered =
-        '@(Model.IsQ1Correct?.ToString() ?? "")' ||
-        '@(Model.IsQ2Correct?.ToString() ?? "")' ||
-        '@(Model.IsQ3Correct?.ToString() ?? "")';
-
+    const q1 = '@(Model.IsQ1Correct?.ToString() ?? "")';
+    const q2 = '@(Model.IsQ2Correct?.ToString() ?? "")';
+    const q3 = '@(Model.IsQ3Correct?.ToString() ?? "")';
     const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
 
-    if (explanationDone === 'True') stepToShow = 2;
-    else if (qAnswered) stepToShow = 1;
+    const hintOrSolution =
+        @(Model.ShowHint.ToString().ToLower()) ||
+        @(Model.ShowSolution.ToString().ToLower());
+
+    let stepToShow = 0;
+
+    // STEP 2 priority (finished lesson)
+    if (explanationDone === 'True') {
+        stepToShow = 2;
+    }
+
+    // STEP 1 priority (any interaction OR hint/solution OR answers attempted)
+    else if (
+        q1 === 'True' ||
+        q2 === 'True' ||
+        q3 === 'True' ||
+        hintOrSolution
+    ) {
+        stepToShow = 1;
+    }
 
     showStep(stepToShow);
 });
