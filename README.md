@@ -2,9 +2,9 @@
 
 Code Quest is an ASP.NET Core 8 MVC learning platform for beginner programming lessons. It includes user accounts, guest access, lesson progression, unit-based content, quizzes, and lesson completion tracking backed by SQL Server and Entity Framework Core.
 
-This repository appears to have started from an Azure App Service + SQL Database sample, but the current app is focused on interactive programming lessons rather than the original CRUD tutorial.
-
 Demo video: https://youtu.be/Xe5Vm_W301o
+
+Website Link: https://codequest-enh0b7dhanf4bjeb.canadacentral-01.azurewebsites.net/
 
 ## Features
 
@@ -14,17 +14,14 @@ Demo video: https://youtu.be/Xe5Vm_W301o
 - Lesson progress tracking per user
 - Profile and progress summaries
 - Syntax and pseudocode learning/game content
-- Optional AI-assisted grading for some explanation-style questions
 
 ## Tech Stack
 
 - ASP.NET Core MVC (.NET 8)
 - Entity Framework Core 8
-- SQL Server / LocalDB
+- SQL Server
 - Cookie authentication
 - Session state
-- Azure Key Vault integration for non-development environments
-- Redis cache in non-development environments
 - Google Gemini integration for selected short-answer grading
 
 ## Project Structure
@@ -51,48 +48,6 @@ Install EF Core CLI if needed:
 ```powershell
 dotnet tool install --global dotnet-ef
 ```
-
-### Configuration
-
-Development uses `appsettings.Development.json` and expects this connection string key:
-
-```json
-"ConnectionStrings": {
-  "MyDbConnection": "Server=(localdb)\\MSSQLLocalDB;Database=CodeQuestDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
-}
-```
-
-If LocalDB is not working on your machine, you can switch to a local SQL Server instance by updating `MyDbConnection`.
-
-The app only loads Azure Key Vault outside Development, so you do not need Azure credentials for normal local work.
-
-### Database Setup
-
-Apply migrations before first run:
-
-```powershell
-dotnet ef database update
-```
-
-If you get an error like `Cannot open database "CodeQuestDb"`, make sure:
-
-- LocalDB is installed
-- the `MSSQLLocalDB` instance exists and is running
-- the database has been created by applying migrations
-
-### Run the App
-
-```powershell
-dotnet run
-```
-
-By default the app starts at:
-
-- `http://localhost:5093`
-
-The default route goes to the login page:
-
-- `/Login/Index`
 
 ## Authentication and Access
 
