@@ -1,82 +1,155 @@
----
-languages:
-- csharp
-- aspx-csharp
-- bicep
-page_type: sample
-products:
-- azure
-- aspnet-core
-- azure-app-service
-- azure-sql-database
-- azure-virtual-network
-urlFragment: msdocs-app-service-sqldb-dotnetcore
-name: Deploy an ASP.NET Core web app with SQL Database in Azure
-description: "A sample application you can use to follow along with Tutorial: Deploy an ASP.NET Core and Azure SQL Database app to Azure App Service."
----
+# Code Quest
 
-# Deploy an ASP.NET Core web app with SQL Database in Azure
+Code Quest is an ASP.NET Core 8 MVC learning platform for beginner programming lessons. It includes user accounts, guest access, lesson progression, unit-based content, quizzes, and lesson completion tracking backed by SQL Server and Entity Framework Core.
 
-This is an ASP.NET Core application that you can use to follow along with the tutorial at 
-[Tutorial: Deploy an ASP.NET Core and Azure SQL Database app to Azure App Service](https://learn.microsoft.com/azure/app-service/tutorial-dotnetcore-sqldb-app) or by using the [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview) according to the instructions below.
+This repository appears to have started from an Azure App Service + SQL Database sample, but the current app is focused on interactive programming lessons rather than the original CRUD tutorial.
 
-## Run the sample
+## Features
 
-This project has a [dev container configuration](.devcontainer/), which makes it easier to develop apps locally, deploy them to Azure, and monitor them. The easiest way to run this sample application is inside a GitHub codespace. Follow these steps:
+- Multi-unit lesson flow with individual lesson pages and controller-based grading
+- Account registration and login with cookie authentication
+- Guest mode with limited access
+- Lesson progress tracking per user
+- Profile and progress summaries
+- Syntax and pseudocode learning/game content
+- Optional AI-assisted grading for some explanation-style questions
 
-1. Fork this repository to your account. For instructions, see [Fork a repo](https://docs.github.com/get-started/quickstart/fork-a-repo).
+## Tech Stack
 
-1. From the repository root of your fork, select **Code** > **Codespaces** > **+**.
+- ASP.NET Core MVC (.NET 8)
+- Entity Framework Core 8
+- SQL Server / LocalDB
+- Cookie authentication
+- Session state
+- Azure Key Vault integration for non-development environments
+- Redis cache in non-development environments
+- Google Gemini integration for selected short-answer grading
 
-1. In the codespace terminal, run the following commands:
+## Project Structure
 
-    ```shell
-    dotnet ef database update
-    dotnet run
-    ```
+- `Controllers/` MVC controllers for lessons, login, profile, games, and navigation
+- `Views/` Razor views for lesson pages and UI
+- `ViewModels/` strongly typed lesson and page view models
+- `Models/` entity models and config models
+- `Data/` EF Core `DbContext`
+- `Migrations/` database migrations
+- `Services/` app services such as AI grading
+- `wwwroot/` static assets
 
-1. When you see the message `Your application running on port 5093 is available.`, click **Open in Browser**.
+## Local Development
 
-## Quick deploy
+### Prerequisites
 
-This project is designed to work well with the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview), which makes it easier to develop apps locally, deploy them to Azure, and monitor them.
+- .NET 8 SDK
+- SQL Server LocalDB or a local SQL Server instance
+- `dotnet-ef` CLI tool if you need to run migrations
 
-🎥 Watch a deployment of the code in [this screencast](https://www.youtube.com/watch?v=JDlZ4TgPKYc).
+Install EF Core CLI if needed:
 
-In the GitHub codespace:
+```powershell
+dotnet tool install --global dotnet-ef
+```
 
-1. Log in to Azure.
+### Configuration
 
-    ```shell
-    azd auth login
-    ```
+Development uses `appsettings.Development.json` and expects this connection string key:
 
-1. Provision and deploy all the resources:
+```json
+"ConnectionStrings": {
+  "MyDbConnection": "Server=(localdb)\\MSSQLLocalDB;Database=CodeQuestDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
+}
+```
 
-    ```shell
-    azd up
-    ```
+If LocalDB is not working on your machine, you can switch to a local SQL Server instance by updating `MyDbConnection`.
 
-    It will prompt you to create a deployment environment name, pick a subscription, and provide a location (like `westeurope`). Then it will provision the resources in your account and deploy the latest code. If you get an error with deployment, changing the location (like to "centralus") can help, as there may be availability constraints for some of the resources.
+The app only loads Azure Key Vault outside Development, so you do not need Azure credentials for normal local work.
 
-1. When `azd` has finished deploying, you'll see an endpoint URI in the command output. Visit that URI, and you should see the CRUD app! 🎉 If you see an error, open the Azure Portal from the URL in the command output, navigate to the App Service, select Logstream, and check the logs for any errors.
+### Database Setup
 
-1. When you've made any changes to the app code, you can just run:
+Apply migrations before first run:
 
-    ```shell
-    azd deploy
-    ```
+```powershell
+dotnet ef database update
+```
 
-## How is database migrations automated?
+If you get an error like `Cannot open database "CodeQuestDb"`, make sure:
 
-The [AZD template](infra/resources.bicep) in this repo secures the database in a virtual network through a private endpoint. The web app can access the database through the private endpoint because it's integrated with the virtual network. In this architecture, the simplest way to do database migrations is directly from within the web app itself.
+- LocalDB is installed
+- the `MSSQLLocalDB` instance exists and is running
+- the database has been created by applying migrations
 
-Because the Linux .NET container in App Service doesn't come with the .NET SDK, you cannot run the migrations command `dotnet ef database update` easily. However, you can upload a [self-contained migrations bundle](https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#bundles). This repo automates the deployment of the migrations bundle as follows:
+### Run the App
 
-- In [azure.yaml](azure.yaml), use the `prepackage` hook to generate a *migrationsbundle* file with `dotnet ef migrations bundle`.
-- In the [.csproj](DotNretCoreSqlDb.csproj) file, include the generated *migrationsbundle* file. During the `azd package` stage, *migrationsbundle* will be added to the deploy package.
-- In [infra/resources.bicep](infra/resources.bicep), add the `appCommandLine` property to the web app to run the uploaded *migrationsbundle*.
+```powershell
+dotnet run
+```
 
-## Getting help
+By default the app starts at:
 
-If you're working with this project and running into issues, please post in [Issues](/issues).
+- `http://localhost:5093`
+
+The default route goes to the login page:
+
+- `/Login/Index`
+
+## Authentication and Access
+
+- Registered users can sign in and save lesson progress
+- Guest users can continue without an account
+- Guest access is restricted to Unit 1 content
+- Most pages require authentication through the app's fallback authorization policy
+
+## AI Grading
+
+Some lessons use an `IAiShortAnswerGrader` implementation backed by Google Gemini.
+
+Relevant config:
+
+- config key: `GeminiAPIKey`
+- configured model: `gemini-2.5-flash`
+
+If no Gemini API key is configured, AI-graded features may not work, but the rest of the application can still run.
+
+## Deployment Notes
+
+The app is set up to behave differently outside Development:
+
+- SQL connection is read from `AZURE_SQL_CONNECTIONSTRING`
+- Redis cache is read from `AZURE_REDIS_CONNECTIONSTRING`
+- Azure Key Vault is loaded from `https://codequest-key-vault.vault.azure.net/`
+
+That means production-style hosting should provide those settings through environment variables or Azure configuration.
+
+## Useful Commands
+
+Build:
+
+```powershell
+dotnet build
+```
+
+Run migrations:
+
+```powershell
+dotnet ef database update
+```
+
+Run the app:
+
+```powershell
+dotnet run
+```
+
+## Contributing
+
+If you're working in this repo with other contributors:
+
+- avoid force-pushing shared branches unless everyone agrees
+- check for in-progress lesson changes before editing unit content
+- prefer small commits grouped by unit or feature
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for any repo-specific contribution guidance.
+
+## License
+
+This repository includes a [LICENSE.md](LICENSE.md) file. Review it before reusing or redistributing the project.
