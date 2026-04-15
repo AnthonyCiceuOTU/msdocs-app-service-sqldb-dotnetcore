@@ -90,8 +90,12 @@ namespace DotNetCoreSqlDb.Controllers
                     return View(vm);
                 }
 
-                await SaveLessonProgressAsync("Variables");
-                return RedirectToAction(nameof(DataTypes));
+                var saved = await SaveLessonProgressAsync("Variables");
+                vm.FeedbackMessage = saved
+                    ? "Lesson complete! Your progress has been saved."
+                    : "Your answers were submitted, but progress could not be saved.";
+
+                return View(vm);
             }
 
             vm.CurrentStep = 0;
