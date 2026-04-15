@@ -170,20 +170,18 @@
                             It initializes the object's fields with starting values.
                         </p>
 
-                        <div class="code-block">class Dog
-{
-    public string Name;
-    public int Age;
+                        <div class="code-block">CLASS Dog
+                                                    VARIABLE Name
+                                                    VARIABLE Age
 
-    public Dog(string name, int age)
-    {
-        Name = name;
-        Age = age;
-    }
-}
+                                                    FUNCTION Constructor(name, age)
+                                                        SET Name TO name
+                                                        SET Age TO age
+                                                    END FUNCTION
+                                                END CLASS
 
-Dog myDog = new Dog("Rex", 3);
-Console.WriteLine(myDog.Name); // Rex</div>
+                                                SET myDog TO NEW Dog("Rex", 3)
+                                                OUTPUT myDog.Name</div>
 
                         <div class="instruction-box">
                             In this lesson, you will identify how objects are created and how a constructor sets up their fields.

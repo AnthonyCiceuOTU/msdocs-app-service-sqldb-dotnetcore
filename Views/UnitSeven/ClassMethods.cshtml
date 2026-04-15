@@ -170,23 +170,22 @@
                             They define what an object can <em>do</em> and can access the object's own fields directly.
                         </p>
 
-                        <div class="code-block">class Dog
-{
-    public string Name;
+                        <div class="code-block">
+                            CLASS Dog
+                                VARIABLE Name
 
-    public Dog(string name)
-    {
-        Name = name;
-    }
+                                FUNCTION Constructor(name)
+                                    SET Name TO name
+                                END FUNCTION
 
-    public void Bark()
-    {
-        Console.WriteLine(Name + " says: Woof!");
-    }
-}
+                                FUNCTION Bark
+                                    OUTPUT Name + " says: Woof!"
+                                END FUNCTION
+                            END CLASS
 
-Dog myDog = new Dog("Rex");
-myDog.Bark(); // Rex says: Woof!</div>
+                            SET myDog TO NEW Dog("Rex")
+                            CALL myDog.Bark()
+                        </div>
 
                         <div class="instruction-box">
                             In this lesson, you will identify instance methods, learn how to call them, and understand

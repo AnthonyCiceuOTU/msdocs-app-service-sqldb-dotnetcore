@@ -446,18 +446,21 @@ END FUNCTION</div>
                             </div>
 
                             <div class="quiz-card">
-                                <div class="quiz-title">2. What does <code>void</code> mean as a return type?</div>
+<div class="quiz-title">
+    2. What does it mean if a method does not return a value?
+</div>
 
-                                <div class="radio-row">
-                                    <label class="radio-option">
-                                        <input type="radio" asp-for="UserAnswer2" value="Returns nothing" />
-                                        <span>Returns nothing</span>
-                                    </label>
-                                    <label class="radio-option">
-                                        <input type="radio" asp-for="UserAnswer2" value="Returns a value" />
-                                        <span>Returns a value</span>
-                                    </label>
-                                </div>
+<div class="radio-row">
+    <label class="radio-option">
+        <input type="radio" asp-for="UserAnswer2" value="Returns nothing" />
+        <span>It performs an action but gives no output</span>
+    </label>
+
+    <label class="radio-option">
+        <input type="radio" asp-for="UserAnswer2" value="Returns a value" />
+        <span>It must return a value</span>
+    </label>
+</div>
 
                                 @if (Model.IsQ2Correct != null)
                                 {
@@ -468,8 +471,11 @@ END FUNCTION</div>
                             </div>
 
                             <div class="quiz-card">
-                                <div class="quiz-title">3. What keyword appears before <code>void</code> in the example?</div>
-                                <input asp-for="UserAnswer3" class="text-input" placeholder="Type the keyword" />
+<div class="quiz-title">
+    3. What keyword is used to define a method in the pseudocode example?
+</div>
+
+<input asp-for="UserAnswer3" class="text-input" placeholder="Type the keyword used to define a method" />
 
                                 @if (Model.IsQ3Correct != null)
                                 {

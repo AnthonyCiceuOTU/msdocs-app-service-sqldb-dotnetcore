@@ -395,11 +395,11 @@
 
                         <div class="code-block">
                             FUNCTION Add(a, b)
-    RETURN a + b
-END FUNCTION
+                                RETURN a + b
+                            END FUNCTION
 
-SET result TO Add(3, 5)
-OUTPUT result</div>
+                            SET result TO Add(3, 5)
+                            OUTPUT result</div>
 
                         <div class="instruction-box">
                             In this lesson, you will identify return types, trace return values, and learn the
@@ -485,18 +485,21 @@ OUTPUT result</div>
                             </div>
 
                             <div class="quiz-card">
-                                <div class="quiz-title">4. What does <code>void</code> mean as a return type?</div>
+<div class="quiz-title">
+    4. What does it mean if a method has no return value in pseudocode?
+</div>
 
-                                <div class="radio-row">
-                                    <label class="radio-option">
-                                        <input type="radio" asp-for="UserAnswer4" value="Returns nothing" />
-                                        <span>Returns nothing</span>
-                                    </label>
-                                    <label class="radio-option">
-                                        <input type="radio" asp-for="UserAnswer4" value="Returns zero" />
-                                        <span>Returns zero</span>
-                                    </label>
-                                </div>
+<div class="radio-row">
+    <label class="radio-option">
+        <input type="radio" asp-for="UserAnswer4" value="Returns nothing" />
+        <span>It performs an action but does not return a value</span>
+    </label>
+
+    <label class="radio-option">
+        <input type="radio" asp-for="UserAnswer4" value="Returns zero" />
+        <span>It returns a default value like 0</span>
+    </label>
+</div>
 
                                 @if (Model.IsQ4Correct != null)
                                 {
