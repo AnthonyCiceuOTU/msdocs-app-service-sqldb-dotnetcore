@@ -195,6 +195,8 @@ namespace DotNetCoreSqlDb.Controllers
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
             vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ExplanationFeedback = vm.ExplanationFeedback?.Trim() ?? "";
+            vm.TaskOrder = vm.TaskOrder?.Trim() ?? "";
 
             bool firstTaskCorrect = vm.TaskOrder == "Wake up|Get dressed|Eat breakfast";
 
@@ -202,6 +204,8 @@ namespace DotNetCoreSqlDb.Controllers
             {
                 vm.IsCorrect = firstTaskCorrect;
                 vm.CurrentStep = 1;
+                vm.ShowHint = false;
+                vm.ShowSolution = false;
                 vm.FeedbackMessage = firstTaskCorrect
                     ? "Correct! You broke the morning routine into smaller steps."
                     : "Not quite. Think about what usually happens before leaving for school.";
@@ -209,34 +213,19 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation")
-            {
-                vm.IsCorrect = true;
-                vm.CurrentStep = 2;
-
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Length >= 12 &&
-                    (
-                        vm.ExplanationAnswer.Contains("smaller", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("steps", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("easier", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("manage", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("break", StringComparison.OrdinalIgnoreCase)
-                    );
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Good explanation. You showed how decomposition makes a problem easier to manage."
-                    : "Add a little more detail about how smaller steps help solve a larger task.";
-
-                return View(vm);
-            }
-
             if (actionType == "submit")
             {
                 vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
                 vm.CurrentStep = 2;
+
+                if (vm.ExplanationCorrect != true)
+                {
+                    vm.ExplanationFeedback = string.IsNullOrWhiteSpace(vm.ExplanationFeedback)
+                        ? "Please check your explanation with AI before submitting."
+                        : vm.ExplanationFeedback;
+
+                    return View(vm);
+                }
 
                 var saved = await SaveLessonProgressAsync("Decomposition");
                 vm.FeedbackMessage = saved
@@ -248,6 +237,72 @@ namespace DotNetCoreSqlDb.Controllers
 
             vm.CurrentStep = 0;
             return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckDecompositionExplanation([FromForm] string explanationAnswer)
+        {
+            explanationAnswer = explanationAnswer?.Trim() ?? "";
+
+            _logger.LogInformation("CheckDecompositionExplanation called. Explanation: {Explanation}", explanationAnswer);
+
+            if (string.IsNullOrWhiteSpace(explanationAnswer))
+            {
+                return BadRequest(new
+                {
+                    isCorrect = false,
+                    feedback = "Please enter an explanation first."
+                });
+            }
+
+            try
+            {
+                var result = await _aiShortAnswerGrader.GradeAsync(new ShortAnswerEvaluationRequest
+                {
+                    QuestionText = "Explain why breaking a big task into smaller steps makes it easier to solve.",
+                    StudentAnswer = explanationAnswer,
+                    ExpectedAnswer = "Breaking a big task into smaller steps makes it easier to solve because each part is simpler to understand, manage, and complete.",
+                    GradingRubric = """
+                    To be correct, the answer should clearly show that:
+
+                    1. A big problem or task is easier when broken into smaller parts or steps.
+                    2. Smaller steps are easier to understand, manage, or complete.
+                    3. Decomposition helps make a large task feel more manageable.
+
+                    Accept simple student wording such as:
+                    - smaller steps make it easier
+                    - big problems are easier when broken up
+                    - each part is easier to do
+                    - it helps you manage the task better
+
+                    Do not require advanced vocabulary.
+                    Minor spelling or grammar mistakes are okay.
+                    Reject answers that are too vague or do not explain why smaller parts help.
+                    """
+                });
+
+                _logger.LogInformation(
+                    "CheckDecompositionExplanation result. IsCorrect: {IsCorrect}, Score: {Score}, Feedback: {Feedback}",
+                    result.IsCorrect,
+                    result.Score,
+                    result.Feedback);
+
+                return Json(new
+                {
+                    isCorrect = result.IsCorrect,
+                    feedback = result.Feedback
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking Decomposition explanation.");
+                return StatusCode(500, new
+                {
+                    isCorrect = false,
+                    feedback = "We could not check your explanation right now. Please try again."
+                });
+            }
         }
 
         [HttpGet]
