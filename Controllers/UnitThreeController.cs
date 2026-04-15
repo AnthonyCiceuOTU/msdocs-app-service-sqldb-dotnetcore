@@ -423,7 +423,7 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: think of multiple grade ranges like 90+, 75+, and 50+.";
+                vm.FeedbackMessage = "Hint: after the first IF, use ELSE IF to check another condition.";
                 return View(vm);
             }
 
@@ -432,32 +432,18 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution: Use multiple IF or ELSE IF checks for grade ranges like 90, 75, and 50.";
+                vm.FeedbackMessage = "Solution: Step 1 = ELSE IF. Step 2 = B) They let a program check more than one condition in order.";
                 return View(vm);
             }
 
             if (actionType == "checkExplanation")
             {
-                bool explanationCorrect =
-                    (
-                        vm.ExplanationAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("several", StringComparison.OrdinalIgnoreCase)
-                    ) &&
-                    (
-                        vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("check", StringComparison.OrdinalIgnoreCase)
-                    ) &&
-                    (
-                        vm.ExplanationAnswer.Contains("different", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("cases", StringComparison.OrdinalIgnoreCase) ||
-                        vm.ExplanationAnswer.Contains("outcomes", StringComparison.OrdinalIgnoreCase)
-                    );
+                bool explanationCorrect = vm.ExplanationAnswer == "B";
 
                 vm.ExplanationCorrect = explanationCorrect;
                 vm.ExplanationFeedback = explanationCorrect
-                    ? "Correct! Nested conditions help programs check multiple cases in order."
-                    : "Try mentioning multiple conditions, ordered checks, and different cases.";
+                    ? "Correct! Nested conditions let a program check multiple conditions in order."
+                    : "Not quite. Nested conditions are useful because they check more than one condition in order.";
 
                 return View(vm);
             }
@@ -473,16 +459,15 @@ namespace DotNetCoreSqlDb.Controllers
             }
 
             bool isCorrect =
-                vm.UserAnswer.Contains("90") &&
-                vm.UserAnswer.Contains("75") &&
-                vm.UserAnswer.Contains("50");
+                vm.UserAnswer.Equals("ELSE IF", StringComparison.OrdinalIgnoreCase) ||
+                vm.UserAnswer.Equals("ELSEIF", StringComparison.OrdinalIgnoreCase);
 
             vm.IsCorrect = isCorrect;
             vm.ShowHint = false;
             vm.ShowSolution = false;
             vm.FeedbackMessage = isCorrect
-                ? "Correct! Nested or chained conditions handle multiple cases."
-                : "Not quite. Include multiple grade thresholds such as 90, 75, and 50.";
+                ? "Correct! ELSE IF lets you check another condition after the first IF."
+                : "Not quite. The missing keyword is ELSE IF.";
 
             return View(vm);
         }

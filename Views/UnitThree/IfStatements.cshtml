@@ -445,6 +445,21 @@ END IF</div>
                             Complete the four IF statement questions below. Check your answers before moving to the second assignment.
                         </div>
 
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Think about what condition needs to be true for the code inside the IF statement to run.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) temperature &lt; 0, 2) Code is skipped, 3) &gt;=, 4) Freezing prints
+                            </div>
+                        }
+
+
                         <div class="quiz-grid">
                             <div class="quiz-card">
                                 <div class="quiz-title">1. Write a condition to check if temperature is below 0</div>

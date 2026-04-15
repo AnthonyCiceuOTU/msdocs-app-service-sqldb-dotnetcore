@@ -489,6 +489,21 @@ x != 5</div>
                             Complete all four Boolean questions. You can type an expression or choose True or False where needed.
                         </div>
 
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Think carefully about what each comparison is asking. Ask yourself whether the statement is true or false.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) age &gt;= 18, 2) True, 3) !=, 4) False
+                            </div>
+                        }
+
+
                         <div class="quiz-grid">
                             <div class="quiz-card">
                                 <div class="quiz-title">1. Write a condition for: age is at least 18</div>

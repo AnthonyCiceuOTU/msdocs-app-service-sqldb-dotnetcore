@@ -382,7 +382,7 @@ END IF</div>
                             </div>
                         }
 
-                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.IsCorrect != null)
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.IsCorrect != null && !Model.ShowHint && !Model.ShowSolution)
                         {
                             <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
                                 @Model.FeedbackMessage
@@ -405,6 +405,21 @@ END IF</div>
                             Your answer should combine both checks in one expression.
                         </div>
 
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                @Model.FeedbackMessage
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                @Model.FeedbackMessage
+                            </div>
+                        }
+
+
                         <div class="mc-grid">
                             <div class="mc-card">
                                 <div class="mc-header">Your logical condition</div>
@@ -412,7 +427,7 @@ END IF</div>
                             </div>
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.IsCorrect != null)
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.IsCorrect != null && !Model.ShowHint && !Model.ShowSolution)
                         {
                             <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
                                 @Model.FeedbackMessage

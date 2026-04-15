@@ -489,6 +489,21 @@ END IF</div>
                             Complete the four IF-ELSE questions below. Check your answers before moving to the second assignment.
                         </div>
 
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Think about what happens when the IF condition is false. That is when the ELSE block runs.
+                            </div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">
+                                Solutions: 1) grade &gt;= 50, 2) ELSE runs, 3) ELSE, 4) Fail
+                            </div>
+                        }
+
+
                         <div class="quiz-grid">
                             <div class="quiz-card">
                                 <div class="quiz-title">1. Write the condition for passing when grade is at least 50</div>
