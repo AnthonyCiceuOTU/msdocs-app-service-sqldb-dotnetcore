@@ -1,5 +1,11 @@
 # Code Quest
 
+## Group Members
+  - Mikhail Kamochkin 100875940
+  - Victor Ma 100789474
+  - Anthony Ciceu 100787198
+  - Ajani Walters 100778216
+
 Code Quest is an ASP.NET Core 8 MVC learning platform for beginner programming lessons. It includes user accounts, guest access, lesson progression, unit-based content, quizzes, and lesson completion tracking backed by SQL Server and Entity Framework Core.
 
 Demo video: https://youtu.be/Xe5Vm_W301o
