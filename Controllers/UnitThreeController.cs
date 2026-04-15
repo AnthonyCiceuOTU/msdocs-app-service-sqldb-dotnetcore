@@ -182,7 +182,7 @@ namespace DotNetCoreSqlDb.Controllers
             vm.UserAnswer2 = vm.UserAnswer2?.Trim() ?? "";
             vm.UserAnswer3 = vm.UserAnswer3?.Trim() ?? "";
             vm.UserAnswer4 = vm.UserAnswer4?.Trim() ?? "";
-            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            vm.ConceptAnswer = vm.ConceptAnswer?.Trim() ?? "";
 
             if (actionType == "hint")
             {
@@ -198,33 +198,29 @@ namespace DotNetCoreSqlDb.Controllers
                 return View(vm);
             }
 
-            if (actionType == "checkExplanation")
+            if (actionType == "checkConcept")
             {
-                bool explanationCorrect =
-                    (vm.ExplanationAnswer.Contains("condition", StringComparison.OrdinalIgnoreCase) ||
-                     vm.ExplanationAnswer.Contains("check", StringComparison.OrdinalIgnoreCase)) &&
-                    vm.ExplanationAnswer.Contains("true", StringComparison.OrdinalIgnoreCase) &&
-                    (vm.ExplanationAnswer.Contains("run", StringComparison.OrdinalIgnoreCase) ||
-                     vm.ExplanationAnswer.Contains("runs", StringComparison.OrdinalIgnoreCase)) &&
-                    vm.ExplanationAnswer.Contains("false", StringComparison.OrdinalIgnoreCase) &&
-                    (vm.ExplanationAnswer.Contains("skip", StringComparison.OrdinalIgnoreCase) ||
-                     vm.ExplanationAnswer.Contains("skipped", StringComparison.OrdinalIgnoreCase));
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Correct! IF statements run code only when a condition is true."
-                    : "Try mentioning a condition, true running code, and false skipping code.";
+                vm.IsConceptCorrect = vm.ConceptAnswer == "C";
+                vm.ConceptFeedback = vm.IsConceptCorrect == true
+                    ? "Correct! IF statements let programs make decisions based on conditions."
+                    : "Not quite. IF statements are used for decision-making.";
 
                 return View(vm);
             }
 
             if (actionType == "submit")
             {
+                if (vm.IsConceptCorrect != true)
+                {
+                    vm.ConceptFeedback = "Please answer the question correctly before submitting.";
+                    return View(vm);
+                }
+
                 var saved = await SaveLessonProgressAsync("IfStatements");
-                vm.ExplanationCorrect = true;
-                vm.ExplanationFeedback = saved
+                vm.ConceptFeedback = saved
                     ? "Lesson complete! Your progress has been saved."
                     : "Your answers were submitted, but progress could not be saved.";
+
                 return View(vm);
             }
 
