@@ -1,10 +1,21 @@
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using DotNetCoreSqlDb.Data;
+using DotNetCoreSqlDb.Models;
 using DotNetCoreSqlDb.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreSqlDb.Controllers
 {
     public class UnitFiveController : Controller
     {
+        private readonly MyDatabaseContext _context;
+
+        public UnitFiveController(MyDatabaseContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IActionResult Lists()
         {
@@ -13,23 +24,21 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Lists(ListsViewModel vm, string actionType)
+        public async Task<IActionResult> Lists(ListsViewModel vm, string actionType)
         {
             Normalize(vm);
 
-            if (HandleCommonActions(
+            await HandleCommonActionsAsync(
                 vm,
                 actionType,
+                "Lists",
                 "Hint: think about what a list stores.",
                 "Solution: Question 1 = B) Storing multiple related values in one variable. Question 2 = A) A list can hold many items together.",
                 IsListsQ1Correct,
                 IsListsQ2Correct,
                 "Correct! A list stores multiple related values in one variable.",
                 "Not quite yet. A list is used to keep several related values together.",
-                "Lesson complete!"))
-            {
-                return View(vm);
-            }
+                "Lesson complete!");
 
             return View(vm);
         }
@@ -42,23 +51,21 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Accessing(AccessingViewModel vm, string actionType)
+        public async Task<IActionResult> Accessing(AccessingViewModel vm, string actionType)
         {
             Normalize(vm);
 
-            if (HandleCommonActions(
+            await HandleCommonActionsAsync(
                 vm,
                 actionType,
+                "Accessing",
                 "Hint: the first item in a list uses index 0.",
                 "Solution: Question 1 = C) scores[0]. Question 2 = B) Because list indexes start at 0.",
                 IsAccessingQ1Correct,
                 IsAccessingQ2Correct,
                 "Correct! The first item in a list is usually accessed with index 0.",
                 "Not quite yet. Remember that most lists start indexing at 0.",
-                "Lesson complete!"))
-            {
-                return View(vm);
-            }
+                "Lesson complete!");
 
             return View(vm);
         }
@@ -71,23 +78,21 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Looping(LoopingViewModel vm, string actionType)
+        public async Task<IActionResult> Looping(LoopingViewModel vm, string actionType)
         {
             Normalize(vm);
 
-            if (HandleCommonActions(
+            await HandleCommonActionsAsync(
                 vm,
                 actionType,
+                "Looping",
                 "Hint: think about what helps you repeat the same action for every item in a list.",
                 "Solution: Question 1 = A) A loop. Question 2 = B) They let you process each item without repeating the same code.",
                 IsLoopingQ1Correct,
                 IsLoopingQ2Correct,
                 "Correct! Loops are useful because they let you go through list items one by one.",
                 "Not quite yet. Think about what repeats code for each item in a list.",
-                "Lesson complete!"))
-            {
-                return View(vm);
-            }
+                "Lesson complete!");
 
             return View(vm);
         }
@@ -100,23 +105,21 @@ namespace DotNetCoreSqlDb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Searching(SearchingViewModel vm, string actionType)
+        public async Task<IActionResult> Searching(SearchingViewModel vm, string actionType)
         {
             Normalize(vm);
 
-            if (HandleCommonActions(
+            await HandleCommonActionsAsync(
                 vm,
                 actionType,
+                "Searching",
                 "Hint: searching means checking items until you find the one you want.",
                 "Solution: Question 1 = C) Checking items to find a target value. Question 2 = A) Use a loop and compare each item with the target.",
                 IsSearchingQ1Correct,
                 IsSearchingQ2Correct,
                 "Correct! Searching a list means checking items to find a target value.",
                 "Not quite yet. Think about checking each item one by one until there is a match.",
-                "Lesson complete!"))
-            {
-                return View(vm);
-            }
+                "Lesson complete!");
 
             return View(vm);
         }
@@ -132,9 +135,10 @@ namespace DotNetCoreSqlDb.Controllers
             vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? string.Empty;
         }
 
-        private bool HandleCommonActions(
+        private async Task HandleCommonActionsAsync(
             dynamic vm,
             string actionType,
+            string actionName,
             string hintMessage,
             string solutionMessage,
             Func<string, bool> firstQuestionChecker,
@@ -148,7 +152,7 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = true;
                 vm.ShowSolution = false;
                 vm.FeedbackMessage = hintMessage;
-                return true;
+                return;
             }
 
             if (actionType == "solution")
@@ -156,7 +160,7 @@ namespace DotNetCoreSqlDb.Controllers
                 vm.ShowHint = false;
                 vm.ShowSolution = true;
                 vm.FeedbackMessage = solutionMessage;
-                return true;
+                return;
             }
 
             bool firstCorrect = firstQuestionChecker(vm.UserAnswer);
@@ -168,15 +172,68 @@ namespace DotNetCoreSqlDb.Controllers
             vm.ShowHint = false;
             vm.ShowSolution = false;
             vm.ExplanationFeedback = secondCorrect ? "Correct!" : "Try the second question again.";
-            vm.FeedbackMessage = allCorrect ? successMessage : retryMessage;
 
             if (actionType == "submit")
             {
-                vm.FeedbackMessage = allCorrect
-                    ? completionMessage
-                    : "Please answer both multiple-choice questions correctly before marking the lesson complete.";
+                if (allCorrect)
+                {
+                    await SaveLessonProgressAsync(actionName);
+                    vm.FeedbackMessage = completionMessage;
+                }
+                else
+                {
+                    vm.FeedbackMessage = "Please answer both multiple-choice questions correctly before marking the lesson complete.";
+                }
+
+                return;
             }
 
+            vm.FeedbackMessage = allCorrect ? successMessage : retryMessage;
+        }
+
+        private async Task<bool> SaveLessonProgressAsync(string actionName)
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("UserID");
+
+            if (!Guid.TryParse(userIdValue, out var userId))
+            {
+                return false;
+            }
+
+            var lesson = await _context.Lessons
+                .FirstOrDefaultAsync(l => l.ControllerName == "UnitFive" && l.ActionName == actionName && l.IsPublished);
+
+            if (lesson == null)
+            {
+                return false;
+            }
+
+            var progress = await _context.UserLessonProgresses
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lesson.Id);
+
+            var now = DateTime.UtcNow;
+
+            if (progress == null)
+            {
+                progress = new UserLessonProgress
+                {
+                    UserId = userId,
+                    LessonId = lesson.Id,
+                    IsCompleted = true,
+                    CompletedAtUtc = now,
+                    LastAccessedAtUtc = now
+                };
+
+                _context.UserLessonProgresses.Add(progress);
+            }
+            else
+            {
+                progress.IsCompleted = true;
+                progress.CompletedAtUtc ??= now;
+                progress.LastAccessedAtUtc = now;
+            }
+
+            await _context.SaveChangesAsync();
             return true;
         }
 
