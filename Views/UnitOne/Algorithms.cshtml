@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Algorithms";
+    var explanationAlreadyCorrect = Model.ExplanationCorrect == true;
 }
 
 <style>
@@ -516,7 +517,12 @@ END
                         <div class="step-progress">Step 2 of 2</div>
 
                         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <button type="button" class="btn-main" id="checkExplanationButton">Check</button>
+                            <button type="button"
+                                    class="btn-main"
+                                    id="checkExplanationButton"
+                                    @(explanationAlreadyCorrect ? "disabled" : "")>
+                                @(explanationAlreadyCorrect ? "Checked" : "Check")
+                            </button>
 
                             <button type="submit"
                                     name="actionType"
@@ -556,19 +562,35 @@ END
         }
     }
 
+    function markExplanationCheckedState(isChecked) {
+        const checkButton = document.getElementById('checkExplanationButton');
+
+        if (!checkButton) return;
+
+        checkButton.disabled = isChecked;
+        checkButton.textContent = isChecked ? 'Checked' : 'Check';
+    }
+
     function setStepTwoLoadingState(isLoading) {
         const loadingBox = document.getElementById('aiLoadingBox');
         const checkButton = document.getElementById('checkExplanationButton');
         const backButton = document.getElementById('backToStep1Button');
         const explanationInput = document.getElementById('ExplanationAnswer');
+        const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+
+        const alreadyChecked = explanationCorrectHidden && explanationCorrectHidden.value === 'true';
 
         if (loadingBox) {
             loadingBox.classList.toggle('active', isLoading);
         }
 
         if (checkButton) {
-            checkButton.disabled = isLoading;
-            checkButton.textContent = isLoading ? 'Checking...' : 'Check';
+            if (isLoading) {
+                checkButton.disabled = true;
+                checkButton.textContent = 'Checking...';
+            } else {
+                markExplanationCheckedState(alreadyChecked);
+            }
         }
 
         if (backButton) {
@@ -609,16 +631,26 @@ END
         if (submitLessonButton) {
             submitLessonButton.style.display = isCorrect ? '' : 'none';
         }
+
+        markExplanationCheckedState(isCorrect);
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         const currentStep = parseInt(document.getElementById('CurrentStep')?.value || '0');
         showStep(currentStep);
 
+        markExplanationCheckedState(@(Model.ExplanationCorrect == true ? "true" : "false"));
+
         const checkExplanationButton = document.getElementById('checkExplanationButton');
 
         if (checkExplanationButton) {
             checkExplanationButton.addEventListener('click', async function () {
+                const explanationCorrectHidden = document.getElementById('ExplanationCorrectHidden');
+                if (explanationCorrectHidden && explanationCorrectHidden.value === 'true') {
+                    markExplanationCheckedState(true);
+                    return;
+                }
+
                 const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
                 const explanationAnswer = document.getElementById('ExplanationAnswer')?.value ?? '';
 
