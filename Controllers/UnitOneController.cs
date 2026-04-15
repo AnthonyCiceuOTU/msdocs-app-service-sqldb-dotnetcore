@@ -198,7 +198,11 @@ namespace DotNetCoreSqlDb.Controllers
             vm.ExplanationFeedback = vm.ExplanationFeedback?.Trim() ?? "";
             vm.TaskOrder = vm.TaskOrder?.Trim() ?? "";
 
-            bool firstTaskCorrect = vm.TaskOrder == "Wake up|Get dressed|Eat breakfast";
+            bool firstTaskCorrect = vm.TaskOrder == "Wake up|Get dressed|Eat breakfast" ||
+            vm.TaskOrder == "Wake up|Eat breakfast|Brush Hair" ||
+            vm.TaskOrder == "Wake up|Brush Hair|Get Dressed" ||
+            vm.TaskOrder == "Wake up|Get Dressed|Brush Hair" ||
+            vm.TaskOrder == "Wake up|Pack Backpack|Eat Breakfast";
 
             if (actionType == "check")
             {
