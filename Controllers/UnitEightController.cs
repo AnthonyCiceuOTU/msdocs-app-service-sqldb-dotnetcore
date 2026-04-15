@@ -51,9 +51,11 @@ public IActionResult DataProcessing(DataProcessingViewModel vm, string actionTyp
     if (actionType == "check")
     {
         // Q1: average explanation
-        if (vm.Q1Answer.Contains("divide", StringComparison.OrdinalIgnoreCase) &&
+        if (vm.Q1Answer.Contains("divid", StringComparison.OrdinalIgnoreCase) &&
             (vm.Q1Answer.Contains("total", StringComparison.OrdinalIgnoreCase) ||
-             vm.Q1Answer.Contains("sum", StringComparison.OrdinalIgnoreCase)))
+             vm.Q1Answer.Contains("sum", StringComparison.OrdinalIgnoreCase)||
+             vm.Q1Answer.Contains("add", StringComparison.OrdinalIgnoreCase)
+             ))
         {
             vm.IsQ1Correct = true;
             vm.Feedback1 = "Correct! Add values, then divide by count.";
@@ -183,7 +185,9 @@ public IActionResult Simulation(SimulationViewModel vm, string actionType)
 
         // Q2: random(1,6)
         if (vm.Q2Answer.Contains("dice", StringComparison.OrdinalIgnoreCase) ||
-            vm.Q2Answer.Contains("roll", StringComparison.OrdinalIgnoreCase))
+            vm.Q2Answer.Contains("roll", StringComparison.OrdinalIgnoreCase) ||
+            vm.Q2Answer.Contains("die", StringComparison.OrdinalIgnoreCase)||
+            vm.Q2Answer.Contains("random", StringComparison.OrdinalIgnoreCase))
         {
             vm.IsQ2Correct = true;
             vm.Feedback2 = "Correct! It simulates a dice roll.";
