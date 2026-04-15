@@ -1,368 +1,43 @@
 @model DotNetCoreSqlDb.ViewModels.AccessingViewModel
 
 @{
-    ViewData["Title"] = "Accessing List Elements";
+    ViewData["Title"] = "Accessing List Items";
 }
+
 <style>
-    html,
-    body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
-
-    .lesson-page {
-        min-height: 100vh;
-        width: 100%;
-        box-sizing: border-box;
-        overflow: hidden;
-        background:
-            radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%),
-            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
-            linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
-        color: #e5e7eb;
-        padding: 16px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .lesson-shell {
-        max-width: 1100px;
-        height: 100%;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
-    }
-
-    .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .brand-icon {
-        width: 46px;
-        height: 46px;
-        border-radius: 14px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        color: #f8fafc;
-    }
-
-    .brand-text h1 {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: 700;
-        color: #ffffff;
-        line-height: 1.1;
-    }
-
-    .brand-text p {
-        margin: 4px 0 0 0;
-        color: #94a3b8;
-        font-size: 0.95rem;
-    }
-
-    .panel {
-        background: rgba(17, 24, 39, 0.88);
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        border-radius: 18px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28);
-        backdrop-filter: blur(12px);
-    }
-
-    .step-panel {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-    }
-
-    .step-card {
-        width: 100%;
-        padding: 18px 20px;
-        display: none;
-        overflow: hidden;
-    }
-
-    .step-card.active {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .step-top h2,
-    .step-top h3 {
-        margin: 0 0 8px 0;
-        color: #ffffff;
-        line-height: 1.15;
-    }
-
-    .step-top h2 {
-        font-size: 1.65rem;
-    }
-
-    .step-top h3 {
-        font-size: 1.3rem;
-    }
-
-    .step-top p {
-        margin: 0 0 10px 0;
-        color: #94a3b8;
-        line-height: 1.5;
-        font-size: 0.95rem;
-    }
-
-    .instruction-box {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 12px 14px;
-        color: #cbd5e1;
-        line-height: 1.5;
-        font-size: 0.94rem;
-        margin-bottom: 10px;
-    }
-
-    .code-block {
-        background: rgba(2, 6, 23, 0.88);
-        border: 1px solid rgba(148, 163, 184, 0.15);
-        color: #e2e8f0;
-        border-radius: 14px;
-        padding: 12px 14px;
-        font-family: Consolas, Monaco, monospace;
-        white-space: pre-wrap;
-        line-height: 1.45;
-        font-size: 0.92rem;
-        margin-bottom: 10px;
-    }
-
-    .quiz-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        align-items: start;
-    }
-
-    .quiz-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 14px;
-        padding: 12px;
-    }
-
-    .quiz-title {
-        color: #ffffff;
-        font-weight: 700;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-    }
-
-    .mini-code {
-        background: rgba(2, 6, 23, 0.7);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 10px;
-        padding: 10px 12px;
-        color: #e2e8f0;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 0.9rem;
-        margin-bottom: 10px;
-    }
-
-    .text-input {
-        width: 100%;
-        box-sizing: border-box;
-        background: rgba(2, 6, 23, 0.7);
-        color: #f8fafc;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        border-radius: 10px;
-        padding: 10px 12px;
-        outline: none;
-        font-size: 0.92rem;
-    }
-
-    .text-input:focus {
-        border-color: rgba(34, 197, 94, 0.5);
-        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
-    }
-
-    .radio-row {
-        display: flex;
-        gap: 18px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-    }
-
-    .radio-option {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: #e5e7eb;
-        font-size: 0.92rem;
-    }
-
-    .mc-grid {
-        display: grid;
-        gap: 10px;
-    }
-
-    .mc-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 12px;
-        padding: 10px 12px;
-    }
-
-    .mc-header {
-        color: #e5e7eb;
-        margin-bottom: 6px;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-
-    .concept-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 8px;
-    }
-
-    .concept-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(148, 163, 184, 0.12);
-        border-radius: 12px;
-        padding: 12px;
-    }
-
-    .concept-card h4 {
-        margin: 0 0 6px 0;
-        color: #ffffff;
-        font-size: 0.95rem;
-    }
-
-    .concept-card p {
-        margin: 0;
-        color: #94a3b8;
-        font-size: 0.88rem;
-        line-height: 1.45;
-    }
-
-    .btn-main,
-    .btn-secondary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: 0.2s ease;
-        border: 1px solid rgba(255,255,255,0.08);
-        padding: 10px 16px;
-        cursor: pointer;
-    }
-
-    .btn-main {
-        background: linear-gradient(135deg, #0ea5e9, #22c55e);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: rgba(255,255,255,0.05);
-        color: #e5e7eb;
-    }
-
-    .btn-main:hover,
-    .btn-secondary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-        color: #ffffff;
-    }
-
-    .step-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 12px;
-    }
-
-    .step-progress {
-        color: #94a3b8;
-        font-size: 0.9rem;
-    }
-
-    .alert-box {
-        border-radius: 12px;
-        padding: 10px 12px;
-        margin-top: 10px;
-        border: 1px solid transparent;
-        font-size: 0.92rem;
-    }
-
-    .alert-success-custom {
-        background: rgba(34, 197, 94, 0.12);
-        color: #bbf7d0;
-        border-color: rgba(34, 197, 94, 0.2);
-    }
-
-    .alert-danger-custom {
-        background: rgba(239, 68, 68, 0.12);
-        color: #fecaca;
-        border-color: rgba(239, 68, 68, 0.2);
-    }
-
-    .alert-info-custom {
-        background: rgba(59, 130, 246, 0.12);
-        color: #bfdbfe;
-        border-color: rgba(59, 130, 246, 0.2);
-    }
-
-    .nav-footer {
-        margin-top: 14px;
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    @@media (max-width: 900px) {
-        .brand-text h1 {
-            font-size: 1.7rem;
-        }
-
-        .step-top h2 {
-            font-size: 1.4rem;
-        }
-
-        .step-top h3 {
-            font-size: 1.15rem;
-        }
-
-        .step-card {
-            padding: 16px;
-            overflow-y: auto;
-        }
-
-        .quiz-grid,
-        .concept-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+    .lesson-page { min-height: 100vh; width: 100%; box-sizing: border-box; overflow: hidden; background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 30%), radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%), linear-gradient(135deg, #0b1020, #111827 50%, #0f172a); color: #e5e7eb; padding: 16px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .lesson-shell { max-width: 1100px; height: 100%; margin: 0 auto; display: flex; flex-direction: column; box-sizing: border-box; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-icon { width: 46px; height: 46px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(148, 163, 184, 0.18); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #f8fafc; }
+    .brand-text h1 { margin: 0; font-size: 2rem; font-weight: 700; color: #ffffff; line-height: 1.1; }
+    .brand-text p { margin: 4px 0 0 0; color: #94a3b8; font-size: 0.95rem; }
+    .panel { background: rgba(17, 24, 39, 0.88); border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 18px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.28); backdrop-filter: blur(12px); }
+    .step-panel { flex: 1; min-height: 0; display: flex; }
+    .step-card { width: 100%; padding: 18px 20px; display: none; overflow: hidden; }
+    .step-card.active { display: flex; flex-direction: column; justify-content: space-between; }
+    .step-top h2, .step-top h3 { margin: 0 0 8px 0; color: #ffffff; line-height: 1.15; }
+    .step-top h2 { font-size: 1.65rem; }
+    .step-top h3 { font-size: 1.3rem; }
+    .step-top p { margin: 0 0 10px 0; color: #94a3b8; line-height: 1.5; font-size: 0.95rem; }
+    .instruction-box, .code-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 14px; padding: 12px 14px; color: #cbd5e1; line-height: 1.5; font-size: 0.94rem; margin-bottom: 10px; white-space: pre-wrap; }
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+    .quiz-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 14px; padding: 12px; }
+    .quiz-title { color: #ffffff; font-weight: 700; margin-bottom: 8px; font-size: 0.95rem; }
+    .text-input { width: 100%; box-sizing: border-box; background: rgba(2, 6, 23, 0.7); color: #f8fafc; border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 10px; padding: 10px 12px; outline: none; font-size: 0.92rem; }
+    .btn-main, .btn-secondary { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; border-radius: 10px; font-weight: 600; transition: 0.2s ease; border: 1px solid rgba(255,255,255,0.08); padding: 10px 16px; cursor: pointer; }
+    .btn-main { background: linear-gradient(135deg, #0ea5e9, #22c55e); color: white; }
+    .btn-secondary { background: rgba(255,255,255,0.05); color: #e5e7eb; }
+    .btn-main:hover, .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); color: #ffffff; }
+    .step-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .step-progress { color: #94a3b8; font-size: 0.9rem; }
+    .alert-box { border-radius: 12px; padding: 10px 12px; margin-top: 10px; border: 1px solid transparent; font-size: 0.92rem; }
+    .alert-success-custom { background: rgba(34, 197, 94, 0.12); color: #bbf7d0; border-color: rgba(34, 197, 94, 0.2); }
+    .alert-danger-custom { background: rgba(239, 68, 68, 0.12); color: #fecaca; border-color: rgba(239, 68, 68, 0.2); }
+    .alert-info-custom { background: rgba(59, 130, 246, 0.12); color: #bfdbfe; border-color: rgba(59, 130, 246, 0.2); }
+    .nav-footer { margin-top: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    @@media (max-width: 900px) { .step-card { padding: 16px; overflow-y: auto; } .quiz-grid { grid-template-columns: 1fr; } }
 </style>
 
 <div class="lesson-page">
@@ -371,66 +46,28 @@
             <div class="brand">
                 <div class="brand-icon">#</div>
                 <div class="brand-text">
-                    <h1>Code Quest</h1>
-                    <p>Unit 3 · Accessing Lists</p>
+                    <h1>CodeQuest</h1>
+                    <p>Unit 5 · Accessing List Items</p>
                 </div>
             </div>
 
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="Accessing" asp-controller="UnitThree" method="post" id="lessonForm">
+        <form asp-action="Accessing" asp-controller="UnitFive" method="post">
             @Html.AntiForgeryToken()
 
             <div class="panel step-panel">
-
-                <!-- STEP 0 -->
                 <div class="step-card active" id="step0">
                     <div class="step-top">
-                        <h2>Accessing List Elements</h2>
+                        <h2>Accessing List Items</h2>
+                        <p>You use indexes to access items in a list. The first item starts at index 0.</p>
 
-                        <p>
-                            Each item in a list has a position called an <strong>index</strong>.
-                        </p>
-
-                        <div class="code-block">
-scores ← [80, 75, 90]
-PRINT scores[0]
-                        </div>
+                        <div class="code-block">scores = [85, 90, 78, 92]</div>
 
                         <div class="instruction-box">
-                            Indexing starts at <strong>0</strong>, not 1.  
-                            So the first item is always at index 0.
+                            In this lesson, identify how to access the first item in a list and explain how indexing works.
                         </div>
-
-                        <div class="concept-grid">
-                            <div class="concept-card">
-                                <h4>Index 0</h4>
-                                <p>The first element in a list.</p>
-                            </div>
-                            <div class="concept-card">
-                                <h4>Accessing Data</h4>
-                                <p>Use square brackets to get a value.</p>
-                            </div>
-                            <div class="concept-card">
-                                <h4>Example</h4>
-                                <p>scores[0] gives the first value.</p>
-                            </div>
-                        </div>
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Remember: counting starts at 0, not 1.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                scores[0]
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -439,7 +76,6 @@ PRINT scores[0]
                     </div>
                 </div>
 
-                <!-- STEP 1 -->
                 <div class="step-card" id="step1">
                     <div class="step-top">
                         <h3>Assignment · Accessing Values</h3>
@@ -451,8 +87,21 @@ PRINT scores[0]
                         <div class="quiz-grid">
                             <div class="quiz-card">
                                 <div class="quiz-title">Write the correct expression</div>
-
                                 <input asp-for="UserAnswer" class="text-input" placeholder="Example: scores[0]" />
+
+                                @if (Model.ShowHint)
+                                {
+                                    <div class="alert-box alert-info-custom">
+                                        Hint: the first index is 0.
+                                    </div>
+                                }
+
+                                @if (Model.ShowSolution)
+                                {
+                                    <div class="alert-box alert-info-custom">
+                                        Solution: use scores[0].
+                                    </div>
+                                }
 
                                 @if (Model.IsCorrect != null)
                                 {
@@ -460,6 +109,11 @@ PRINT scores[0]
                                         @Model.FeedbackMessage
                                     </div>
                                 }
+                            </div>
+
+                            <div class="quiz-card">
+                                <div class="quiz-title">What to remember</div>
+                                <p>Lists usually start counting at index 0, not 1.</p>
                             </div>
                         </div>
                     </div>
@@ -475,7 +129,7 @@ PRINT scores[0]
                         else
                         {
                             <div style="display:flex; gap:10px;">
-                                <button type="submit" name="actionType" value="submit" class="btn-main">Submit</button>
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
                                 <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
                                 <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
                             </div>
@@ -483,16 +137,14 @@ PRINT scores[0]
                     </div>
                 </div>
 
-                <!-- STEP 2 -->
                 <div class="step-card" id="step2">
                     <div class="step-top">
                         <h3>Reflection</h3>
-
                         <div class="instruction-box">
-                            Why do programming languages start indexing at 0?
+                            Explain why indexes are useful when accessing items in a list.
                         </div>
 
-                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: easiermemoryindexing" />
+                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: Indexes let you access a specific position in the list." />
 
                         @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
                         {
@@ -508,7 +160,7 @@ PRINT scores[0]
 
                         @if (Model.ExplanationCorrect == true)
                         {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark As Complete</button>
                         }
                         else
                         {
@@ -516,13 +168,12 @@ PRINT scores[0]
                         }
                     </div>
                 </div>
-
             </div>
         </form>
 
         <div class="nav-footer">
-            <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back to Lessons</a>
-            <a asp-controller="UnitThree" asp-action="NextLesson" class="btn-main">Next Lesson</a>
+            <a asp-controller="UnitFive" asp-action="Lists" class="btn-secondary">Previous Lesson</a>
+            <a asp-controller="UnitFive" asp-action="Looping" class="btn-main">Next Lesson</a>
         </div>
     </div>
 </div>
