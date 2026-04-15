@@ -383,92 +383,59 @@ fruits ← ["apple", "mango", "banana"]
                     <div class="step-top">
                         <h3>Practice</h3>
 
-                        <div class="instruction-box">
-                            What is a list used for in programming?
-                        </div>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">@Model.FeedbackMessage</div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">@Model.FeedbackMessage</div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.ShowHint == false && Model.ShowSolution == false)
+                        {
+                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">@Model.FeedbackMessage</div>
+                        }
 
                         <div class="quiz-grid">
                             <div class="quiz-card">
-                                <div class="quiz-title">Write your answer</div>
-                                <input asp-for="UserAnswer" class="text-input" placeholder="Type your answer..." />
-
-                                @if (Model.ShowHint)
-                                {
-                                    <div class="alert-box alert-info-custom">
-                                        @Model.FeedbackMessage
-                                    </div>
-                                }
-
-                                @if (Model.ShowSolution)
-                                {
-                                    <div class="alert-box alert-info-custom">
-                                        @Model.FeedbackMessage
-                                    </div>
-                                }
-
-                                @if (Model.IsCorrect != null)
-                                {
-                                    <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                        @Model.FeedbackMessage
-                                    </div>
-                                }
+                                <div class="quiz-title">1. What is a list mainly used for in programming?</div>
+                                <div class="mc-grid">
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="A" /> Storing only one number</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="B" /> Storing multiple related values in one variable</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="C" /> Printing text to the screen</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="D" /> Replacing every IF statement</label>
+                                </div>
                             </div>
 
                             <div class="quiz-card">
-                                <div class="quiz-title">What to remember</div>
-                                <p>Lists let you store several related values together in one variable.</p>
+                                <div class="quiz-title">2. Which statement about lists is true?</div>
+                                <div class="mc-grid">
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="A" /> A list can hold many items together</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="B" /> A list can only hold one value</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="C" /> Lists do not use indexes</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="D" /> Lists can only store words</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="step-actions">
                         <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
-                        <div class="step-progress">Step 1 of 2</div>
+                        <div class="step-progress">Step 1 of 1</div>
 
                         @if (Model.IsCorrect == true)
-                        {
-                            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
-                        }
-                        else
-                        {
-                            <div style="display:flex; gap:10px;">
-                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
-                                <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
-                                <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                <div class="step-card" id="step2">
-                    <div class="step-top">
-                        <h3>Reflection</h3>
-
-                        <div class="instruction-box">
-                            Explain why lists are useful in programming.
-                        </div>
-
-                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Type your explanation..." />
-
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-                        {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
-                            </div>
-                        }
-                    </div>
-
-                    <div class="step-actions">
-                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
-                        <div class="step-progress">Step 2 of 2</div>
-
-                        @if (Model.ExplanationCorrect == true)
                         {
                             <button type="submit" name="actionType" value="submit" class="btn-main">Mark As Completed</button>
                         }
                         else
                         {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
+                                <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
+                                <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
+                            </div>
                         }
                     </div>
                 </div>
@@ -485,28 +452,13 @@ fruits ← ["apple", "mango", "banana"]
 
 <script>
     function showStep(stepNumber) {
-        document.querySelectorAll('.step-card').forEach(card => {
-            card.classList.remove('active');
-        });
-
+        document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
         const target = document.getElementById(`step${stepNumber}`);
-        if (target) {
-            target.classList.add('active');
-        }
+        if (target) target.classList.add('active');
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        let stepToShow = 0;
-
-        const answered = '@(Model.IsCorrect?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
-
-        if (explanationDone === 'True') {
-            stepToShow = 2;
-        } else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
-            stepToShow = 1;
-        }
-
-        showStep(stepToShow);
+        const shouldShowPractice = '@((!string.IsNullOrWhiteSpace(Model.FeedbackMessage) || Model.ShowHint || Model.ShowSolution).ToString().ToLower())' === 'true';
+        showStep(shouldShowPractice ? 1 : 0);
     });
 </script>

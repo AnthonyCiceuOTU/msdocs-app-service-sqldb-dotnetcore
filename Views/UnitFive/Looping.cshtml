@@ -378,61 +378,43 @@
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="Looping" asp-controller="UnitThree" method="post" id="lessonForm">
+        <form asp-action="Looping" asp-controller="UnitFive" method="post" id="lessonForm">
             @Html.AntiForgeryToken()
 
             <div class="panel step-panel">
 
-                <!-- STEP 0 -->
                 <div class="step-card active" id="step0">
                     <div class="step-top">
                         <h2>Looping Through Lists</h2>
 
                         <p>
-                            Loops let you go through every item in a list automatically.
+                            A loop lets you go through each item in a list one at a time.
                         </p>
 
                         <div class="code-block">
-scores ← [80, 75, 90]
-
-FOR each score IN scores
-    PRINT score
+FOR each item IN scores
+    PRINT item
 END FOR
                         </div>
 
                         <div class="instruction-box">
-                            Instead of accessing one item at a time, loops let you process
-                            all values in a list efficiently.
+                            Loops are useful because they save time and stop you from writing the same code over and over.
                         </div>
 
                         <div class="concept-grid">
                             <div class="concept-card">
-                                <h4>Iteration</h4>
-                                <p>Repeating a process for each item in a list.</p>
+                                <h4>Repeat</h4>
+                                <p>A loop repeats a block of code.</p>
                             </div>
                             <div class="concept-card">
-                                <h4>FOR EACH</h4>
-                                <p>Used to loop through all values easily.</p>
+                                <h4>Each Item</h4>
+                                <p>You can visit every value in the list.</p>
                             </div>
                             <div class="concept-card">
-                                <h4>Automation</h4>
-                                <p>Prevents writing repetitive code.</p>
+                                <h4>Efficiency</h4>
+                                <p>Loops reduce repeated code.</p>
                             </div>
                         </div>
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Think about how to repeat an action for every item.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Use a FOR loop (or FOR EACH loop).
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -441,80 +423,63 @@ END FOR
                     </div>
                 </div>
 
-                <!-- STEP 1 -->
                 <div class="step-card" id="step1">
                     <div class="step-top">
-                        <h3>Assignment · Looping</h3>
+                        <h3>Practice</h3>
 
-                        <div class="instruction-box">
-                            How do you go through all items in a list?
-                        </div>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">@Model.FeedbackMessage</div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">@Model.FeedbackMessage</div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.ShowHint == false && Model.ShowSolution == false)
+                        {
+                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">@Model.FeedbackMessage</div>
+                        }
 
                         <div class="quiz-grid">
                             <div class="quiz-card">
-                                <div class="quiz-title">Write your answer</div>
+                                <div class="quiz-title">1. Which structure is best for going through every item in a list?</div>
+                                <div class="mc-grid">
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="A" /> A loop</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="B" /> A comment</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="C" /> A string</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="D" /> A variable name only</label>
+                                </div>
+                            </div>
 
-                                <input asp-for="UserAnswer" class="text-input" placeholder="Example: use a FOR loop" />
-
-                                @if (Model.IsCorrect != null)
-                                {
-                                    <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                        @Model.FeedbackMessage
-                                    </div>
-                                }
+                            <div class="quiz-card">
+                                <div class="quiz-title">2. Why are loops useful with lists?</div>
+                                <div class="mc-grid">
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="A" /> They delete the whole list automatically</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="B" /> They let you process each item without repeating the same code</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="C" /> They turn every list into one number</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="D" /> They make indexes start at 1</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="step-actions">
                         <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
-                        <div class="step-progress">Step 1 of 2</div>
+                        <div class="step-progress">Step 1 of 1</div>
 
                         @if (Model.IsCorrect == true)
                         {
-                            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark As Completed</button>
                         }
                         else
                         {
-                            <div style="display:flex; gap:10px;">
-                                <button type="submit" name="actionType" value="submit" class="btn-main">Submit</button>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
                                 <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
                                 <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
                             </div>
-                        }
-                    </div>
-                </div>
-
-                <!-- STEP 2 -->
-                <div class="step-card" id="step2">
-                    <div class="step-top">
-                        <h3>Reflection</h3>
-
-                        <div class="instruction-box">
-                            Why are loops useful when working with lists?
-                        </div>
-
-                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: avoidsrepetition" />
-
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-                        {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
-                            </div>
-                        }
-                    </div>
-
-                    <div class="step-actions">
-                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
-                        <div class="step-progress">Step 2 of 2</div>
-
-                        @if (Model.ExplanationCorrect == true)
-                        {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
-                        }
-                        else
-                        {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
                         }
                     </div>
                 </div>
@@ -524,35 +489,20 @@ END FOR
 
         <div class="nav-footer">
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back to Lessons</a>
-            <a asp-controller="UnitThree" asp-action="NextLesson" class="btn-main">Next Lesson</a>
+            <a asp-controller="UnitFive" asp-action="Searching" class="btn-main">Next Lesson</a>
         </div>
     </div>
 </div>
 
 <script>
     function showStep(stepNumber) {
-        document.querySelectorAll('.step-card').forEach(card => {
-            card.classList.remove('active');
-        });
-
+        document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
         const target = document.getElementById(`step${stepNumber}`);
-        if (target) {
-            target.classList.add('active');
-        }
+        if (target) target.classList.add('active');
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        let stepToShow = 0;
-
-        const answered = '@(Model.IsCorrect?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
-
-        if (explanationDone === 'True') {
-            stepToShow = 2;
-        } else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
-            stepToShow = 1;
-        }
-
-        showStep(stepToShow);
+        const shouldShowPractice = '@((!string.IsNullOrWhiteSpace(Model.FeedbackMessage) || Model.ShowHint || Model.ShowSolution).ToString().ToLower())' === 'true';
+        showStep(shouldShowPractice ? 1 : 0);
     });
 </script>

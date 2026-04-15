@@ -380,12 +380,11 @@
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="Searching" asp-controller="UnitThree" method="post" id="lessonForm">
+        <form asp-action="Searching" asp-controller="UnitFive" method="post" id="lessonForm">
             @Html.AntiForgeryToken()
 
             <div class="panel step-panel">
 
-                <!-- STEP 0 -->
                 <div class="step-card active" id="step0">
                     <div class="step-top">
                         <h2>Finding Values in Lists</h2>
@@ -402,8 +401,7 @@ END FOR
                         </div>
 
                         <div class="instruction-box">
-                            To search a list, you go through each item and compare it
-                            with the value you are looking for.
+                            To search a list, you go through each item and compare it with the value you are looking for.
                         </div>
 
                         <div class="concept-grid">
@@ -413,27 +411,13 @@ END FOR
                             </div>
                             <div class="concept-card">
                                 <h4>Comparison</h4>
-                                <p>Check if item equals the target value.</p>
+                                <p>Check if an item equals the target value.</p>
                             </div>
                             <div class="concept-card">
                                 <h4>Condition</h4>
                                 <p>Use IF to detect a match.</p>
                             </div>
                         </div>
-
-                        @if (Model.ShowHint)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Think: loop through every item and compare each one.
-                            </div>
-                        }
-
-                        @if (Model.ShowSolution)
-                        {
-                            <div class="alert-box alert-info-custom">
-                                Use a loop with an IF condition to check each value.
-                            </div>
-                        }
                     </div>
 
                     <div class="step-actions">
@@ -442,80 +426,63 @@ END FOR
                     </div>
                 </div>
 
-                <!-- STEP 1 -->
                 <div class="step-card" id="step1">
                     <div class="step-top">
-                        <h3>Assignment · Searching</h3>
+                        <h3>Practice</h3>
 
-                        <div class="instruction-box">
-                            How do you search for a value in a list?
-                        </div>
+                        @if (Model.ShowHint)
+                        {
+                            <div class="alert-box alert-info-custom">@Model.FeedbackMessage</div>
+                        }
+
+                        @if (Model.ShowSolution)
+                        {
+                            <div class="alert-box alert-info-custom">@Model.FeedbackMessage</div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.FeedbackMessage) && Model.ShowHint == false && Model.ShowSolution == false)
+                        {
+                            <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">@Model.FeedbackMessage</div>
+                        }
 
                         <div class="quiz-grid">
                             <div class="quiz-card">
-                                <div class="quiz-title">Write your answer</div>
+                                <div class="quiz-title">1. What is the main idea of searching a list?</div>
+                                <div class="mc-grid">
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="A" /> Changing every item in the list</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="B" /> Printing only the first item</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="C" /> Checking items to find a target value</label>
+                                    <label class="mc-option"><input type="radio" asp-for="UserAnswer" value="D" /> Sorting the list from smallest to biggest</label>
+                                </div>
+                            </div>
 
-                                <input asp-for="UserAnswer" class="text-input" placeholder="Example: loop through and compare" />
-
-                                @if (Model.IsCorrect != null)
-                                {
-                                    <div class="alert-box @(Model.IsCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                        @Model.FeedbackMessage
-                                    </div>
-                                }
+                            <div class="quiz-card">
+                                <div class="quiz-title">2. Which approach is usually used to search for a value in a list?</div>
+                                <div class="mc-grid">
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="A" /> Use a loop and compare each item with the target</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="B" /> Only check the last item</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="C" /> Remove all items first</label>
+                                    <label class="mc-option"><input type="radio" asp-for="ExplanationAnswer" value="D" /> Use comments instead of code</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="step-actions">
                         <button type="button" class="btn-secondary" onclick="showStep(0)">Back</button>
-                        <div class="step-progress">Step 1 of 2</div>
+                        <div class="step-progress">Step 1 of 1</div>
 
                         @if (Model.IsCorrect == true)
                         {
-                            <button type="button" class="btn-main" onclick="showStep(2)">Next</button>
+                            <button type="submit" name="actionType" value="submit" class="btn-main">Mark As Completed</button>
                         }
                         else
                         {
-                            <div style="display:flex; gap:10px;">
-                                <button type="submit" name="actionType" value="submit" class="btn-main">Submit</button>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="submit" name="actionType" value="check" class="btn-main">Check</button>
                                 <button type="submit" name="actionType" value="hint" class="btn-secondary">Hint</button>
                                 <button type="submit" name="actionType" value="solution" class="btn-secondary">Solution</button>
                             </div>
-                        }
-                    </div>
-                </div>
-
-                <!-- STEP 2 -->
-                <div class="step-card" id="step2">
-                    <div class="step-top">
-                        <h3>Reflection</h3>
-
-                        <div class="instruction-box">
-                            Why is searching through a list important in programming?
-                        </div>
-
-                        <input asp-for="ExplanationAnswer" class="text-input" placeholder="Example: findvaluesquickly" />
-
-                        @if (!string.IsNullOrWhiteSpace(Model.ExplanationFeedback))
-                        {
-                            <div class="alert-box @(Model.ExplanationCorrect == true ? "alert-success-custom" : "alert-danger-custom")">
-                                @Model.ExplanationFeedback
-                            </div>
-                        }
-                    </div>
-
-                    <div class="step-actions">
-                        <button type="button" class="btn-secondary" onclick="showStep(1)">Back</button>
-                        <div class="step-progress">Step 2 of 2</div>
-
-                        @if (Model.ExplanationCorrect == true)
-                        {
-                            <button type="submit" name="actionType" value="submit" class="btn-main">Submit Lesson</button>
-                        }
-                        else
-                        {
-                            <button type="submit" name="actionType" value="checkExplanation" class="btn-main">Check</button>
                         }
                     </div>
                 </div>
@@ -525,35 +492,20 @@ END FOR
 
         <div class="nav-footer">
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Back to Lessons</a>
-            <a asp-controller="UnitThree" asp-action="NextLesson" class="btn-main">Finish Unit</a>
+            <a asp-controller="Lessons" asp-action="Index" class="btn-main">Finish Unit</a>
         </div>
     </div>
 </div>
 
 <script>
     function showStep(stepNumber) {
-        document.querySelectorAll('.step-card').forEach(card => {
-            card.classList.remove('active');
-        });
-
+        document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
         const target = document.getElementById(`step${stepNumber}`);
-        if (target) {
-            target.classList.add('active');
-        }
+        if (target) target.classList.add('active');
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        let stepToShow = 0;
-
-        const answered = '@(Model.IsCorrect?.ToString() ?? "")';
-        const explanationDone = '@(Model.ExplanationCorrect?.ToString() ?? "")';
-
-        if (explanationDone === 'True') {
-            stepToShow = 2;
-        } else if (answered || @((Model.ShowHint || Model.ShowSolution).ToString().ToLower())) {
-            stepToShow = 1;
-        }
-
-        showStep(stepToShow);
+        const shouldShowPractice = '@((!string.IsNullOrWhiteSpace(Model.FeedbackMessage) || Model.ShowHint || Model.ShowSolution).ToString().ToLower())' === 'true';
+        showStep(shouldShowPractice ? 1 : 0);
     });
 </script>

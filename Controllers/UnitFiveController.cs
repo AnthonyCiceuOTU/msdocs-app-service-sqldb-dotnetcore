@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetCoreSqlDb.ViewModels;
-using System;
 
 namespace DotNetCoreSqlDb.Controllers
 {
@@ -13,90 +12,27 @@ namespace DotNetCoreSqlDb.Controllers
         }
 
         [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult Lists(ListsViewModel vm, string actionType)
-{
-    vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-    vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
-
-    if (actionType == "hint")
-    {
-        vm.ShowHint = true;
-        vm.ShowSolution = false;
-        vm.IsCorrect = null;
-        vm.FeedbackMessage = "Hint: a list is used to store several related values together in one variable.";
-        return View(vm);
-    }
-
-    if (actionType == "solution")
-    {
-        vm.ShowHint = false;
-        vm.ShowSolution = true;
-        vm.IsCorrect = null;
-        vm.FeedbackMessage = "Solution: a list is used to store multiple values in one variable.";
-        return View(vm);
-    }
-
-    if (actionType == "checkExplanation")
-    {
-        vm.IsCorrect = true;
-
-        bool explanationCorrect =
-            vm.ExplanationAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("items", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("values", StringComparison.OrdinalIgnoreCase);
-
-        explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
-
-        vm.ExplanationCorrect = explanationCorrect;
-        vm.ExplanationFeedback = explanationCorrect
-            ? "Good explanation. Lists are useful because they store multiple values together."
-            : "Add a bit more detail about how lists help store multiple values in one place.";
-
-        return View(vm);
-    }
-
-    if (actionType == "submit")
-    {
-        vm.IsCorrect = true;
-
-        bool explanationCorrect =
-            vm.ExplanationAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("items", StringComparison.OrdinalIgnoreCase) ||
-            vm.ExplanationAnswer.Contains("values", StringComparison.OrdinalIgnoreCase);
-
-        explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
-
-        vm.ExplanationCorrect = explanationCorrect;
-        vm.ExplanationFeedback = explanationCorrect
-            ? "Good explanation. Lists are useful because they store multiple values together."
-            : "Add a bit more detail about how lists help store multiple values in one place.";
-
-        if (vm.ExplanationCorrect != true)
+        [ValidateAntiForgeryToken]
+        public IActionResult Lists(ListsViewModel vm, string actionType)
         {
+            Normalize(vm);
+
+            if (HandleCommonActions(
+                vm,
+                actionType,
+                "Hint: think about what a list stores.",
+                "Solution: a list stores multiple related values in one variable.",
+                IsListsQ1Correct,
+                IsListsQ2Correct,
+                "Correct! A list stores multiple related values in one variable.",
+                "Not quite yet. A list is used to keep several related values together.",
+                "Lesson complete!"))
+            {
+                return View(vm);
+            }
+
             return View(vm);
         }
-
-        vm.FeedbackMessage = "Lesson complete!";
-        return View(vm);
-    }
-
-    bool isCorrect =
-        vm.UserAnswer.Contains("multiple", StringComparison.OrdinalIgnoreCase) ||
-        vm.UserAnswer.Contains("many", StringComparison.OrdinalIgnoreCase) ||
-        vm.UserAnswer.Contains("several", StringComparison.OrdinalIgnoreCase);
-
-    vm.IsCorrect = isCorrect;
-    vm.ShowHint = false;
-    vm.ShowSolution = false;
-    vm.FeedbackMessage = isCorrect
-        ? "Correct! Lists store multiple values."
-        : "Not quite. Think about what lists allow you to store.";
-
-    return View(vm);
-}
 
         [HttpGet]
         public IActionResult Accessing()
@@ -108,63 +44,21 @@ public IActionResult Lists(ListsViewModel vm, string actionType)
         [ValidateAntiForgeryToken]
         public IActionResult Accessing(AccessingViewModel vm, string actionType)
         {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            Normalize(vm);
 
-            if (actionType == "hint")
+            if (HandleCommonActions(
+                vm,
+                actionType,
+                "Hint: the first item in a list is at index 0.",
+                "Solution: use square brackets with index 0 to access the first item, like scores[0].",
+                IsAccessingQ1Correct,
+                IsAccessingQ2Correct,
+                "Correct! Indexing starts at 0, so the first item is accessed with [0].",
+                "Not quite yet. Remember that list indexing starts at 0.",
+                "Lesson complete!"))
             {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: use square brackets with an index.";
                 return View(vm);
             }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
-                return View(vm);
-            }
-
-            if (actionType == "checkExplanation")
-            {
-                vm.IsCorrect = true;
-
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("index", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("position", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("0", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("first", StringComparison.OrdinalIgnoreCase);
-
-                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Good explanation. You explained how indexing helps access an item."
-                    : "Mention that list items are accessed by index, and that the first index is 0.";
-
-                return View(vm);
-            }
-
-            if (actionType == "submit")
-            {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
-            }
-
-            bool isCorrect = vm.UserAnswer.Contains("[0]");
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Indexing starts at 0."
-                : "Not quite. Remember the first index is 0.";
 
             return View(vm);
         }
@@ -179,64 +73,21 @@ public IActionResult Lists(ListsViewModel vm, string actionType)
         [ValidateAntiForgeryToken]
         public IActionResult Looping(LoopingViewModel vm, string actionType)
         {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            Normalize(vm);
 
-            if (actionType == "hint")
+            if (HandleCommonActions(
+                vm,
+                actionType,
+                "Hint: use a loop when you want to go through every item in a list.",
+                "Solution: a FOR loop is commonly used to go through each item in a list one by one.",
+                IsLoopingQ1Correct,
+                IsLoopingQ2Correct,
+                "Correct! A loop helps you go through each item in a list without repeating code.",
+                "Not quite yet. Think about which structure repeats for every item in a list.",
+                "Lesson complete!"))
             {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: use a loop to go through each item.";
                 return View(vm);
             }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
-                return View(vm);
-            }
-
-            if (actionType == "checkExplanation")
-            {
-                vm.IsCorrect = true;
-
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("each", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("every", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("item", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("repeat", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("repetition", StringComparison.OrdinalIgnoreCase);
-
-                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Good explanation. Loops help process each item in a list without repetition."
-                    : "Add a little more detail about how loops repeat through each item in the list.";
-
-                return View(vm);
-            }
-
-            if (actionType == "submit")
-            {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
-            }
-
-            bool isCorrect = vm.UserAnswer.Contains("for", StringComparison.OrdinalIgnoreCase);
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Loops allow you to process each item in a list."
-                : "Not quite. Think about which loop works best here.";
 
             return View(vm);
         }
@@ -251,66 +102,21 @@ public IActionResult Lists(ListsViewModel vm, string actionType)
         [ValidateAntiForgeryToken]
         public IActionResult Searching(SearchingViewModel vm, string actionType)
         {
-            vm.UserAnswer = vm.UserAnswer?.Trim() ?? "";
-            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? "";
+            Normalize(vm);
 
-            if (actionType == "hint")
+            if (HandleCommonActions(
+                vm,
+                actionType,
+                "Hint: searching usually means checking items one by one until you find a match.",
+                "Solution: use a loop to check each item and an IF statement to see whether it matches the target value.",
+                IsSearchingQ1Correct,
+                IsSearchingQ2Correct,
+                "Correct! Searching usually uses a loop and an IF check to find a target value.",
+                "Not quite yet. Think about checking each item until one matches.",
+                "Lesson complete!"))
             {
-                vm.ShowHint = true;
-                vm.ShowSolution = false;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Hint: check each item one by one.";
                 return View(vm);
             }
-
-            if (actionType == "solution")
-            {
-                vm.ShowHint = false;
-                vm.ShowSolution = true;
-                vm.IsCorrect = null;
-                vm.FeedbackMessage = "Solution shown below.";
-                return View(vm);
-            }
-
-            if (actionType == "checkExplanation")
-            {
-                vm.IsCorrect = true;
-
-                bool explanationCorrect =
-                    vm.ExplanationAnswer.Contains("each", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("item", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("one by one", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("find", StringComparison.OrdinalIgnoreCase) ||
-                    vm.ExplanationAnswer.Contains("search", StringComparison.OrdinalIgnoreCase);
-
-                explanationCorrect = explanationCorrect && vm.ExplanationAnswer.Length >= 10;
-
-                vm.ExplanationCorrect = explanationCorrect;
-                vm.ExplanationFeedback = explanationCorrect
-                    ? "Good explanation. Searching checks items until the target is found."
-                    : "Explain a bit more clearly that searching checks items one by one until it finds the target.";
-
-                return View(vm);
-            }
-
-            if (actionType == "submit")
-            {
-                vm.IsCorrect = true;
-                vm.ExplanationCorrect = true;
-                vm.FeedbackMessage = "Lesson complete!";
-                return View(vm);
-            }
-
-            bool hasLoop = vm.UserAnswer.Contains("for", StringComparison.OrdinalIgnoreCase);
-            bool hasIf = vm.UserAnswer.Contains("if", StringComparison.OrdinalIgnoreCase);
-            bool isCorrect = hasLoop && hasIf;
-
-            vm.IsCorrect = isCorrect;
-            vm.ShowHint = false;
-            vm.ShowSolution = false;
-            vm.FeedbackMessage = isCorrect
-                ? "Correct! Linear search checks each item."
-                : "Not quite. You need both a loop and a condition.";
 
             return View(vm);
         }
@@ -319,5 +125,71 @@ public IActionResult Lists(ListsViewModel vm, string actionType)
         {
             return View();
         }
+
+        private static void Normalize(dynamic vm)
+        {
+            vm.UserAnswer = vm.UserAnswer?.Trim() ?? string.Empty;
+            vm.ExplanationAnswer = vm.ExplanationAnswer?.Trim() ?? string.Empty;
+        }
+
+        private bool HandleCommonActions(
+            dynamic vm,
+            string actionType,
+            string hintMessage,
+            string solutionMessage,
+            Func<string, bool> firstQuestionChecker,
+            Func<string, bool> secondQuestionChecker,
+            string successMessage,
+            string retryMessage,
+            string completionMessage)
+        {
+            if (actionType == "hint")
+            {
+                vm.ShowHint = true;
+                vm.ShowSolution = false;
+                vm.FeedbackMessage = hintMessage;
+                return true;
+            }
+
+            if (actionType == "solution")
+            {
+                vm.ShowHint = false;
+                vm.ShowSolution = true;
+                vm.FeedbackMessage = solutionMessage;
+                return true;
+            }
+
+            bool firstCorrect = firstQuestionChecker(vm.UserAnswer);
+            bool secondCorrect = secondQuestionChecker(vm.ExplanationAnswer);
+            bool allCorrect = firstCorrect && secondCorrect;
+
+            vm.IsCorrect = allCorrect;
+            vm.ExplanationCorrect = secondCorrect;
+            vm.ShowHint = false;
+            vm.ShowSolution = false;
+            vm.ExplanationFeedback = secondCorrect ? "Correct!" : "Try the second question again.";
+            vm.FeedbackMessage = allCorrect ? successMessage : retryMessage;
+
+            if (actionType == "submit")
+            {
+                vm.FeedbackMessage = allCorrect
+                    ? completionMessage
+                    : "Please answer both multiple-choice questions correctly before marking the lesson complete.";
+            }
+
+            return true;
+        }
+
+        private static bool IsListsQ1Correct(string answer) => answer == "B";
+        private static bool IsListsQ2Correct(string answer) => answer == "A";
+
+        private static bool IsAccessingQ1Correct(string answer) => answer == "C";
+        private static bool IsAccessingQ2Correct(string answer) => answer == "B";
+
+        private static bool IsLoopingQ1Correct(string answer) => answer == "A";
+        private static bool IsLoopingQ2Correct(string answer) => answer == "B";
+
+        private static bool IsSearchingQ1Correct(string answer) => answer == "C";
+        private static bool IsSearchingQ2Correct(string answer) => answer == "A";
     }
 }
