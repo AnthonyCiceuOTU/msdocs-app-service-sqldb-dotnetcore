@@ -16,7 +16,7 @@
     }
 
     .lesson-page {
-        min-height: 100vh;
+        height: 100vh;
         width: 100%;
         box-sizing: border-box;
         overflow: hidden;
@@ -25,7 +25,7 @@
             radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 30%),
             linear-gradient(135deg, #0b1020, #111827 50%, #0f172a);
         color: #e5e7eb;
-        padding: 16px;
+        padding: 12px;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -36,48 +36,51 @@
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
+        min-height: 0;
     }
 
     .topbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 16px;
-        margin-bottom: 14px;
+        gap: 12px;
+        margin-bottom: 10px;
         flex-wrap: wrap;
+        flex: 0 0 auto;
     }
 
     .brand {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
     }
 
     .brand-icon {
-        width: 46px;
-        height: 46px;
+        width: 42px;
+        height: 42px;
         border-radius: 14px;
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(148, 163, 184, 0.18);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 17px;
         color: #f8fafc;
+        flex: 0 0 auto;
     }
 
     .brand-text h1 {
         margin: 0;
-        font-size: 2rem;
+        font-size: 1.75rem;
         font-weight: 700;
         color: #ffffff;
-        line-height: 1.1;
+        line-height: 1.05;
     }
 
     .brand-text p {
-        margin: 4px 0 0 0;
+        margin: 3px 0 0 0;
         color: #94a3b8;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .panel {
@@ -89,16 +92,18 @@
     }
 
     .step-panel {
-        flex: 1;
+        flex: 1 1 auto;
         min-height: 0;
         display: flex;
+        overflow: hidden;
     }
 
     .step-card {
         width: 100%;
-        padding: 18px 20px;
+        padding: 16px 18px;
         display: none;
         overflow: hidden;
+        min-height: 0;
     }
 
     .step-card.active {
@@ -107,37 +112,41 @@
         justify-content: space-between;
     }
 
+    .step-top {
+        min-height: 0;
+    }
+
     .step-top h2,
     .step-top h3 {
         margin: 0 0 8px 0;
         color: #ffffff;
-        line-height: 1.15;
+        line-height: 1.12;
     }
 
     .step-top h2 {
-        font-size: 1.65rem;
+        font-size: 1.5rem;
     }
 
     .step-top h3 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .step-top p {
-        margin: 0 0 10px 0;
+        margin: 0 0 8px 0;
         color: #94a3b8;
-        line-height: 1.5;
-        font-size: 0.95rem;
+        line-height: 1.4;
+        font-size: 0.93rem;
     }
 
     .instruction-box {
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(148, 163, 184, 0.12);
         border-radius: 14px;
-        padding: 12px 14px;
+        padding: 10px 12px;
         color: #cbd5e1;
-        line-height: 1.5;
-        font-size: 0.94rem;
-        margin-bottom: 10px;
+        line-height: 1.4;
+        font-size: 0.91rem;
+        margin-bottom: 8px;
     }
 
     .code-block {
@@ -145,12 +154,12 @@
         border: 1px solid rgba(148, 163, 184, 0.15);
         color: #e2e8f0;
         border-radius: 14px;
-        padding: 12px 14px;
+        padding: 10px 12px;
         font-family: Consolas, Monaco, monospace;
         white-space: pre-wrap;
-        line-height: 1.45;
-        font-size: 0.92rem;
-        margin-bottom: 10px;
+        line-height: 1.4;
+        font-size: 0.89rem;
+        margin-bottom: 8px;
     }
 
     .compact-code {
@@ -158,26 +167,26 @@
         border: 1px solid rgba(148, 163, 184, 0.15);
         color: #e2e8f0;
         border-radius: 14px;
-        padding: 12px 14px;
+        padding: 10px 12px;
         font-family: Consolas, Monaco, monospace;
-        font-size: 0.92rem;
-        line-height: 1.7;
-        margin-bottom: 10px;
+        font-size: 0.89rem;
+        line-height: 1.55;
+        margin-bottom: 8px;
     }
 
     .inline-answer {
-        width: 120px;
-        max-width: 120px;
+        width: 110px;
+        max-width: 110px;
         display: inline-block;
         vertical-align: middle;
-        margin: 0 6px;
+        margin: 0 5px;
         background: rgba(15, 23, 42, 0.95);
         color: #f8fafc;
         border: 1px solid rgba(148, 163, 184, 0.18);
         border-radius: 10px;
-        padding: 8px 10px;
+        padding: 7px 9px;
         outline: none;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
     }
 
     .inline-answer:focus {
@@ -190,18 +199,24 @@
         gap: 10px;
     }
 
+    .mc-grid.step-two-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: start;
+    }
+
     .mc-card {
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(148, 163, 184, 0.12);
         border-radius: 12px;
         padding: 10px 12px;
+        min-height: 0;
     }
 
     .mc-header {
         color: #e5e7eb;
         margin-bottom: 6px;
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
     }
 
     .text-input {
@@ -213,7 +228,8 @@
         border-radius: 10px;
         padding: 10px 12px;
         outline: none;
-        font-size: 0.92rem;
+        font-size: 0.91rem;
+        resize: none;
     }
 
     .text-input:focus {
@@ -231,8 +247,10 @@
         font-weight: 600;
         transition: 0.2s ease;
         border: 1px solid rgba(255,255,255,0.08);
-        padding: 10px 16px;
+        padding: 9px 14px;
         cursor: pointer;
+        font-size: 0.92rem;
+        white-space: nowrap;
     }
 
     .btn-main {
@@ -266,20 +284,22 @@
         align-items: center;
         gap: 10px;
         flex-wrap: wrap;
-        margin-top: 12px;
+        margin-top: 10px;
+        flex: 0 0 auto;
     }
 
     .step-progress {
         color: #94a3b8;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
     }
 
     .alert-box {
         border-radius: 12px;
-        padding: 10px 12px;
-        margin-top: 10px;
+        padding: 9px 11px;
+        margin-top: 8px;
         border: 1px solid transparent;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
+        line-height: 1.35;
     }
 
     .alert-success-custom {
@@ -304,13 +324,13 @@
         display: none;
         align-items: center;
         gap: 10px;
-        margin-top: 12px;
-        padding: 10px 12px;
+        margin-top: 8px;
+        padding: 9px 11px;
         border-radius: 12px;
         background: rgba(59, 130, 246, 0.12);
         color: #bfdbfe;
         border: 1px solid rgba(59, 130, 246, 0.2);
-        font-size: 0.92rem;
+        font-size: 0.9rem;
     }
 
     .loading-box.active {
@@ -327,6 +347,30 @@
         flex: 0 0 auto;
     }
 
+    .step-two-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 0;
+    }
+
+    .step-two-layout .text-input.explanation-box {
+        min-height: 140px;
+        height: 140px;
+    }
+
+    .step-two-layout .text-input.feedback-box {
+        min-height: 110px;
+        height: 110px;
+    }
+
+    .step-two-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
     @@keyframes spin {
         to {
             transform: rotate(360deg);
@@ -334,29 +378,125 @@
     }
 
     .nav-footer {
-        margin-top: 14px;
+        margin-top: 10px;
         display: flex;
         justify-content: space-between;
         gap: 12px;
         flex-wrap: wrap;
+        flex: 0 0 auto;
     }
 
     @@media (max-width: 900px) {
+        .lesson-page {
+            padding: 10px;
+        }
+
         .brand-text h1 {
-            font-size: 1.7rem;
+            font-size: 1.55rem;
         }
 
         .step-top h2 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
         }
 
         .step-top h3 {
-            font-size: 1.15rem;
+            font-size: 1.08rem;
         }
 
         .step-card {
-            padding: 16px;
-            overflow-y: auto;
+            padding: 14px;
+        }
+
+        .mc-grid.step-two-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .step-two-layout .text-input.explanation-box {
+            height: 120px;
+            min-height: 120px;
+        }
+
+        .step-two-layout .text-input.feedback-box {
+            height: 90px;
+            min-height: 90px;
+        }
+    }
+
+    @@media (max-height: 860px) {
+        .lesson-page {
+            padding: 8px;
+        }
+
+        .topbar {
+            margin-bottom: 8px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 15px;
+        }
+
+        .brand-text h1 {
+            font-size: 1.45rem;
+        }
+
+        .brand-text p {
+            font-size: 0.85rem;
+        }
+
+        .step-card {
+            padding: 12px 14px;
+        }
+
+        .step-top h2 {
+            font-size: 1.22rem;
+            margin-bottom: 6px;
+        }
+
+        .step-top h3 {
+            font-size: 1.03rem;
+            margin-bottom: 6px;
+        }
+
+        .step-top p,
+        .instruction-box,
+        .code-block,
+        .compact-code,
+        .alert-box,
+        .loading-box,
+        .step-progress,
+        .mc-header,
+        .text-input,
+        .btn-main,
+        .btn-secondary {
+            font-size: 0.86rem;
+        }
+
+        .instruction-box,
+        .code-block,
+        .compact-code,
+        .mc-card {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        .step-two-layout .text-input.explanation-box {
+            height: 100px;
+            min-height: 100px;
+        }
+
+        .step-two-layout .text-input.feedback-box {
+            height: 76px;
+            min-height: 76px;
+        }
+
+        .step-actions {
+            margin-top: 8px;
+        }
+
+        .nav-footer {
+            margin-top: 8px;
         }
     }
 </style>
@@ -375,7 +515,7 @@
             <a asp-controller="Lessons" asp-action="Index" class="btn-secondary">Browse Lessons</a>
         </div>
 
-        <form asp-action="Algorithms" asp-controller="UnitOne" method="post" id="lessonForm">
+        <form asp-action="Algorithms" asp-controller="UnitOne" method="post" id="lessonForm" style="display:flex; flex-direction:column; flex:1; min-height:0;">
             @Html.AntiForgeryToken()
             <input asp-for="CurrentStep" type="hidden" id="CurrentStep" />
             <input asp-for="ExplanationCorrect" type="hidden" id="ExplanationCorrectHidden" />
@@ -474,27 +614,27 @@ END
                 </div>
 
                 <div class="step-card" id="step2">
-                    <div class="step-top">
-                        <h3>Question 2 · Explain the fix</h3>
-                        <div class="instruction-box">
-                            Explain why using those two variables makes the algorithm correct.
+                    <div class="step-top step-two-layout">
+                        <div>
+                            <h3>Question 2 · Explain the fix</h3>
+                            <div class="instruction-box">
+                                Explain why using those two variables makes the algorithm correct.
+                            </div>
                         </div>
 
-                        <div class="mc-grid">
+                        <div class="mc-grid step-two-grid">
                             <div class="mc-card">
                                 <div class="mc-header">Your explanation</div>
                                 <textarea asp-for="ExplanationAnswer"
                                           id="ExplanationAnswer"
-                                          class="text-input"
-                                          rows="5"
+                                          class="text-input explanation-box"
                                           placeholder="Explain why the algorithm works..."></textarea>
                             </div>
 
                             <div class="mc-card">
                                 <div class="mc-header">AI feedback</div>
                                 <textarea id="aiFeedbackDisplay"
-                                          class="text-input"
-                                          rows="4"
+                                          class="text-input feedback-box"
                                           readonly
                                           placeholder="AI feedback will appear here...">@Model.ExplanationFeedback</textarea>
                             </div>
@@ -516,12 +656,12 @@ END
                         <button type="button" class="btn-secondary" onclick="showStep(1)" id="backToStep1Button">Back</button>
                         <div class="step-progress">Step 2 of 2</div>
 
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <div class="step-two-actions">
                             <button type="button"
                                     class="btn-main"
                                     id="checkExplanationButton"
                                     @(explanationAlreadyCorrect ? "disabled" : "")>
-                                @(explanationAlreadyCorrect ? "Checked" : "Check")
+                                @(explanationAlreadyCorrect ? "Checked" : "Check with AI")
                             </button>
 
                             <button type="submit"
@@ -568,7 +708,7 @@ END
         if (!checkButton) return;
 
         checkButton.disabled = isChecked;
-        checkButton.textContent = isChecked ? 'Checked' : 'Check';
+        checkButton.textContent = isChecked ? 'Checked' : 'Check with AI';
     }
 
     function setStepTwoLoadingState(isLoading) {
